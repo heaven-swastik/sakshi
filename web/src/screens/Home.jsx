@@ -459,6 +459,13 @@ export default function Home() {
                 <span className="text-gray-300 text-[11px] truncate">Meera: Ghost Seat</span>
                 <ArrowRight size={11} className="text-[#BFDBFE]" />
               </div>
+              <div
+                onClick={() => navigate('/architecture')}
+                className="col-span-2 p-2 rounded-xl bg-blue-500/20 hover:bg-blue-500/30 cursor-pointer transition flex items-center justify-between border border-blue-400/30 text-blue-200"
+              >
+                <span className="text-[11px] font-bold">⚡ 3D Cryptographic Vault, Architecture & Tech Stack</span>
+                <ArrowRight size={11} className="text-[#BFDBFE]" />
+              </div>
             </div>
           </div>
         </div>
