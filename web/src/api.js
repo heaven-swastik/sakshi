@@ -115,6 +115,18 @@ export const api = {
   runRules: (year = 2026, token) =>
     post(`/v1/system/run-rules?year=${year}`, { token }),
 
+  /** Quota ledger: NRI, OCI, FN, Supernumerary (Req 2) */
+  getQuotaLedger: (year = 2026, token) =>
+    get(`/v1/regulator/quota-ledger?year=${year}`, { token }),
+
+  /** Admission Season Replay timeline (interactive scrubber) */
+  getReplay: (year = 2026, token) =>
+    get(`/v1/regulator/replay?year=${year}`, { token }),
+
+  /** Official Accreditation / Regulatory report (Req 9) */
+  getAccreditationReport: (year = 2026, token) =>
+    get(`/v1/regulator/reports/accreditation?year=${year}`, { token }),
+
   // ── Credentials ───────────────────────────────────────────────────────────
 
   /** Issue a verifiable credential for an enrolment */

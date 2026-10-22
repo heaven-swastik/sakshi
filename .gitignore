@@ -48,3 +48,9 @@ logs/
 seed/personas.json
 seed/ground_truth.json
 
+# Local-only root files
+/.env.example
+/CHANGELOG.md
+/DEMO.md
+/design.md
+/SAKHI – SIH26263 Build Pack (AICTE APAAR Student Verification).md
