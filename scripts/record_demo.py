@@ -1,12 +1,13 @@
 """
 record_demo.py — Deterministic Playwright Demo Video & Artifact Generator for SAKSHI.
 
-Automates the full 2-minute judging script and 60-second condensed cut:
+Automates the 4-minute slow-paced judging walkthrough:
 - Viewport: 1920x1080 (Full HD)
-- Records deterministic video (.mp4)
+- Visual Mouse Cursor with smooth travel interpolation & animated click ripples
+- 8 structured scenes showcasing the AICTE Problem Statement and SAKSHI's 3-Lock Solution
 - Captures 6 high-res PNG screenshots for presentation slides
 - Compiles 3 smooth animated GIFs using Pillow
-- Injects elegant on-screen narrative captions
+- Transcodes to standard H.264 MP4 (1080p, ~4 minutes)
 """
 
 import os
@@ -14,6 +15,7 @@ import sys
 import time
 import shutil
 import asyncio
+import subprocess
 from pathlib import Path
 from PIL import Image
 import imageio_ffmpeg
@@ -30,8 +32,101 @@ for d in [DEMO_DIR, SCREENSHOTS_DIR, GIFS_DIR, TEMP_VIDEO_DIR]:
 
 FFMPEG_BIN = imageio_ffmpeg.get_ffmpeg_exe()
 
+async def setup_visual_cursor(page):
+    """Injects a high-visibility SVG mouse cursor and expanding ripple click effect."""
+    await page.evaluate("""
+        () => {
+            if (document.getElementById('virtual-cursor-layer')) return;
+
+            const layer = document.createElement('div');
+            layer.id = 'virtual-cursor-layer';
+            layer.style.position = 'fixed';
+            layer.style.inset = '0';
+            layer.style.pointerEvents = 'none';
+            layer.style.zIndex = '9999999';
+            document.body.appendChild(layer);
+
+            // Cursor pointer element
+            const cursor = document.createElement('div');
+            cursor.id = 'demo-virtual-cursor';
+            cursor.style.position = 'absolute';
+            cursor.style.top = '100px';
+            cursor.style.left = '100px';
+            cursor.style.width = '32px';
+            cursor.style.height = '32px';
+            cursor.style.transform = 'translate(-4px, -4px)';
+            cursor.style.transition = 'top 0.6s cubic-bezier(0.22, 1, 0.36, 1), left 0.6s cubic-bezier(0.22, 1, 0.36, 1)';
+            cursor.innerHTML = `
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" style="filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));">
+                    <path d="M5 3L13 25L17 15L25 11L5 3Z" fill="#0F172A" stroke="#FFFFFF" stroke-width="2.2" stroke-linejoin="round"/>
+                </svg>
+            `;
+            layer.appendChild(cursor);
+
+            // Move cursor helper
+            window.__moveCursor = (x, y) => {
+                cursor.style.left = `${x}px`;
+                cursor.style.top = `${y}px`;
+            };
+
+            // Click ripple effect
+            window.__clickRipple = (x, y) => {
+                const ripple = document.createElement('div');
+                ripple.style.position = 'absolute';
+                ripple.style.left = `${x - 24}px`;
+                ripple.style.top = `${y - 24}px`;
+                ripple.style.width = '48px';
+                ripple.style.height = '48px';
+                ripple.style.borderRadius = '50%';
+                ripple.style.border = '3px solid #3B82F6';
+                ripple.style.backgroundColor = 'rgba(59, 130, 246, 0.25)';
+                ripple.style.transform = 'scale(0.2)';
+                ripple.style.opacity = '1';
+                ripple.style.transition = 'all 0.45s ease-out';
+                layer.appendChild(ripple);
+
+                requestAnimationFrame(() => {
+                    ripple.style.transform = 'scale(1.8)';
+                    ripple.style.opacity = '0';
+                });
+
+                setTimeout(() => ripple.remove(), 500);
+            };
+        }
+    """)
+
+async def smooth_click(page, locator, delay_after=2.5):
+    """Smoothly moves virtual cursor to element, triggers click ring, and performs click."""
+    try:
+        box = await locator.bounding_box()
+        if not box:
+            await locator.click()
+            await asyncio.sleep(delay_after)
+            return
+
+        cx = box['x'] + box['width'] / 2
+        cy = box['y'] + box['height'] / 2
+
+        # Move virtual cursor
+        await page.evaluate("([x, y]) => window.__moveCursor(x, y)", [cx, cy])
+        await asyncio.sleep(0.65)
+
+        # Trigger expanding click ripple
+        await page.evaluate("([x, y]) => window.__clickRipple(x, y)", [cx, cy])
+        await asyncio.sleep(0.15)
+
+        await locator.click()
+        await asyncio.sleep(delay_after)
+    except Exception as e:
+        print(f"  Note on click: {e}")
+        try:
+            await locator.click()
+        except:
+            pass
+        await asyncio.sleep(delay_after)
+
 async def inject_caption(page, text: str, subtitle: str = ""):
-    """Injects a sleek, semi-transparent caption overlay at the top of the browser window."""
+    """Injects a sleek caption overlay at the top of the browser window."""
     await page.evaluate("""
         ([text, subtitle]) => {
             let el = document.getElementById('demo-caption-overlay');
@@ -42,40 +137,32 @@ async def inject_caption(page, text: str, subtitle: str = ""):
                 el.style.top = '16px';
                 el.style.left = '50%';
                 el.style.transform = 'translateX(-50%)';
-                el.style.zIndex = '99999';
-                el.style.backgroundColor = 'rgba(24, 26, 32, 0.94)';
-                el.style.backdropFilter = 'blur(8px)';
+                el.style.zIndex = '999999';
+                el.style.backgroundColor = 'rgba(15, 23, 42, 0.95)';
+                el.style.backdropFilter = 'blur(10px)';
                 el.style.color = '#FFFFFF';
-                el.style.padding = '10px 22px';
-                el.style.borderRadius = '16px';
-                el.style.boxShadow = '0 10px 30px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.1)';
+                el.style.padding = '12px 28px';
+                el.style.borderRadius = '20px';
+                el.style.boxShadow = '0 12px 35px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.15)';
                 el.style.fontFamily = 'system-ui, -apple-system, sans-serif';
                 el.style.textAlign = 'center';
-                el.style.maxWidth = '850px';
+                el.style.maxWidth = '900px';
                 el.style.transition = 'all 0.3s ease-out';
                 document.body.appendChild(el);
             }
             el.innerHTML = `
-                <div style="font-size: 13.5px; font-weight: 700; letter-spacing: -0.01em; color: #FFFFFF;">${text}</div>
-                ${subtitle ? `<div style="font-size: 11px; font-weight: 500; color: #94A3B8; margin-top: 2px;">${subtitle}</div>` : ''}
+                <div style="font-size: 14.5px; font-weight: 700; letter-spacing: -0.01em; color: #FFFFFF;">${text}</div>
+                ${subtitle ? `<div style="font-size: 11.5px; font-weight: 500; color: #94A3B8; margin-top: 3px;">${subtitle}</div>` : ''}
             `;
         }
     """, [text, subtitle])
 
-async def remove_caption(page):
-    await page.evaluate("""
-        () => {
-            const el = document.getElementById('demo-caption-overlay');
-            if (el) el.remove();
-        }
-    """)
-
 async def run_demo_recording():
     from playwright.async_api import async_playwright
 
-    print("=" * 65)
-    print("SAKSHI — Deterministic Demo Recording (1080p)")
-    print("=" * 65)
+    print("=" * 70)
+    print("SAKSHI — 4-Minute Paced Demo Video Generator (1080p Full HD)")
+    print("=" * 70)
 
     gif_frames_upload = []
     gif_frames_radar = []
@@ -100,188 +187,255 @@ async def run_demo_recording():
 
         page = await context.new_page()
 
-        # ── SCENE 1: HOOK & EXECUTIVE ADMISSION PORTFOLIO ───────────────────
-        print("\n[Scene 1/7] Hook & Executive Admission Portfolio...")
+        # ── SCENE 1: THE AICTE PROBLEM STATEMENT & DATA CRISIS [00:00 - 00:40]
+        print("\n[Scene 1/8] AICTE Problem Statement & Regulatory Crisis...")
         await page.goto("http://localhost:5173/")
         await page.wait_for_load_state("networkidle")
-        await asyncio.sleep(1)
-
-        await inject_caption(
-            page,
-            "SAKSHI — Verify Student Enrolment Without Collecting Student Identity",
-            "AICTE Regulation Bureau · PS SIH26263 · DPDP Act 2023 Compliant"
-        )
-        await asyncio.sleep(2)
-        await page.screenshot(path=str(SCREENSHOTS_DIR / "01-executive-portfolio.png"))
-        await asyncio.sleep(3)
-
-        # ── SCENE 2: CSV UPLOAD & CIPHERTEXT SEALING ANIMATION ───────────────
-        print("\n[Scene 2/7] Lock 1 & 2: Ingestion & Sealing Animation...")
-        await inject_caption(
-            page,
-            "Lock 1 & 2: Ingestion & Real-Time Sealing Animation",
-            "Raw IDs verified once in memory, tokenized via cohort HMAC-SHA256, and immediately purged."
-        )
-        await page.goto("http://localhost:5173/upload")
-        await page.wait_for_load_state("networkidle")
+        await setup_visual_cursor(page)
         await asyncio.sleep(1.5)
+
+        await inject_caption(
+            page,
+            "The AICTE Problem Statement (SIH26263): Why Macro Statistical Reporting Fails",
+            "AICTE receives aggregate counts without authentication. SAKSHI solves all 4 regulatory crises."
+        )
+        await asyncio.sleep(4)
+
+        # Explore Challenge 1: Ghost Enrolments
+        c1 = page.locator("text='Statistical Blindness & Ghost Enrolments'").first
+        if await c1.count() > 0:
+            await smooth_click(page, c1, delay_after=5.5)
+
+        # Explore Challenge 2: Dual Seat Hoarding
+        c2 = page.locator("text='Inter-State Dual Seat Hoarding'").first
+        if await c2.count() > 0:
+            await smooth_click(page, c2, delay_after=5.5)
+
+        # Explore Challenge 3: Sanctioned Capacity Overruns
+        c3 = page.locator("text='Sanctioned Intake Overruns'").first
+        if await c3.count() > 0:
+            await smooth_click(page, c3, delay_after=5.5)
+
+        # Explore Challenge 4: DPDP Database Surveillance Risk
+        c4 = page.locator("text='Central Database Surveillance & DPDP Risk'").first
+        if await c4.count() > 0:
+            await smooth_click(page, c4, delay_after=5.5)
+
+        await page.screenshot(path=str(SCREENSHOTS_DIR / "01-executive-portfolio.png"))
+
+        # ── SCENE 2: EXECUTIVE ADMISSION PORTFOLIO & TELEMETRY [00:40 - 01:15]
+        print("\n[Scene 2/8] Executive Admission Portfolio & Collegiate Incidents...")
+        await inject_caption(
+            page,
+            "National Admission Portfolio: 15 Institutions & Live Regulatory Incidents",
+            "3,333 seats monitored in real-time · Collegiate crests & deterministic AICTE handbook violation rules."
+        )
+        await page.evaluate("window.scrollTo({top: 480, behavior: 'smooth'})")
+        await asyncio.sleep(4)
+
+        # Hover over Incident 1 (MIT Pune & RV College)
+        inc1_btn = page.locator("button:has-text('Inspect')").first
+        if await inc1_btn.count() > 0:
+            box = await inc1_btn.bounding_box()
+            if box:
+                await page.evaluate("([x, y]) => window.__moveCursor(x, y)", [box['x'] + box['width']/2, box['y'] + box['height']/2])
+                await asyncio.sleep(3.5)
+
+        # Navigate to Upload Batch CSV via button
+        upload_nav = page.locator("button:has-text('Upload Batch CSV')").first
+        if await upload_nav.count() > 0:
+            await smooth_click(page, upload_nav, delay_after=3.5)
+        else:
+            await page.goto("http://localhost:5173/upload")
+            await page.wait_for_load_state("networkidle")
+            await setup_visual_cursor(page)
+            await asyncio.sleep(2)
+
+        # ── SCENE 3: LOCK 1 & LOCK 2 EPHEMERAL INGESTION & SEALING [01:15 - 01:55]
+        print("\n[Scene 3/8] Lock 1 & 2: Ingestion & Dissolve-to-Seal Animation...")
+        await setup_visual_cursor(page)
+        await inject_caption(
+            page,
+            "Lock 1 & 2: Client-Side Ephemeral Ingestion & Zero-PII Sealing",
+            "Raw IDs verified once in memory; digits dissolve into cryptographic HMAC seals; raw data immediately purged."
+        )
+        await asyncio.sleep(3)
 
         # Click Load Demo CSV
         demo_btn = page.locator("button:has-text('Load demo CSV'), button:has-text('Load Demo CSV')").first
         if await demo_btn.count() > 0:
-            await demo_btn.click()
-            await asyncio.sleep(1.2)
+            await smooth_click(page, demo_btn, delay_after=3.5)
 
         # Click Upload Admissions CSV
         upload_btn = page.locator("button:has-text('Upload Admissions CSV'), button:has-text('Upload')").first
         if await upload_btn.count() > 0:
-            await upload_btn.click()
+            await smooth_click(page, upload_btn, delay_after=1.0)
 
-        # Capture animated sealing frames for GIF 1
+        # Capture animated sealing frames for GIF 1 slowly
         for _ in range(12):
-            await asyncio.sleep(0.25)
+            await asyncio.sleep(0.35)
             frame_path = TEMP_VIDEO_DIR / f"frame_upload_{len(gif_frames_upload)}.png"
             await page.screenshot(path=str(frame_path))
             gif_frames_upload.append(frame_path)
 
-        await page.screenshot(path=str(SCREENSHOTS_DIR / "02-upload-sealing.png"))
-        await asyncio.sleep(2.5)
+        # Hover over Supernumerary, NRI, OCI, and FN quota rows to showcase PS Req 2
+        await page.evaluate("window.scrollTo({top: 260, behavior: 'smooth'})")
+        await asyncio.sleep(5)
 
-        # ── SCENE 3: BLIND DUPLICATE RADAR & BILATERAL REVEAL ────────────────
-        print("\n[Scene 3/7] Blind Duplicate Radar & Dual-Control Dispute Notice...")
-        await inject_caption(
-            page,
-            "Blind Duplicate Radar: Cross-Institution Duplicate Detection (Rule R1)",
-            "Same student seal active in MIT Pune & RV College Bengaluru — zero names or IDs disclosed."
-        )
+        await page.screenshot(path=str(SCREENSHOTS_DIR / "02-upload-sealing.png"))
+        await asyncio.sleep(4)
+
+        # ── SCENE 4: BLIND DUPLICATE RADAR & BILATERAL NOTICE [01:55 - 02:35]
+        print("\n[Scene 4/8] Blind Duplicate Radar & Dual-Control Inquiry Notice...")
         await page.goto("http://localhost:5173/radar")
         await page.wait_for_load_state("networkidle")
+        await setup_visual_cursor(page)
         await asyncio.sleep(2)
 
+        await inject_caption(
+            page,
+            "Lock 2 Blind Duplicate Radar: Cross-Institution Duplicate Detection (Rule R1)",
+            "Ravi's seal active at MIT Pune & RV College Bengaluru simultaneously — zero personal identity disclosed."
+        )
+        await asyncio.sleep(4)
         await page.screenshot(path=str(SCREENSHOTS_DIR / "03-duplicate-radar.png"))
 
         # Open Dual-Control Dispute Modal
         ask_btn = page.locator("button:has-text('Ask Both Colleges')").first
         if await ask_btn.count() > 0:
-            await ask_btn.click()
-            await asyncio.sleep(1)
+            await smooth_click(page, ask_btn, delay_after=3.5)
 
             # Capture frames for GIF 2
             for _ in range(8):
-                await asyncio.sleep(0.25)
+                await asyncio.sleep(0.35)
                 frame_path = TEMP_VIDEO_DIR / f"frame_radar_{len(gif_frames_radar)}.png"
                 await page.screenshot(path=str(frame_path))
                 gif_frames_radar.append(frame_path)
 
+            # Move cursor over both collegiate crests
+            await asyncio.sleep(2.5)
+
             # Click Dispatch Signed Notice
-            dispatch_btn = page.locator("button:has-text('Dispatch Signed Notice')")
+            dispatch_btn = page.locator("button:has-text('Dispatch Signed Notice')").first
             if await dispatch_btn.count() > 0:
-                await dispatch_btn.click()
-                await asyncio.sleep(1.5)
+                await smooth_click(page, dispatch_btn, delay_after=3)
 
             # Close modal
-            done_btn = page.locator("button:has-text('Done')")
+            done_btn = page.locator("button:has-text('Done')").first
             if await done_btn.count() > 0:
-                await done_btn.click()
+                await smooth_click(page, done_btn, delay_after=3)
 
-        await asyncio.sleep(1.5)
+        await asyncio.sleep(2)
 
-        # ── SCENE 4: CITIZEN WINDOW & GHOST SEAT DISPUTE ─────────────────────
-        print("\n[Scene 4/7] Citizen Window & 'This is not me' Dispute Filing...")
+        # ── SCENE 5: LOCK 3 ADMISSION SEASON REPLAY & 5-QUOTA LEDGER [02:35 - 03:15]
+        print("\n[Scene 5/8] Lock 3: Admission Season Replay & 5-Quota Ledger...")
+        await page.goto("http://localhost:5173/integrity")
+        await page.wait_for_load_state("networkidle")
+        await setup_visual_cursor(page)
+        await asyncio.sleep(2)
+
+        await inject_caption(
+            page,
+            "Lock 3: Admission Season Replay & Dedicated Quota Ledger",
+            "Temporal time scrubber tracking intake velocity; breaks down Approved, Supernumerary, NRI, OCI, and FN."
+        )
+        await asyncio.sleep(3)
+
+        # Click Season Replay Tab
+        replay_tab = page.locator("button:has-text('Season Replay')").first
+        if await replay_tab.count() > 0:
+            await smooth_click(page, replay_tab, delay_after=3)
+
+            # Smoothly scrub the timeline slider across admission milestones
+            slider = page.locator("input[type='range']").first
+            if await slider.count() > 0:
+                box = await slider.bounding_box()
+                if box:
+                    for frac in [0.25, 0.5, 0.75, 1.0]:
+                        x = box['x'] + box['width'] * frac
+                        y = box['y'] + box['height'] / 2
+                        await page.evaluate("([x, y]) => window.__moveCursor(x, y)", [x, y])
+                        await page.evaluate("([v]) => { const el = document.querySelector('input[type=range]'); if (el) { el.value = v; el.dispatchEvent(new Event('input', {bubbles: true})); } }", [int(frac * 45)])
+                        await asyncio.sleep(2.2)
+
+        # Click Accreditation Report Tab
+        report_tab = page.locator("button:has-text('Accreditation Report')").first
+        if await report_tab.count() > 0:
+            await smooth_click(page, report_tab, delay_after=4.5)
+
+        # ── SCENE 6: CITIZEN WINDOW & GHOST SEAT DISPUTE [03:15 - 03:50] ─────
+        print("\n[Scene 6/8] Citizen Window: Student Sovereignty & 'This is not me'...")
+        await page.goto("http://localhost:5173/citizen")
+        await page.wait_for_load_state("networkidle")
+        await setup_visual_cursor(page)
+        await asyncio.sleep(2)
+
         await inject_caption(
             page,
             "Citizen Window: Student Dispute & Ghost Enrolment Defense",
-            "Meera discovers an unauthorized registration at SSN Chennai and asserts 'This is not me'."
+            "Meera logs in with 1 click; spots unauthorized registration at SSN Chennai; asserts 'This is not me'."
         )
-        await page.goto("http://localhost:5173/citizen")
-        await page.wait_for_load_state("networkidle")
-        await asyncio.sleep(1)
+        await asyncio.sleep(3)
 
         # 1-Click login as Meera
         meera_btn = page.locator("button:has-text('Meera')").first
         if await meera_btn.count() > 0:
-            await meera_btn.click()
-            await asyncio.sleep(1.8)
+            await smooth_click(page, meera_btn, delay_after=3.5)
 
         # Click "This is not me" on SSN Chennai enrolment
         not_me_btn = page.locator("button:has-text('This is not me'), button:has-text('notMe')").first
         if await not_me_btn.count() > 0:
-            await not_me_btn.click()
-            await asyncio.sleep(1)
+            await smooth_click(page, not_me_btn, delay_after=2.5)
 
             # Submit dispute
             submit_btn = page.locator("button:has-text('Submit Dispute'), button:has-text('submitDispute')").first
             if await submit_btn.count() > 0:
-                await submit_btn.click()
+                await smooth_click(page, submit_btn, delay_after=1.0)
 
-                # Capture frames for GIF 3 (envelope sealing moment)
+                # Capture frames for GIF 3 (sealed envelope moment)
                 for _ in range(10):
-                    await asyncio.sleep(0.2)
+                    await asyncio.sleep(0.35)
                     frame_path = TEMP_VIDEO_DIR / f"frame_disp_{len(gif_frames_dispute)}.png"
                     await page.screenshot(path=str(frame_path))
                     gif_frames_dispute.append(frame_path)
 
         await page.screenshot(path=str(SCREENSHOTS_DIR / "04-citizen-dispute.png"))
-        await asyncio.sleep(2)
+        await asyncio.sleep(4)
 
-        # ── SCENE 5: STATELESS PUBLIC EMPLOYER VERIFICATION ─────────────────
-        print("\n[Scene 5/7] Public Stateless Credential Verification...")
+        # ── SCENE 7: STATELESS PUBLIC EMPLOYER VERIFICATION [03:50 - 04:15] ──
+        print("\n[Scene 7/8] Public Stateless Credential Verification...")
+        await page.goto("http://localhost:5173/verify/6BRQOTU4L7UB")
+        await page.wait_for_load_state("networkidle")
+        await setup_visual_cursor(page)
+        await asyncio.sleep(1.5)
+
         await inject_caption(
             page,
             "Public Verifier Portal: Instant Background Verification (< 1s)",
             "Employers verify Ravi's Ed25519-signed degree credential statelessly with zero PII access."
         )
-        await page.goto("http://localhost:5173/verify/6BRQOTU4L7UB")
+        await asyncio.sleep(5)
+        await page.screenshot(path=str(SCREENSHOTS_DIR / "05-credential-verification.png"))
+        await asyncio.sleep(3)
+
+        # ── SCENE 8: AUTOMATED PRIVACY PROOF & CLOSING [04:15 - 04:35] ───────
+        print("\n[Scene 8/8] Automated Privacy Proof & Closing Statement...")
+        await page.goto("http://localhost:5173/proof")
         await page.wait_for_load_state("networkidle")
+        await setup_visual_cursor(page)
         await asyncio.sleep(2)
 
-        await page.screenshot(path=str(SCREENSHOTS_DIR / "05-credential-verification.png"))
-        await asyncio.sleep(2.5)
-
-        # ── SCENE 6: ADMISSION SEASON REPLAY & QUOTA LEDGER ──────────────────
-        print("\n[Scene 6/7] Admission Season Replay & 5-Quota Ledger...")
-        await inject_caption(
-            page,
-            "Lock 3: Admission Season Replay & Dedicated Quota Ledger",
-            "Temporal time scrubber tracking intake velocity; breaks down Supernumerary, NRI, OCI, and FN."
-        )
-        await page.goto("http://localhost:5173/integrity")
-        await page.wait_for_load_state("networkidle")
-        await asyncio.sleep(1.5)
-
-        # Switch to Replay Tab
-        replay_tab = page.locator("button:has-text('Admission Season Replay'), button:has-text('Replay')").first
-        if await replay_tab.count() > 0:
-            await replay_tab.click()
-            await asyncio.sleep(1)
-            # Play timeline
-            play_btn = page.locator("button:has-text('Play Timeline'), button:has-text('Play')").first
-            if await play_btn.count() > 0:
-                await play_btn.click()
-                await asyncio.sleep(4)
-
-        # Switch to Quota Ledger Tab
-        quota_tab = page.locator("button:has-text('Quota Ledger'), button:has-text('Quotas')").first
-        if await quota_tab.count() > 0:
-            await quota_tab.click()
-            await asyncio.sleep(2)
-
-        # ── SCENE 7: PRIVACY PROOF & CLOSING COVENANT ───────────────────────
-        print("\n[Scene 7/7] Automated Privacy Proof & Closing...")
         await inject_caption(
             page,
             "Real-Time Privacy Proof: Mathematical Guarantee of Zero PII",
             "Regex scan across all 19 database tables confirms zero raw APAAR IDs or personal data exist."
         )
-        await page.goto("http://localhost:5173/proof")
-        await page.wait_for_load_state("networkidle")
-        await asyncio.sleep(1.5)
+        await asyncio.sleep(3)
 
-        # Click Automated Inspection
+        # Click Deep Regex Scan
         scan_btn = page.locator("button:has-text('Scan'), button:has-text('Inspection')").first
         if await scan_btn.count() > 0:
-            await scan_btn.click()
-            await asyncio.sleep(3)
+            await smooth_click(page, scan_btn, delay_after=4.5)
 
         await page.screenshot(path=str(SCREENSHOTS_DIR / "06-privacy-proof.png"))
 
@@ -291,7 +445,7 @@ async def run_demo_recording():
             "SAKSHI for AICTE SIH26263",
             "A witness that confirms, never discloses. 100% DPDP Act 2023 Compliant."
         )
-        await asyncio.sleep(3.5)
+        await asyncio.sleep(6)
 
         # Close context to write out video
         await page.close()
@@ -306,27 +460,26 @@ async def run_demo_recording():
     out_60s = DEMO_DIR / "sakshi-60s.mp4"
 
     # Transcode full 1080p demo to standard H.264 MP4
-    import subprocess
     subprocess.run([
         FFMPEG_BIN, "-y", "-i", str(raw_video_path),
         "-c:v", "libx264", "-pix_fmt", "yuv420p",
         "-r", "30", "-crf", "20", str(out_full)
     ], check=True)
-    print(f"✓ Saved Full Demo (1080p): {out_full} ({round(out_full.stat().st_size / (1024*1024), 2)} MB)")
+    print(f"[OK] Saved Full 4-Minute Demo (1080p): {out_full} ({round(out_full.stat().st_size / (1024*1024), 2)} MB)")
 
-    # Produce condensed 60-second trailer (2x speed)
+    # Produce condensed trailer (4x speed)
     subprocess.run([
         FFMPEG_BIN, "-y", "-i", str(raw_video_path),
-        "-filter:v", "setpts=0.5*PTS",
+        "-filter:v", "setpts=0.25*PTS",
         "-c:v", "libx264", "-pix_fmt", "yuv420p",
         "-r", "30", "-crf", "22", str(out_60s)
     ], check=True)
-    print(f"✓ Saved 60-Second Cut (1080p): {out_60s} ({round(out_60s.stat().st_size / (1024*1024), 2)} MB)")
+    print(f"[OK] Saved Condensed Cut (1080p): {out_60s} ({round(out_60s.stat().st_size / (1024*1024), 2)} MB)")
 
     # Generate Animated GIFs for PPT slides
     print("\nGenerating Animated GIFs for PPT Presentation...")
 
-    def make_gif(frame_paths, out_path, duration=220):
+    def make_gif(frame_paths, out_path, duration=250):
         if not frame_paths:
             return
         images = [Image.open(f).resize((800, 450), Image.Resampling.LANCZOS) for f in frame_paths if f.exists()]
@@ -339,16 +492,16 @@ async def run_demo_recording():
                 duration=duration,
                 loop=0,
             )
-            print(f"✓ Generated GIF: {out_path} ({round(out_path.stat().st_size / 1024, 1)} KB)")
+            print(f"[OK] Generated GIF: {out_path} ({round(out_path.stat().st_size / 1024, 1)} KB)")
 
-    make_gif(gif_frames_upload, GIFS_DIR / "01-upload-sealing.gif", duration=250)
-    make_gif(gif_frames_radar, GIFS_DIR / "02-radar-dual-control.gif", duration=280)
-    make_gif(gif_frames_dispute, GIFS_DIR / "03-citizen-dispute.gif", duration=250)
+    make_gif(gif_frames_upload, GIFS_DIR / "01-upload-sealing.gif", duration=280)
+    make_gif(gif_frames_radar, GIFS_DIR / "02-radar-dual-control.gif", duration=300)
+    make_gif(gif_frames_dispute, GIFS_DIR / "03-citizen-dispute.gif", duration=280)
 
     # Cleanup temp frame files
     shutil.rmtree(TEMP_VIDEO_DIR, ignore_errors=True)
     print("\n============================================================")
-    print("✓ PHASE 4 COMPLETE: Demo videos, screenshots & GIFs ready.")
+    print("[OK] PHASE 4 COMPLETE: 4-minute demo video, screenshots & GIFs ready.")
     print("============================================================")
 
 if __name__ == "__main__":

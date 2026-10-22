@@ -20,6 +20,8 @@ import { useAuth } from '../App';
 import { api } from '../api';
 import Seal from '../components/Seal';
 import DemoMode from '../components/DemoMode';
+import ProblemOverview from '../components/ProblemOverview';
+import CollegeEmblem from '../components/CollegeEmblem';
 
 export default function Home() {
   const { t } = useI18n();
@@ -101,6 +103,9 @@ export default function Home() {
 
   return (
     <div className="space-y-6">
+      {/* ── PROBLEM STATEMENT & AICTE CRISIS OVERVIEW ──────────────────────── */}
+      <ProblemOverview />
+
       {/* ── ROW 1: PORTFOLIO & ASSET STAT CARDS ───────────────────────────── */}
       <div>
         {/* Section Titles Row */}
@@ -349,9 +354,9 @@ export default function Home() {
                   className="py-3 flex items-center justify-between gap-3 hover:bg-gray-50/70 rounded-xl px-2 transition group"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    {/* Clean black square icon */}
-                    <div className="w-8 h-8 rounded-lg bg-gray-950 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-2xs">
-                      {item.code}
+                    {/* Institutional Emblem */}
+                    <div className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-200/80 flex items-center justify-center flex-shrink-0 shadow-2xs">
+                      <CollegeEmblem name={item.college} size={28} />
                     </div>
 
                     <div className="min-w-0">
