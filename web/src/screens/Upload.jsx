@@ -154,18 +154,26 @@ export default function Upload() {
   };
 
   return (
-    <div className="page-wrapper">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <h1 className="font-display text-2xl font-bold text-ink">
-            {t('upload')}
-          </h1>
-          <p className="text-slate text-sm mt-1 max-w-md">
-            {t('uploadSubtitle')}
+    <div className="space-y-6">
+      {/* Step 1 Explainer Banner */}
+      <div className="bg-[#F0F5FD] border border-[#DCE7F9] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-sm">
+        <div className="w-9 h-9 rounded-xl bg-ink text-white flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5 shadow-sm">
+          1
+        </div>
+        <div className="flex-1">
+          <h2 className="font-display font-bold text-ink text-sm sm:text-base">
+            Step 1: College Admissions Ingestion & Cryptographic Sealing
+          </h2>
+          <p className="text-xs sm:text-sm text-slate mt-0.5 leading-relaxed">
+            <strong>What happens here:</strong> AICTE-approved colleges upload their admitted student CSV. SAKSHI checks each APAAR ID in memory, converts it into an un-reversible geometric seal, and immediately discards the raw ID. <strong>Zero student names or raw IDs are stored.</strong>
           </p>
         </div>
-        <HindiToggle />
+        <button
+          onClick={loadDemoCSV}
+          className="px-3 py-1.5 rounded-xl bg-white border border-[#DCE7F9] text-xs font-bold text-ink hover:bg-paper transition hidden sm:block flex-shrink-0"
+        >
+          {t('loadDemo')}
+        </button>
       </div>
 
       {/* Two-panel layout */}

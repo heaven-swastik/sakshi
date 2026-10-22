@@ -164,20 +164,23 @@ export default function CitizenWindow() {
   // ── Unauthenticated / Student Login Screen ──────────────────────────────────
   if (!isStudent) {
     return (
-      <main className="min-h-screen bg-paper pb-28 pt-8 px-4 sm:px-6 max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+      <div className="space-y-6">
+        {/* Step 5 Explainer Banner */}
+        <div className="bg-[#FFF8F0] border border-[#FDE5CC] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-sm">
+          <div className="w-9 h-9 rounded-xl bg-crimson text-white flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5 shadow-sm">
+            5
+          </div>
           <div>
-            <h1 className="text-3xl sm:text-4xl font-display font-bold text-ink">
-              {t('citizen')}
-            </h1>
-            <p className="text-sm sm:text-base text-slate mt-1">
-              {t('citizenSubtitle')}
+            <h2 className="font-display font-bold text-ink text-sm sm:text-base">
+              Step 5: Student Citizen Window & Ghost Enrolment Dispute
+            </h2>
+            <p className="text-xs sm:text-sm text-slate mt-0.5 leading-relaxed">
+              <strong>What happens here:</strong> Students authenticate via mock phone OTP (no identity stored). They see which colleges have enrolled them and who checked their records. If a college enrolled them without consent (ghost seat), clicking <strong>"This is not me"</strong> flags an immediate regulatory alert on AICTE's investigation queue.
             </p>
           </div>
-          <HindiToggle />
         </div>
 
-        <div className="bg-white border border-fog rounded-2xl p-6 sm:p-8 shadow-sm">
+        <div className="bg-white border border-fog rounded-3xl p-6 sm:p-8 shadow-sm max-w-xl mx-auto">
           <div className="max-w-md mx-auto">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-10 h-10 rounded-full bg-crimson-light flex items-center justify-center text-crimson">
@@ -294,7 +297,7 @@ export default function CitizenWindow() {
             </div>
           </div>
         </div>
-      </main>
+      </div>
     );
   }
 
@@ -304,27 +307,27 @@ export default function CitizenWindow() {
   const hasOptedOut = consentWithdrawn || enrolments.some(e => e.assurance_tier === 'attested');
 
   return (
-    <main className="min-h-screen bg-paper pb-28 pt-8 px-4 sm:px-6 max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl sm:text-4xl font-display font-bold text-ink">
-            {t('citizen')}
-          </h1>
-          <p className="text-sm sm:text-base text-slate mt-1">
-            {t('citizenSubtitle')}
+    <div className="space-y-6">
+      {/* Step 5 Explainer Banner */}
+      <div className="bg-[#FFF8F0] border border-[#FDE5CC] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-sm">
+        <div className="w-9 h-9 rounded-xl bg-crimson text-white flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5 shadow-sm">
+          5
+        </div>
+        <div className="flex-1">
+          <h2 className="font-display font-bold text-ink text-sm sm:text-base">
+            Step 5: Student Citizen Window & Ghost Enrolment Dispute
+          </h2>
+          <p className="text-xs sm:text-sm text-slate mt-0.5 leading-relaxed">
+            <strong>What happens here:</strong> You are logged in as a student using an anonymous session. Below are all enrolments registered under your seal. If any college enrolled you without permission, click <strong>"This is not me"</strong> to report a ghost enrolment to AICTE.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <HindiToggle />
-          <button
-            onClick={() => { logout(); setRecordsData(null); }}
-            className="flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-slate hover:text-ink bg-white border border-fog rounded-full"
-          >
-            <LogOut size={14} />
-            <span>Logout</span>
-          </button>
-        </div>
+        <button
+          onClick={() => { logout(); setRecordsData(null); }}
+          className="px-3.5 py-1.5 rounded-xl bg-white border border-fog text-xs font-semibold text-slate hover:text-ink transition flex-shrink-0 flex items-center gap-1.5"
+        >
+          <LogOut size={14} />
+          <span>Logout</span>
+        </button>
       </div>
 
       {/* Seal & Pseudonym Banner */}
@@ -623,7 +626,7 @@ export default function CitizenWindow() {
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }
 

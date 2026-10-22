@@ -33,14 +33,12 @@ html {
 
 body {
   font-family: 'Hanken Grotesk', sans-serif;
-  background-color: var(--paper);
+  background-color: #EAF0F6;
   color: var(--ink);
   font-size: 15px;
   line-height: 1.6;
   margin: 0;
   padding: 0;
-  /* Bottom padding for pill dock */
-  padding-bottom: 100px;
 }
 
 /* ─── Typography ────────────────────────────────────────────────── */

@@ -150,21 +150,20 @@ export default function Integrity() {
   const openFlags = institutions.reduce((s, i) => s + (i.open_flags || 0), 0);
 
   return (
-    <main className="min-h-screen bg-paper pb-28 pt-8 px-4 sm:px-6 max-w-5xl mx-auto">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div className="space-y-6">
+      {/* Step 3 Explainer Banner */}
+      <div className="bg-[#EDF7F1] border border-[#D5EFE0] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-sm">
+        <div className="w-9 h-9 rounded-xl bg-jade text-white flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5 shadow-sm">
+          3
+        </div>
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <BarChart2 size={24} className="text-ink" />
-            <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink">
-              {t('integrity')} & Regulatory Suite
-            </h1>
-          </div>
-          <p className="text-slate text-sm max-w-xl">
-            {t('integritySubtitle')}
+          <h2 className="font-display font-bold text-ink text-sm sm:text-base">
+            Step 3: Seat Integrity Scores & Quota Distribution (Rules R2–R6)
+          </h2>
+          <p className="text-xs sm:text-sm text-slate mt-0.5 leading-relaxed">
+            <strong>What happens here:</strong> Transparent 0–100 health scores computed per college. Rule R3 catches intake capacity overruns; Rule R2 catches double degree claims in the same college; Rule R4 catches sudden burst uploads; and the Quota Ledger tracks NRI, OCI, and Foreign National seats (AICTE Requirement 2).
           </p>
         </div>
-        <HindiToggle />
       </div>
 
       {/* Navigation Pills */}
@@ -590,6 +589,6 @@ export default function Integrity() {
           ) : null}
         </div>
       )}
-    </main>
+    </div>
   );
 }

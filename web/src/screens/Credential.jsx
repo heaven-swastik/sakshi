@@ -218,21 +218,20 @@ export default function Credential() {
   };
 
   return (
-    <main className="min-h-screen bg-paper pb-28 pt-8 px-4 sm:px-6 max-w-5xl mx-auto">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div className="space-y-6">
+      {/* Step 4 Explainer Banner */}
+      <div className="bg-[#F0F5FD] border border-[#DCE7F9] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-sm">
+        <div className="w-9 h-9 rounded-xl bg-ink text-white flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5 shadow-sm">
+          4
+        </div>
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Award size={24} className="text-ink" />
-            <h1 className="font-display text-2xl sm:text-3xl font-bold text-ink">
-              {t('credential')} & Certificate Suite
-            </h1>
-          </div>
-          <p className="text-slate text-sm max-w-xl">
-            {t('credentialSubtitle')}
+          <h2 className="font-display font-bold text-ink text-sm sm:text-base">
+            Step 4: Verifiable Academic Credentials & Degree Certificate (AICTE Requirement 10)
+          </h2>
+          <p className="text-xs sm:text-sm text-slate mt-0.5 leading-relaxed">
+            <strong>What happens here:</strong> Degrees and enrolment records are cryptographically signed with Ed25519 keys. The Certificate Display Block displays the student's Roll ID alongside their masked APAAR ID and a verification QR code that employers or other universities can verify in under 1 second without looking up a central database.
           </p>
         </div>
-        <HindiToggle />
       </div>
 
       {/* Navigation Tabs */}
@@ -491,6 +490,6 @@ export default function Credential() {
           )}
         </div>
       )}
-    </main>
+    </div>
   );
 }

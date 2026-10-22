@@ -8,7 +8,7 @@ import { I18nProvider } from './i18n';
 import { api } from './api';
 
 // Components
-import PillDock from './components/PillDock';
+import AppShell from './components/AppShell';
 
 // Screens
 import Home from './screens/Home';
@@ -87,7 +87,7 @@ export default function App() {
     <I18nProvider>
       <AuthProvider>
         <BrowserRouter>
-          <div className="min-h-screen bg-paper font-body text-ink antialiased selection:bg-crimson-light selection:text-crimson">
+          <AppShell>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/upload" element={<Upload />} />
@@ -99,10 +99,7 @@ export default function App() {
               <Route path="/proof" element={<PrivacyProof />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-
-            {/* Global floating pill dock navigation */}
-            <PillDock />
-          </div>
+          </AppShell>
         </BrowserRouter>
       </AuthProvider>
     </I18nProvider>
