@@ -218,46 +218,46 @@ export default function Credential() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Step 4 Explainer Banner */}
-      <div className="bg-[#F0F5FD] border border-[#DCE7F9] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-sm">
-        <div className="w-9 h-9 rounded-xl bg-ink text-white flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5 shadow-sm">
+      <div className="bg-[#F0F6FF] border border-[#DBEAFE] rounded-2xl p-4 flex items-start gap-3 shadow-2xs">
+        <div className="w-8 h-8 rounded-xl bg-gray-950 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5 shadow-2xs">
           4
         </div>
         <div>
-          <h2 className="font-display font-bold text-ink text-sm sm:text-base">
+          <h2 className="font-display font-bold text-gray-900 text-sm sm:text-base">
             Step 4: Verifiable Academic Credentials & Degree Certificate (AICTE Requirement 10)
           </h2>
-          <p className="text-xs sm:text-sm text-slate mt-0.5 leading-relaxed">
-            <strong>What happens here:</strong> Degrees and enrolment records are cryptographically signed with Ed25519 keys. The Certificate Display Block displays the student's Roll ID alongside their masked APAAR ID and a verification QR code that employers or other universities can verify in under 1 second without looking up a central database.
+          <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">
+            <strong>What happens here:</strong> Degrees and enrolment records are cryptographically signed with Ed25519 keys. The Certificate Display Block displays the student's Roll ID alongside their masked APAAR ID and a verification QR code that employers or other universities can verify in under 1 second without querying a central personal database.
           </p>
         </div>
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex flex-wrap gap-2 mb-8 bg-white border border-fog p-1.5 rounded-2xl shadow-sm">
+      <div className="flex flex-wrap gap-1 bg-gray-100 p-1 rounded-2xl text-xs">
         <button
           onClick={() => setTab('certificate')}
-          className={`px-4 py-2 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 ${
-            tab === 'certificate' ? 'bg-ink text-white shadow' : 'text-slate hover:text-ink'
+          className={`px-3.5 py-1.5 font-bold rounded-xl transition flex items-center gap-1.5 ${
+            tab === 'certificate' ? 'bg-gray-950 text-white shadow-xs' : 'text-gray-600 hover:text-gray-950'
           }`}
         >
-          <Award size={14} />
+          <Award size={13} />
           <span>Certificate Display Block (Req 10)</span>
         </button>
         <button
           onClick={() => setTab('verify')}
-          className={`px-4 py-2 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 ${
-            tab === 'verify' ? 'bg-ink text-white shadow' : 'text-slate hover:text-ink'
+          className={`px-3.5 py-1.5 font-bold rounded-xl transition flex items-center gap-1.5 ${
+            tab === 'verify' ? 'bg-gray-950 text-white shadow-xs' : 'text-gray-600 hover:text-gray-950'
           }`}
         >
-          <ShieldCheck size={14} />
+          <ShieldCheck size={13} />
           <span>Verify Credential (Req 5)</span>
         </button>
         <button
           onClick={() => setTab('issue')}
-          className={`px-4 py-2 text-xs font-semibold rounded-xl transition ${
-            tab === 'issue' ? 'bg-ink text-white shadow' : 'text-slate hover:text-ink'
+          className={`px-3.5 py-1.5 font-bold rounded-xl transition ${
+            tab === 'issue' ? 'bg-gray-950 text-white shadow-xs' : 'text-gray-600 hover:text-gray-950'
           }`}
         >
           Issue New Credential
@@ -266,16 +266,16 @@ export default function Credential() {
 
       {/* ── TAB 1: CERTIFICATE DISPLAY BLOCK (Requirement 10) ─────────────────── */}
       {tab === 'certificate' && (
-        <div className="space-y-6">
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <label className="text-xs font-semibold text-slate uppercase tracking-wider">
+            <div className="flex items-center gap-2.5">
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">
                 Select Student:
               </label>
               <select
                 value={selectedEnrolId}
                 onChange={(e) => setSelectedEnrolId(e.target.value)}
-                className="px-3 py-1.5 rounded-lg border border-fog text-xs font-medium text-ink bg-white focus:outline-none focus:border-ink"
+                className="px-3 py-1.5 rounded-xl border border-gray-200 text-xs font-semibold text-gray-900 bg-white focus:outline-none focus:border-gray-900 shadow-2xs"
               >
                 {DEMO_ENROLMENTS.map((e) => (
                   <option key={e.id} value={e.id}>{e.label}</option>
@@ -284,69 +284,69 @@ export default function Credential() {
             </div>
             <button
               onClick={printCertificate}
-              className="px-4 py-2 bg-ink text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 hover:bg-ink/90 transition shadow-sm"
+              className="px-3.5 py-1.5 bg-gray-950 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 hover:bg-gray-800 transition shadow-xs"
             >
-              <Printer size={14} />
+              <Printer size={13} />
               <span>Print Certificate</span>
             </button>
           </div>
 
-          {/* Official AICTE Degree Certificate Card */}
-          <div className="bg-white border-2 border-slate/40 rounded-3xl p-8 sm:p-12 shadow-lg relative overflow-hidden print:border-none print:shadow-none print:p-0">
+          {/* Official AICTE Degree Certificate Card (Compact, Elegant, Perfectly Sized) */}
+          <div className="bg-white border border-gray-300 rounded-2xl p-6 sm:p-7 shadow-xs relative overflow-hidden print:border-none print:shadow-none print:p-0">
             {/* Watermark Seal */}
-            <div className="absolute right-6 top-6 opacity-10 pointer-events-none">
-              <Seal token={activeEnrolment.token} size={280} />
+            <div className="absolute right-4 top-4 opacity-5 pointer-events-none">
+              <Seal token={activeEnrolment.token} size={200} />
             </div>
 
             {/* Header Banner */}
-            <div className="text-center pb-8 border-b-2 border-fog space-y-2">
-              <span className="text-[10px] font-mono tracking-widest text-slate uppercase block">
+            <div className="text-center pb-5 border-b border-gray-200 space-y-1.5">
+              <span className="text-[10px] font-mono tracking-widest text-gray-400 uppercase block">
                 All India Council for Technical Education · Ministry of Education (Govt. of India)
               </span>
-              <h2 className="font-display font-black text-2xl sm:text-3xl text-ink tracking-tight uppercase">
+              <h2 className="font-display font-black text-xl sm:text-2xl text-gray-950 tracking-tight uppercase">
                 Academic Enrolment & Degree Credential
               </h2>
-              <p className="text-xs font-semibold text-slate">
+              <p className="text-xs font-medium text-gray-500">
                 Issued in Compliance with AICTE Approval Process Handbook (EoA Norms)
               </p>
             </div>
 
             {/* Certificate Body */}
-            <div className="py-8 space-y-6 text-center max-w-2xl mx-auto">
-              <p className="text-xs text-slate italic">
+            <div className="py-5 space-y-4 text-center max-w-2xl mx-auto">
+              <p className="text-xs text-gray-500 italic">
                 This is to certify that the student holding the institutional roll credential below is lawfully enrolled in an AICTE-approved programme:
               </p>
 
-              <div className="p-4 rounded-2xl bg-paper border border-fog text-left space-y-2 text-xs">
+              <div className="p-3.5 rounded-xl bg-gray-50/80 border border-gray-200 text-left space-y-1.5 text-xs">
                 <div className="flex justify-between items-center">
-                  <span className="text-slate font-semibold uppercase">Institution:</span>
-                  <span className="font-display font-bold text-ink">Maharashtra Institute of Technology, Pune</span>
+                  <span className="text-gray-500 font-semibold uppercase text-[11px]">Institution:</span>
+                  <span className="font-display font-bold text-gray-900">Maharashtra Institute of Technology, Pune</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate font-semibold uppercase">Degree Programme:</span>
-                  <span className="font-bold text-ink">Bachelor of Technology (Computer Science & Engineering)</span>
+                  <span className="text-gray-500 font-semibold uppercase text-[11px]">Degree Programme:</span>
+                  <span className="font-bold text-gray-900">Bachelor of Technology (Computer Science & Engineering)</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate font-semibold uppercase">Cohort Year:</span>
-                  <span className="font-mono text-ink">2026 – 2030 (Full-Time Regular)</span>
+                  <span className="text-gray-500 font-semibold uppercase text-[11px]">Cohort Year:</span>
+                  <span className="font-mono text-gray-900 font-semibold">2026 – 2030 (Full-Time Regular)</span>
                 </div>
               </div>
 
               {/* Requirement 10 Highlight Box: Student ID + APAAR ID */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-2xl bg-paper/80 border border-ink/20 text-left">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-xl bg-blue-50/50 border border-blue-200 text-left">
                 <div>
-                  <span className="text-[11px] font-semibold text-slate uppercase block">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase block">
                     Institution Student Roll ID:
                   </span>
-                  <span className="font-mono text-sm font-bold text-ink mt-0.5 block">
+                  <span className="font-mono text-xs font-bold text-gray-900 mt-0.5 block">
                     {activeEnrolment.studentId}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[11px] font-semibold text-slate uppercase block">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase block">
                     National APAAR ID (PS Req 10):
                   </span>
-                  <span className="font-mono text-sm font-bold text-jade mt-0.5 block">
+                  <span className="font-mono text-xs font-bold text-emerald-800 mt-0.5 block">
                     {activeEnrolment.apaarMasked}
                   </span>
                 </div>
@@ -354,35 +354,35 @@ export default function Credential() {
             </div>
 
             {/* Verification Footer with Seal & QR */}
-            <div className="pt-6 border-t-2 border-fog flex flex-col sm:flex-row items-center justify-between gap-6">
-              <div className="flex items-center gap-4">
-                <Seal token={activeEnrolment.token} size={64} />
+            <div className="pt-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <Seal token={activeEnrolment.token} size={48} />
                 <div className="text-left text-xs">
-                  <p className="font-display font-bold text-ink">
+                  <p className="font-display font-bold text-gray-900 text-xs">
                     Tamper-Evident Enrolment Seal
                   </p>
-                  <p className="text-slate text-[11px]">
+                  <p className="text-gray-400 text-[11px] font-mono">
                     Keyed HMAC-SHA256 Token
                   </p>
-                  <p className="text-jade font-semibold text-[11px]">
+                  <p className="text-emerald-700 font-semibold text-[11px]">
                     Status: AICTE Verified ✓
                   </p>
                 </div>
               </div>
 
               {/* Verification QR */}
-              <div className="flex items-center gap-4 bg-paper p-3 rounded-2xl border border-fog">
+              <div className="flex items-center gap-3 bg-gray-50 p-2.5 rounded-xl border border-gray-200">
                 <QRCodeSVG
                   value={`${window.location.origin}/credential/verify/6BRQOTU4L7UB`}
-                  size={64}
+                  size={52}
                   level="M"
-                  bgColor="#F5F6F8"
-                  fgColor="#0F1217"
+                  bgColor="#F9FAFB"
+                  fgColor="#111827"
                 />
                 <div className="text-left text-[11px]">
-                  <p className="font-bold text-ink">Scan to Verify</p>
-                  <p className="text-slate font-mono">6BRQOTU4L7UB</p>
-                  <p className="text-slate text-[10px]">Instant Employer Check</p>
+                  <p className="font-bold text-gray-900">Scan to Verify</p>
+                  <p className="text-gray-500 font-mono text-[10px]">6BRQOTU4L7UB</p>
+                  <p className="text-emerald-700 font-medium text-[10px]">Instant Employer Check</p>
                 </div>
               </div>
             </div>

@@ -30,25 +30,25 @@ APAAR,APAAR202400010,CSE,2024,full-time,ews`;
 
 // Deterministic demo results (so demo works without backend)
 const DEMO_RESULTS = [
-  { row: 1, status: 'accepted', reason: null,              token: 'seal-row-1-cse-2024' },
-  { row: 2, status: 'accepted', reason: null,              token: 'seal-row-2-ece-2024' },
-  { row: 3, status: 'attested', reason: 'Opted out of APAAR — attested status applied', token: 'seal-row-3-mech-2024' },
-  { row: 4, status: 'accepted', reason: null,              token: 'seal-row-4-cse-2024' },
-  { row: 5, status: 'accepted', reason: null,              token: 'seal-row-5-civil-2024' },
-  { row: 6, status: 'accepted', reason: null,              token: 'seal-row-6-it-2024' },
-  { row: 7, status: 'accepted', reason: null,              token: 'seal-row-7-mba-2024' },
-  { row: 8, status: 'flagged',  reason: 'Duplicate seal detected — R1 cross-institution', token: 'seal-row-8-cse-2024' },
-  { row: 9, status: 'accepted', reason: null,              token: 'seal-row-9-ece-2024' },
-  { row:10, status: 'accepted', reason: null,              token: 'seal-row-10-cse-2024' },
+  { row: 1, status: 'accepted', reason: null, token: 'STU-A48FE9B27C12' },
+  { row: 2, status: 'accepted', reason: null, token: 'STU-B19CD47E82FA' },
+  { row: 3, status: 'attested', reason: 'Opted out of APAAR — attested status applied (SC Ruling)', token: 'STU-C783EF9104DA' },
+  { row: 4, status: 'accepted', reason: null, token: 'STU-D526A37F91BC' },
+  { row: 5, status: 'accepted', reason: null, token: 'STU-E814B29CD3FE' },
+  { row: 6, status: 'accepted', reason: null, token: 'STU-F372C81AE49B' },
+  { row: 7, status: 'accepted', reason: null, token: 'STU-7A39F18B4CD2' },
+  { row: 8, status: 'flagged',  reason: 'Duplicate seal detected — R1 cross-institution', token: 'STU-AXECI4H4VCDL' },
+  { row: 9, status: 'accepted', reason: null, token: 'STU-8C21E4B923FA' },
+  { row:10, status: 'accepted', reason: null, token: 'STU-9D34F12AB84C' },
 ];
 
 // ─── Stat summary tile ───────────────────────────────────────────────────────
 
-function SummaryTile({ label, value, color = 'text-ink' }) {
+function SummaryTile({ label, value, color = 'text-gray-950' }) {
   return (
-    <div className="bg-paper rounded-lg p-3 text-center">
-      <div className={`text-2xl font-display font-bold ${color}`}>{value}</div>
-      <div className="text-xs text-slate mt-0.5">{label}</div>
+    <div className="bg-gray-50/80 border border-gray-100 rounded-xl p-2.5 text-center">
+      <div className={`text-xl font-display font-extrabold ${color}`}>{value}</div>
+      <div className="text-[11px] text-gray-500 font-medium mt-0.5">{label}</div>
     </div>
   );
 }
@@ -57,11 +57,11 @@ function SummaryTile({ label, value, color = 'text-ink' }) {
 
 function WhatHappensStep({ num, text }) {
   return (
-    <div className="flex items-start gap-3">
-      <div className="w-6 h-6 rounded-full bg-ink text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
+    <div className="flex items-start gap-2.5">
+      <div className="w-5 h-5 rounded-full bg-gray-950 text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">
         {num}
       </div>
-      <p className="text-sm text-slate leading-relaxed">{text}</p>
+      <p className="text-xs text-gray-600 leading-relaxed">{text}</p>
     </div>
   );
 }
@@ -154,40 +154,40 @@ export default function Upload() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Step 1 Explainer Banner */}
-      <div className="bg-[#F0F5FD] border border-[#DCE7F9] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-sm">
-        <div className="w-9 h-9 rounded-xl bg-ink text-white flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5 shadow-sm">
+      <div className="bg-[#F0F6FF] border border-[#DBEAFE] rounded-2xl p-4 flex items-start gap-3 shadow-2xs">
+        <div className="w-8 h-8 rounded-xl bg-gray-950 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5 shadow-2xs">
           1
         </div>
         <div className="flex-1">
-          <h2 className="font-display font-bold text-ink text-sm sm:text-base">
+          <h2 className="font-display font-bold text-gray-900 text-sm sm:text-base">
             Step 1: College Admissions Ingestion & Cryptographic Sealing
           </h2>
-          <p className="text-xs sm:text-sm text-slate mt-0.5 leading-relaxed">
-            <strong>What happens here:</strong> AICTE-approved colleges upload their admitted student CSV. SAKSHI checks each APAAR ID in memory, converts it into an un-reversible geometric seal, and immediately discards the raw ID. <strong>Zero student names or raw IDs are stored.</strong>
+          <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">
+            <strong>What happens here:</strong> Approved institutions upload their admitted student CSV. SAKSHI checks each APAAR ID against the registry in volatile RAM, derives an irreversible geometric HMAC seal, and immediately purges the raw ID. <strong>Zero student names or raw IDs are stored.</strong>
           </p>
         </div>
         <button
           onClick={loadDemoCSV}
-          className="px-3 py-1.5 rounded-xl bg-white border border-[#DCE7F9] text-xs font-bold text-ink hover:bg-paper transition hidden sm:block flex-shrink-0"
+          className="px-3 py-1.5 rounded-xl bg-white border border-[#DBEAFE] text-xs font-bold text-gray-900 hover:bg-gray-50 transition hidden sm:block flex-shrink-0 shadow-2xs"
         >
           {t('loadDemo')}
         </button>
       </div>
 
       {/* Two-panel layout */}
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="flex flex-col md:flex-row gap-5">
 
         {/* ── Left panel: upload controls ─────────────────────────────── */}
-        <div className="md:w-1/3 flex flex-col gap-4">
+        <div className="md:w-1/3 flex flex-col gap-3.5">
 
           {/* Drag-drop zone */}
           <div
-            className={`rounded-xl border-2 border-dashed p-8 text-center transition-colors cursor-pointer ${
+            className={`rounded-2xl border-2 border-dashed p-6 text-center transition-colors cursor-pointer ${
               dragging
-                ? 'border-ink bg-paper'
-                : 'border-fog hover:border-ink/40 bg-white'
+                ? 'border-gray-950 bg-gray-50'
+                : 'border-gray-200 hover:border-gray-400 bg-white'
             }`}
             onDragOver={onDragOver}
             onDragLeave={onDragLeave}
@@ -198,9 +198,9 @@ export default function Upload() {
             tabIndex={0}
             onKeyDown={e => e.key === 'Enter' && fileInputRef.current?.click()}
           >
-            <UploadIcon size={28} className="mx-auto text-slate mb-3" />
-            <p className="text-sm font-medium text-ink">{t('dragDrop')}</p>
-            <p className="text-xs text-slate mt-1 font-mono">{t('dragDropHint')}</p>
+            <UploadIcon size={24} className="mx-auto text-gray-400 mb-2.5" />
+            <p className="text-xs font-bold text-gray-900">{t('dragDrop')}</p>
+            <p className="text-[11px] text-gray-400 mt-1 font-mono">{t('dragDropHint')}</p>
             <input
               ref={fileInputRef}
               type="file"
@@ -212,17 +212,17 @@ export default function Upload() {
 
           {/* Selected file indicator */}
           {file && (
-            <div className="flex items-center gap-2 bg-paper rounded-lg px-4 py-3 border border-fog">
-              <FileText size={16} className="text-slate flex-shrink-0" />
-              <span className="text-sm text-ink truncate flex-1">{file.name}</span>
-              <CheckCircle size={15} className="text-jade flex-shrink-0" />
+            <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3.5 py-2.5 border border-gray-200">
+              <FileText size={15} className="text-gray-500 flex-shrink-0" />
+              <span className="text-xs font-semibold text-gray-900 truncate flex-1">{file.name}</span>
+              <CheckCircle size={14} className="text-emerald-600 flex-shrink-0" />
             </div>
           )}
 
           {/* Error */}
           {error && (
-            <div className="flex items-center gap-2 bg-crimson-light text-crimson rounded-lg px-4 py-3 text-sm">
-              <XCircle size={15} />
+            <div className="flex items-center gap-2 bg-red-50 text-red-700 border border-red-200 rounded-xl px-3.5 py-2.5 text-xs">
+              <XCircle size={14} />
               {error}
             </div>
           )}
@@ -230,25 +230,25 @@ export default function Upload() {
           {/* Action buttons */}
           <div className="flex gap-2">
             <button
-              className="btn btn-secondary flex-1 justify-center text-sm"
+              className="flex-1 py-2 px-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-xs font-semibold text-gray-800 transition text-center shadow-2xs"
               onClick={loadDemoCSV}
             >
               {t('loadDemo')}
             </button>
             <button
-              className="btn btn-primary flex-1 justify-center text-sm"
+              className="flex-1 py-2 px-3 rounded-xl bg-gray-950 hover:bg-gray-800 text-white text-xs font-semibold transition text-center shadow-xs flex items-center justify-center gap-1.5 disabled:opacity-50"
               disabled={!file || uploading}
               onClick={handleUpload}
             >
               {uploading ? (
                 <>
-                  <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                  Processing…
+                  <span className="w-3.5 h-3.5 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                  <span>Processing…</span>
                 </>
               ) : (
                 <>
-                  <UploadIcon size={14} />
-                  {t('uploadBtn')}
+                  <UploadIcon size={13} />
+                  <span>{t('uploadBtn')}</span>
                 </>
               )}
             </button>
@@ -256,29 +256,29 @@ export default function Upload() {
 
           {/* Batch summary */}
           {results && (
-            <div className="rounded-xl border border-fog bg-white p-4">
-              <h3 className="text-sm font-semibold text-ink mb-3">{t('batchSummary')}</h3>
+            <div className="rounded-2xl border border-gray-200/90 bg-white p-4 shadow-2xs">
+              <h3 className="text-xs font-bold text-gray-900 mb-2.5">{t('batchSummary')}</h3>
               <div className="grid grid-cols-2 gap-2">
                 <SummaryTile label={t('totalRows')}  value={results.length} />
-                <SummaryTile label={t('accepted')}   value={accepted}  color="text-jade"    />
-                <SummaryTile label={t('rejected')}   value={rejected}  color="text-crimson" />
+                <SummaryTile label={t('accepted')}   value={accepted}  color="text-emerald-700" />
+                <SummaryTile label={t('rejected')}   value={rejected}  color="text-red-600" />
                 <SummaryTile label={t('coverage')}   value={`${coverage}%`} />
               </div>
             </div>
           )}
 
           {/* What happens collapsible */}
-          <div className="rounded-xl border border-fog bg-white overflow-hidden">
+          <div className="rounded-2xl border border-gray-200/90 bg-white overflow-hidden shadow-2xs">
             <button
-              className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-ink hover:bg-paper transition-colors"
+              className="w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-semibold text-gray-900 hover:bg-gray-50 transition"
               onClick={() => setExplainerOpen(o => !o)}
               aria-expanded={explainerOpen}
             >
-              {t('whatHappens')}
-              {explainerOpen ? <ChevronUp size={16} className="text-slate" /> : <ChevronDown size={16} className="text-slate" />}
+              <span>{t('whatHappens')}</span>
+              {explainerOpen ? <ChevronUp size={14} className="text-gray-400" /> : <ChevronDown size={14} className="text-gray-400" />}
             </button>
             {explainerOpen && (
-              <div className="px-4 pb-4 space-y-3 border-t border-fog pt-3">
+              <div className="px-3.5 pb-3.5 space-y-2.5 border-t border-gray-100 pt-2.5">
                 <WhatHappensStep num="1" text={t('step1')} />
                 <WhatHappensStep num="2" text={t('step2')} />
                 <WhatHappensStep num="3" text={t('step3')} />
@@ -290,51 +290,51 @@ export default function Upload() {
         {/* ── Right panel: row results ─────────────────────────────────── */}
         <div className="md:w-2/3">
           {!results && !uploading && (
-            <div className="rounded-xl border border-dashed border-fog bg-white flex flex-col items-center justify-center py-24 text-center">
-              <FileText size={40} className="text-fog mb-4" />
-              <p className="text-slate text-sm">{t('noData')}</p>
-              <p className="text-slate/60 text-xs mt-1">Upload a CSV to see row results</p>
+            <div className="rounded-2xl border border-dashed border-gray-200 bg-white flex flex-col items-center justify-center py-16 text-center">
+              <FileText size={36} className="text-gray-300 mb-2.5" />
+              <p className="text-gray-900 font-semibold text-xs">{t('noData')}</p>
+              <p className="text-gray-400 text-[11px] mt-0.5">Click "Load Demo CSV" to see real-time sealing</p>
             </div>
           )}
 
           {uploading && (
-            <div className="rounded-xl border border-fog bg-white flex flex-col items-center justify-center py-24 gap-4">
-              <div className="w-8 h-8 border-2 border-fog border-t-ink rounded-full animate-spin" />
-              <p className="text-slate text-sm">Processing and sealing…</p>
+            <div className="rounded-2xl border border-gray-200 bg-white flex flex-col items-center justify-center py-16 gap-3">
+              <div className="w-7 h-7 border-2 border-gray-200 border-t-gray-950 rounded-full animate-spin" />
+              <p className="text-gray-600 text-xs font-medium">Verifying against APAAR registry & sealing IDs…</p>
             </div>
           )}
 
           {results && (
             <motion.div
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="rounded-xl border border-fog bg-white overflow-hidden"
+              transition={{ duration: 0.25 }}
+              className="rounded-2xl border border-gray-200/90 bg-white overflow-hidden shadow-2xs"
             >
-              <div className="flex items-center justify-between px-4 py-3 border-b border-fog">
-                <h3 className="text-sm font-semibold text-ink">
-                  Results — {results.length} rows
+              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50/50">
+                <h3 className="text-xs font-bold text-gray-900">
+                  Batch Ingestion Results — {results.length} rows processed
                 </h3>
                 <button
-                  className="btn btn-secondary text-xs py-1.5 px-3"
+                  className="px-2.5 py-1 rounded-lg bg-white border border-gray-200 text-[11px] font-semibold text-gray-800 hover:bg-gray-50 transition flex items-center gap-1 shadow-2xs"
                   onClick={downloadReport}
                 >
-                  <Download size={13} />
-                  {t('downloadReport')}
+                  <Download size={11} />
+                  <span>{t('downloadReport')}</span>
                 </button>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left">
                   <thead>
-                    <tr className="bg-paper border-b border-fog text-xs text-slate uppercase tracking-wide">
-                      <th className="py-2.5 pl-4 pr-2 font-medium">{t('rowNum')}</th>
-                      <th className="py-2.5 px-2 font-medium">{t('status')}</th>
-                      <th className="py-2.5 px-2 font-medium">{t('reason')}</th>
-                      <th className="py-2.5 px-4 font-medium">{t('seal')}</th>
+                    <tr className="bg-gray-50/90 border-b border-gray-100 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                      <th className="py-2 pl-3.5 pr-2">{t('rowNum')}</th>
+                      <th className="py-2 px-2">{t('status')}</th>
+                      <th className="py-2 px-2">{t('reason')}</th>
+                      <th className="py-2 px-3 text-center">{t('seal')}</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-gray-100">
                     {results.map((row, i) => (
                       <SealingRow
                         key={row.row}
@@ -342,7 +342,7 @@ export default function Upload() {
                         rowNum={row.row}
                         status={row.status}
                         reason={row.reason}
-                        delay={i * 60} // 60ms stagger between rows
+                        delay={i * 50}
                       />
                     ))}
                   </tbody>
@@ -350,9 +350,10 @@ export default function Upload() {
               </div>
 
               {/* Sealing message */}
-              <div className="px-4 py-4 border-t border-fog">
-                <p className="text-sm italic text-crimson font-medium">
-                  {t('sealingMessage')}
+              <div className="px-4 py-3 bg-gray-50/60 border-t border-gray-100">
+                <p className="text-xs text-emerald-800 font-semibold flex items-center gap-1.5">
+                  <CheckCircle size={13} className="text-emerald-600" />
+                  <span>10 Raw IDs processed in volatile memory and purged. Zero student PII persisted.</span>
                 </p>
               </div>
             </motion.div>

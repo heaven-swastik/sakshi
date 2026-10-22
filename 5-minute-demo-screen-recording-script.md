@@ -87,3 +87,4 @@
 - **Tool:** OBS Studio, Loom, or Windows Xbox Game Bar (`Win + Alt + R`).
 - **Cursor:** Keep the mouse moving smoothly; hover over the element 1 second *before* talking about it.
 - **Tone:** Confident, crisp, authoritative. Do not rush.
+
