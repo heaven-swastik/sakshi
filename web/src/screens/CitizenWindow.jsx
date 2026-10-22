@@ -626,3 +626,4 @@ export default function CitizenWindow() {
     </main>
   );
 }
+
