@@ -44,7 +44,7 @@ from audit_log import append_audit
 
 RNG = random.Random(42)  # fixed seed — results are deterministic and repeatable
 
-COHORT_YEAR = 2024
+COHORT_YEAR = 2026
 _SEED_DIR = Path(__file__).resolve().parent
 
 # ---------------------------------------------------------------------------

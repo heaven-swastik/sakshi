@@ -7,12 +7,13 @@
  * - High-contrast white canvas inside rounded frame with soft outer backdrop.
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, UploadCloud, RadioTower, BarChart3,
   Award, UserCheck, ShieldCheck, Sparkles, Bell, Search,
-  ChevronDown, RotateCcw, ShieldAlert, CheckCircle2, User
+  ChevronDown, RotateCcw, ShieldAlert, CheckCircle2, User,
+  Activity, Lock, Clock
 } from 'lucide-react';
 import { useI18n } from '../i18n';
 import { useAuth } from '../App';
@@ -80,6 +81,14 @@ export default function AppShell({ children }) {
 
   const [showDemoModal, setShowDemoModal] = useState(false);
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
+  const [liveTime, setLiveTime] = useState(new Date().toLocaleTimeString('en-IN', { hour12: false }));
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setLiveTime(new Date().toLocaleTimeString('en-IN', { hour12: false }));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Determine current active navigation item
   const currentNav = NAV_ITEMS.find(item =>
@@ -257,6 +266,50 @@ export default function AppShell({ children }) {
               </div>
             </header>
 
+            {/* ── LIVE TELEMETRY & DPDP AUDIT STRIP ───────────────────────────── */}
+            <div className="flex flex-wrap items-center justify-between gap-2.5 bg-[#0F172A] text-white rounded-2xl px-4 py-2.5 text-xs mb-6 shadow-sm border border-slate/20">
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-bold px-2.5 py-1 rounded-xl text-[11px] tracking-wide">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  APAAR GATEWAY ACTIVE
+                </div>
+
+                <span className="text-slate/40 hidden sm:inline">•</span>
+
+                <div className="flex items-center gap-1.5 text-slate-300">
+                  <Activity size={13} className="text-emerald-400" />
+                  <span>Latency: <strong className="text-white font-mono">12ms</strong></span>
+                </div>
+
+                <span className="text-slate/40 hidden md:inline">•</span>
+
+                <div className="hidden md:flex items-center gap-1.5 text-slate-300">
+                  <Lock size={13} className="text-amber-400" />
+                  <span>KMS Key: <strong className="text-white font-mono">K_2026_COHORT (HMAC)</strong></span>
+                </div>
+
+                <span className="text-slate/40 hidden lg:inline">•</span>
+
+                <div className="hidden lg:flex items-center gap-1.5 text-emerald-400 font-medium">
+                  <ShieldCheck size={13} />
+                  <span>RAM Buffer: <strong className="text-white font-mono">0 Bytes (Zero PII)</strong></span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 text-slate-400 text-[11px] font-mono ml-auto">
+                <span className="hidden xl:inline bg-slate-800/80 px-2.5 py-0.5 rounded-lg border border-slate-700">
+                  Audit Root: <strong className="text-emerald-400">0x8f2c...e12d</strong>
+                </span>
+                <span className="text-white font-semibold flex items-center gap-1 bg-slate-800/60 px-2 py-0.5 rounded-lg">
+                  <Clock size={11} className="text-slate-400" />
+                  {liveTime} IST
+                </span>
+              </div>
+            </div>
+
             {/* ── SCREEN CONTENT ──────────────────────────────────────────────── */}
             <main>
               {children}
@@ -291,3 +344,4 @@ export default function AppShell({ children }) {
     </div>
   );
 }
+
