@@ -93,3 +93,4 @@ X-Sakshi-Signature: sha256=d58e3e4a...
 - **Data Minimization:** Webhook payloads include the pseudonymous `student_token` only; no candidate names or raw IDs are transmitted across networks.
 - **Mutual TLS (mTLS):** Required for production institutional ERP connections.
 - **Rate Limiting:** 120 requests/minute per institutional permanent ID with standard `429 Too Many Requests` backoff headers.
+
