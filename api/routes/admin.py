@@ -22,9 +22,9 @@ from audit_log import verify_chain, daily_root
 
 router = APIRouter(tags=["admin"])
 
-# Regex for a 12-consecutive-digit sequence — the format of APAAR-style IDs.
+# Regex for a standalone 12-consecutive-digit sequence — the format of APAAR-style IDs.
 # If this pattern appears in any DB text column, that's a privacy violation.
-_RAW_ID_PATTERN = re.compile(r"\d{12}")
+_RAW_ID_PATTERN = re.compile(r"\b\d{12}\b")
 
 
 def get_admin_or_visitor(

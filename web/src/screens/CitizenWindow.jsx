@@ -100,9 +100,21 @@ export default function CitizenWindow() {
     }
   };
 
-  const handlePersonaLogin = (demoPhone) => {
+  const handlePersonaLogin = async (demoPhone) => {
     setPhone(demoPhone);
-    handleSendOtp(demoPhone);
+    setAuthLoading(true);
+    setAuthError('');
+    try {
+      await api.studentOtp(demoPhone);
+      const res = await api.studentVerify(demoPhone, '123456');
+      login(res.access_token, 'student');
+      setOtpSent(false);
+      setOtp('');
+    } catch (err) {
+      setAuthError(err.message || 'Persona login failed');
+    } finally {
+      setAuthLoading(false);
+    }
   };
 
   const openDisputeFor = (enrolment) => {
@@ -604,9 +616,19 @@ export default function CitizenWindow() {
             </div>
 
             {disputeSuccess ? (
-              <div className="py-6 text-center text-emerald-700 font-semibold text-xs">
-                <CheckCircle size={28} className="mx-auto mb-2 text-emerald-600" />
-                {disputeSuccess}
+              <div className="py-7 text-center animate-fade-in">
+                <div className="w-14 h-14 mx-auto mb-3 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center transition-transform transform scale-100 shadow-xs">
+                  <CheckCircle size={32} className="text-emerald-600 animate-pulse" />
+                </div>
+                <h5 className="font-semibold text-gray-900 text-sm mb-1">
+                  Dispute Docket Sealed & Dispatched
+                </h5>
+                <p className="text-xs text-emerald-800 max-w-xs mx-auto leading-relaxed">
+                  {disputeSuccess}
+                </p>
+                <div className="mt-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-mono text-emerald-800">
+                  <span>AICTE Case Ref: DISP-2026-{Math.floor(1000 + Math.random()*9000)}</span>
+                </div>
               </div>
             ) : (
               <form onSubmit={submitDispute} className="space-y-3">

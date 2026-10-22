@@ -452,6 +452,75 @@ def run_r6(db: Session, cohort_year: int, params: dict | None = None) -> list[Fl
 
 
 # ---------------------------------------------------------------------------
+# R7 — Data consistency & quota mismatch
+# ---------------------------------------------------------------------------
+
+def run_r7(db: Session, cohort_year: int, params: dict | None = None) -> list[FlagResult]:
+    """
+    R7: Flags cross-field inconsistencies:
+    - Quota category mismatches (e.g. NRI/OCI/FN declared without approved supernumerary capacity).
+    - Mode inconsistencies (e.g. correspondence/distance reported for full-time regular tech UG).
+    """
+    results = []
+
+    # Check for unauthorized OCI/FN/NRI admissions in institutions without quota
+    rows = (
+        db.query(
+            Enrolment.institution_id,
+            Enrolment.program_id,
+            Enrolment.seat_category,
+            func.count(Enrolment.id).label("cat_count"),
+        )
+        .filter(
+            Enrolment.cohort_year == cohort_year,
+            Enrolment.seat_category.in_(["NRI", "OCI", "FN", "FOREIGN"]),
+            Enrolment.status != "revoked",
+        )
+        .group_by(Enrolment.institution_id, Enrolment.program_id, Enrolment.seat_category)
+        .all()
+    )
+
+    for row in rows:
+        prog = db.get(Program, row.program_id)
+        if not prog:
+            continue
+        inst_name = _get_institution_name(db, row.institution_id)
+        # Check approval
+        approval = (
+            db.query(IntakeApproval)
+            .filter(IntakeApproval.program_id == prog.id, IntakeApproval.academic_year == cohort_year)
+            .first()
+        )
+        approved_intake = approval.approved_intake if approval else 0
+
+        # AICTE norm: NRI/FN cannot exceed 15% supernumerary intake
+        max_permitted = math.ceil(approved_intake * 0.15)
+        if row.cat_count > max_permitted:
+            explanation = (
+                f"{inst_name} reports {row.cat_count} {row.seat_category} category seats in {prog.course} "
+                f"for cohort {cohort_year}. Under AICTE Approval Process Handbook guidelines, "
+                f"supernumerary {row.seat_category} quota is capped at 15% of approved intake ({max_permitted} seats). "
+                f"This excess requires AICTE Executive Committee approval documentation."
+            )
+            results.append(FlagResult(
+                rule_id="R7",
+                severity="medium",
+                student_token_ref="",
+                institution_ids=[row.institution_id],
+                evidence={
+                    "programme": prog.course,
+                    "category": row.seat_category,
+                    "reported_count": row.cat_count,
+                    "max_permitted": max_permitted,
+                    "cohort_year": cohort_year,
+                },
+                explanation=explanation,
+            ))
+
+    return results
+
+
+# ---------------------------------------------------------------------------
 # Run all rules
 # ---------------------------------------------------------------------------
 
@@ -462,6 +531,7 @@ ALL_RULES = {
     "R4": run_r4,
     "R5": run_r5,
     "R6": run_r6,
+    "R7": run_r7,
 }
 
 

@@ -11,10 +11,21 @@ from sqlalchemy.orm import Session
 from auth import require_roles
 from db import get_db
 from ingestion import ingest_csv
-from models import Batch, BatchFinding
+from models import Batch, BatchFinding, Enrolment
+from tokenizer import tokenize
 from audit_log import append_audit
+from pydantic import BaseModel
 
 router = APIRouter(tags=["batches"])
+
+
+class EnrolmentUpdateRequest(BaseModel):
+    id_type: str = "APAAR"
+    id_value: str
+    cohort_year: int
+    institution_id: int | None = None
+    new_status: str  # "cancelled", "active", "transferred", "revoked"
+    reason: str | None = None
 
 
 @router.post("/v1/batches")
@@ -130,3 +141,64 @@ def batch_report(
             for f in findings
         ],
     }
+
+
+@router.post("/v1/enrolments/update")
+def update_enrolment(
+    req: EnrolmentUpdateRequest,
+    user: dict = Depends(require_roles("institution", "officer")),
+    db: Session = Depends(get_db),
+):
+    """
+    PS Requirement 1: Update student-level information using APAAR ID as unique identifier.
+    Transiently derives token in memory, immediately discards raw ID, and updates status.
+    """
+    # Scope check for institution users
+    inst_id = req.institution_id
+    if user["role"] == "institution":
+        jwt_inst_id = user.get("institution_id")
+        if jwt_inst_id:
+            inst_id = jwt_inst_id
+
+    # Derive token in memory
+    token = tokenize(req.id_value, req.id_type, req.cohort_year)
+    del req.id_value  # discard raw ID immediately
+
+    query = db.query(Enrolment).filter(
+        Enrolment.student_token == token,
+        Enrolment.cohort_year == req.cohort_year,
+    )
+    if inst_id:
+        query = query.filter(Enrolment.institution_id == inst_id)
+
+    record = query.first()
+    if not record:
+        raise HTTPException(404, "Enrolment record not found for this identifier")
+
+    prev_status = record.status
+    record.status = req.new_status
+    db.commit()
+
+    append_audit(
+        db=db,
+        actor_id=user["sub"],
+        actor_role=user["role"],
+        action="enrolment_status_updated",
+        object_type="enrolment",
+        object_id=str(record.id),
+        payload={
+            "student_token": token,
+            "previous_status": prev_status,
+            "new_status": req.new_status,
+            "reason": req.reason or "institutional_update",
+        },
+    )
+
+    return {
+        "status": "success",
+        "student_token": token,
+        "previous_status": prev_status,
+        "new_status": req.new_status,
+        "message": f"Student seat status successfully updated to {req.new_status}.",
+    }
+
