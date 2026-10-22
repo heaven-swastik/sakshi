@@ -275,12 +275,12 @@ function CaseManagementModal({ dup, onClose }) {
 
 function SeverityBadge({ severity }) {
   const colorMap = {
-    HIGH:   'bg-crimson-light text-crimson',
-    MEDIUM: 'bg-amber-light text-amber',
-    LOW:    'bg-fog text-slate',
+    HIGH:   'bg-red-50 text-red-700 border border-red-200/70',
+    MEDIUM: 'bg-amber-50 text-amber-800 border border-amber-200/70',
+    LOW:    'bg-gray-100 text-gray-600 border border-gray-200/70',
   };
   return (
-    <span className={`text-xs font-bold px-2 py-0.5 rounded-full tracking-wide ${colorMap[severity] ?? colorMap.LOW}`}>
+    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full tracking-wide ${colorMap[severity] ?? colorMap.LOW}`}>
       {severity}
     </span>
   );
@@ -292,63 +292,78 @@ function DuplicateCard({ dup, onOpenCase, onAskColleges }) {
   const { t } = useI18n();
 
   return (
-    <div className="rounded-xl bg-white border border-fog p-6 flex flex-col gap-5">
-      {/* Seal hero + severity */}
-      <div className="flex flex-col items-center gap-3">
-        <Seal token={dup.token} size={96} />
-        <div className="flex items-center gap-2">
-          <SeverityBadge severity={dup.severity} />
-          <span className="text-xs text-slate font-mono">{dup.rule}</span>
+    <div className="rounded-2xl bg-white border border-gray-200/90 p-4.5 flex flex-col justify-between shadow-xs hover:border-gray-300 transition gap-3.5">
+      {/* Top Header: Seal + Token + Severity */}
+      <div className="flex items-center justify-between gap-3 pb-2.5 border-b border-gray-100">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <Seal token={dup.token} size={38} />
+          <div className="min-w-0">
+            <span className="text-[10px] font-mono uppercase text-gray-400 font-bold block leading-none">
+              HMAC Seal Token
+            </span>
+            <span className="font-mono font-bold text-xs text-gray-900 truncate block mt-0.5">
+              {dup.token.slice(0, 14)}…
+            </span>
+          </div>
         </div>
+        <SeverityBadge severity={dup.severity} />
       </div>
 
-      {/* Appears in */}
-      <div>
-        <p className="text-xs font-semibold text-slate uppercase tracking-wide mb-2">
-          {t('sealAppears')}
+      {/* Appears in Two Colleges */}
+      <div className="space-y-1.5">
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+          {t('sealAppears')}:
         </p>
-        <div className="flex flex-col gap-2">
+        <div className="grid grid-cols-1 gap-1.5">
           {dup.appearances.map((a, i) => (
-            <div key={i} className="flex items-start gap-2 bg-paper rounded-lg px-3 py-2.5">
-              <div className="w-5 h-5 rounded-full bg-fog flex items-center justify-center text-xs font-bold text-slate flex-shrink-0 mt-0.5">
-                {String.fromCharCode(65 + i)}
+            <div
+              key={i}
+              className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl border text-xs ${
+                i === 0
+                  ? 'bg-[#FAF5FF] border-[#E9D5FF] text-[#581C87]'
+                  : 'bg-[#EFF6FF] border-[#BFDBFE] text-[#1E40AF]'
+              }`}
+            >
+              <div className="min-w-0">
+                <span className="font-bold block truncate">{a.institution}</span>
+                <span className="text-[10px] opacity-75 block">{a.programme} · {a.state}</span>
               </div>
-              <div>
-                <p className="text-sm font-medium text-ink leading-snug">{a.institution}</p>
-                <p className="text-xs text-slate mt-0.5">{a.programme} · {a.cohort} · {a.state}</p>
-              </div>
+              <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-white/70 shadow-2xs">
+                Seat {String.fromCharCode(65 + i)}
+              </span>
             </div>
           ))}
         </div>
       </div>
 
       {/* Explanation */}
-      <p className="text-sm text-slate leading-relaxed border-l-2 border-fog pl-3">
+      <p className="text-xs text-gray-600 line-clamp-2 leading-relaxed">
         {dup.explanation}
       </p>
 
-      {/* Case status */}
+      {/* Case Status Pill */}
       {dup.case_id && (
-        <div className="flex items-center gap-2 text-xs text-slate bg-amber-light rounded-lg px-3 py-2">
-          <AlertTriangle size={13} className="text-amber flex-shrink-0" />
-          {t('caseStatus')}: <span className="font-medium text-ink">{dup.case_status}</span>
-          <span className="text-slate/60 ml-auto font-mono">{dup.case_id}</span>
+        <div className="flex items-center gap-1.5 text-[11px] text-gray-600 bg-gray-50 border border-gray-200/80 rounded-lg px-2.5 py-1">
+          <AlertTriangle size={12} className="text-amber-600 flex-shrink-0" />
+          <span>Case: <strong className="text-gray-900">{dup.case_status}</strong></span>
+          <span className="text-gray-400 ml-auto font-mono text-[10px]">{dup.case_id}</span>
         </div>
       )}
 
       {/* Actions */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 pt-1 border-t border-gray-100">
         <button
-          className="btn btn-primary flex-1 justify-center text-sm"
+          className="flex-1 py-1.5 px-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 text-xs font-semibold text-gray-800 transition text-center"
           onClick={() => onOpenCase(dup)}
         >
           {t('openCase')}
         </button>
         <button
-          className="btn btn-secondary flex-1 justify-center text-sm"
+          className="flex-1 py-1.5 px-3 rounded-xl bg-gray-950 hover:bg-gray-800 text-white text-xs font-semibold transition text-center shadow-xs flex items-center justify-center gap-1.5"
           onClick={() => onAskColleges(dup)}
         >
-          {t('askColleges')}
+          <Send size={11} />
+          <span>{t('askColleges')}</span>
         </button>
       </div>
     </div>
@@ -396,68 +411,62 @@ export default function Radar() {
   const handleAskColleges= (dup) => setNoticeModalDup(dup);
 
   return (
-    <div className="space-y-6">
-      {/* Step 2 Explainer Banner */}
-      <div className="bg-[#FFF8F0] border border-[#FDE5CC] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-sm">
-        <div className="w-9 h-9 rounded-xl bg-crimson text-white flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5 shadow-sm">
+    <div className="space-y-5">
+      {/* Step 2 Explainer Banner (Clean, Compact, Eye-Catching) */}
+      <div className="bg-[#FFFBF5] border border-[#FDECD8] rounded-2xl p-4 flex items-start gap-3 shadow-2xs">
+        <div className="w-8 h-8 rounded-xl bg-gray-950 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5 shadow-2xs">
           2
         </div>
         <div>
-          <h2 className="font-display font-bold text-ink text-sm sm:text-base">
+          <h2 className="font-display font-bold text-gray-900 text-sm sm:text-base">
             Step 2: Cross-Institution Duplicate Radar (Rule R1)
           </h2>
-          <p className="text-xs sm:text-sm text-slate mt-0.5 leading-relaxed">
-            <strong>What happens here:</strong> When Ravi Kumar enrolls in both MIT Pune and RV College Bengaluru, <strong>both colleges generate the identical geometric seal</strong>. SAKSHI detects this mathematical match across institutions without needing to store Ravi's name or personal ID.
+          <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">
+            <strong>How it works:</strong> When a candidate enrolls in both MIT Pune and RV College Bengaluru, <strong>both institutions produce the identical cryptographic seal</strong>. SAKSHI detects this mathematical match across institutions without ever needing to store the student's name, DOB, or raw APAAR ID.
           </p>
         </div>
       </div>
 
       {/* Filter bar */}
-      <div className="flex items-center gap-3 mb-6 flex-wrap">
-        <button
-          className={`btn btn-secondary text-sm ${filterOpen ? 'border-ink' : ''}`}
-          onClick={() => setFilterOpen(o => !o)}
-        >
-          <Filter size={14} />
-          {t('radarFilter')}
-        </button>
+      <div className="flex items-center gap-2.5 flex-wrap text-xs">
+        <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-gray-500 font-medium">
+          <Filter size={13} />
+          <span>Filters:</span>
+        </div>
 
-        {filterOpen && (
-          <>
-            <input
-              className="input-field w-36 text-sm py-2"
-              placeholder={t('filterState')}
-              value={filters.state}
-              onChange={e => setFilters(f => ({ ...f, state: e.target.value }))}
-            />
-            <input
-              className="input-field w-40 text-sm py-2"
-              placeholder={t('filterProg')}
-              value={filters.programme}
-              onChange={e => setFilters(f => ({ ...f, programme: e.target.value }))}
-            />
-            <select
-              className="input-field w-36 text-sm py-2"
-              value={filters.severity}
-              onChange={e => setFilters(f => ({ ...f, severity: e.target.value }))}
-            >
-              <option value="">{t('filterSeverity')}</option>
-              <option value="HIGH">{t('high')}</option>
-              <option value="MEDIUM">{t('medium')}</option>
-              <option value="LOW">{t('low')}</option>
-            </select>
-            <button
-              className="btn btn-ghost text-sm"
-              onClick={() => setFilters({ state: '', programme: '', severity: '' })}
-            >
-              <RefreshCw size={13} />
-              Clear
-            </button>
-          </>
+        <input
+          className="bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-900 w-36"
+          placeholder="Filter state (e.g. MH)"
+          value={filters.state}
+          onChange={e => setFilters(f => ({ ...f, state: e.target.value }))}
+        />
+        <input
+          className="bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-gray-800 placeholder-gray-400 focus:outline-none focus:border-gray-900 w-36"
+          placeholder="Filter course (e.g. CSE)"
+          value={filters.programme}
+          onChange={e => setFilters(f => ({ ...f, programme: e.target.value }))}
+        />
+        <select
+          className="bg-white border border-gray-200 rounded-xl px-3 py-1.5 text-xs text-gray-800 focus:outline-none focus:border-gray-900"
+          value={filters.severity}
+          onChange={e => setFilters(f => ({ ...f, severity: e.target.value }))}
+        >
+          <option value="">All Severities</option>
+          <option value="HIGH">High Severity</option>
+          <option value="MEDIUM">Medium Severity</option>
+          <option value="LOW">Low Severity</option>
+        </select>
+        {(filters.state || filters.programme || filters.severity) && (
+          <button
+            className="text-xs text-gray-500 hover:text-gray-900 underline ml-1"
+            onClick={() => setFilters({ state: '', programme: '', severity: '' })}
+          >
+            Clear
+          </button>
         )}
 
-        <span className="ml-auto text-xs text-slate">
-          {filtered.length} duplicate{filtered.length !== 1 ? 's' : ''} found
+        <span className="ml-auto text-xs text-gray-500 font-medium">
+          {filtered.length} duplicate incident{filtered.length !== 1 ? 's' : ''} detected
         </span>
       </div>
 
@@ -465,9 +474,9 @@ export default function Radar() {
       {loading && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map(i => (
-            <div key={i} className="rounded-xl border border-fog bg-white p-6 animate-pulse">
-              <div className="w-24 h-24 skeleton rounded-full mx-auto mb-4" />
-              <div className="skeleton h-4 w-24 rounded mx-auto mb-2" />
+            <div key={i} className="rounded-2xl border border-gray-200 bg-white p-5 animate-pulse">
+              <div className="w-10 h-10 skeleton rounded-full mb-3" />
+              <div className="skeleton h-4 w-32 rounded mb-2" />
               <div className="skeleton h-3 w-full rounded mb-1" />
               <div className="skeleton h-3 w-3/4 rounded" />
             </div>
@@ -477,9 +486,9 @@ export default function Radar() {
 
       {/* Empty state */}
       {!loading && filtered.length === 0 && (
-        <div className="rounded-xl border border-dashed border-fog bg-white py-20 text-center">
-          <RadioTower size={40} className="mx-auto text-fog mb-4" />
-          <p className="text-ink font-semibold">{t('radarEmpty')}</p>
+        <div className="rounded-2xl border border-dashed border-gray-200 bg-white py-16 text-center">
+          <RadioTower size={36} className="mx-auto text-gray-300 mb-3" />
+          <p className="text-gray-900 font-semibold text-sm">{t('radarEmpty')}</p>
         </div>
       )}
 

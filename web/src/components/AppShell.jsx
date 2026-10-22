@@ -1,10 +1,10 @@
 /**
- * AppShell.jsx — Modern Tablet/Desktop Chassis Layout.
+ * AppShell.jsx — Executive Modern Tablet Chassis Layout.
  *
- * Modeled directly on the executive tablet frame:
- * - Left vertical dark sidebar with sleek icon navigation.
- * - Top header with Page Title, 1-Line Explanation, Step-by-Step Pipeline, and Role Switcher.
- * - High-contrast white canvas inside rounded frame with soft outer backdrop.
+ * Implements a clean, refined design:
+ * - Left vertical obsidian sidebar with soft icon navigation.
+ * - Clean, spacious header with title, role perspective selector, and status indicator.
+ * - Perfect padding and readable typography with complementary colors.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -13,7 +13,7 @@ import {
   LayoutDashboard, UploadCloud, RadioTower, BarChart3,
   Award, UserCheck, ShieldCheck, Sparkles, Bell, Search,
   ChevronDown, RotateCcw, ShieldAlert, CheckCircle2, User,
-  Activity, Lock, Clock
+  Activity, Lock, Clock, ExternalLink
 } from 'lucide-react';
 import { useI18n } from '../i18n';
 import { useAuth } from '../App';
@@ -27,49 +27,49 @@ const NAV_ITEMS = [
     icon: LayoutDashboard,
     label: 'Overview',
     step: 'Home',
-    desc: 'National Admission Health'
+    desc: 'National Admission Integrity & Verification Pulse'
   },
   {
     to: '/upload',
     icon: UploadCloud,
-    label: '1. Upload Admissions',
-    step: 'Step 1',
-    desc: 'Upload CSV & Seal IDs'
+    label: 'Upload Admissions',
+    step: '1',
+    desc: 'CSV Ingestion & Instant Blind HMAC Sealing'
   },
   {
     to: '/radar',
     icon: RadioTower,
-    label: '2. Duplicate Radar',
-    step: 'Step 2',
-    desc: 'Cross-College Duplicates'
+    label: 'Duplicate Radar',
+    step: '2',
+    desc: 'Cross-Institution Multi-Seat Detection (Rule R1)'
   },
   {
     to: '/integrity',
     icon: BarChart3,
-    label: '3. Seat Integrity & Quota',
-    step: 'Step 3',
-    desc: 'Intake Rules, NRI/OCI, Replay'
+    label: 'Seat Integrity & Quotas',
+    step: '3',
+    desc: 'Deterministic Scoring, Quota Ledgers & Season Replay'
   },
   {
     to: '/credential',
     icon: Award,
-    label: '4. Verifiable Certificate',
-    step: 'Step 4',
-    desc: 'Degree QR & Verify Block'
+    label: 'Verifiable Certificate',
+    step: '4',
+    desc: 'Ed25519-Signed Degree QR & Tamper Verification'
   },
   {
     to: '/citizen',
     icon: UserCheck,
-    label: '5. Student Window',
-    step: 'Step 5',
-    desc: 'Student OTP & Ghost Disputes'
+    label: 'Student Window',
+    step: '5',
+    desc: 'Student Citizen Consent & Ghost Seat Dispute'
   },
   {
     to: '/proof',
     icon: ShieldCheck,
-    label: '6. Privacy Proof',
-    step: 'Step 6',
-    desc: 'Zero Raw IDs Verification'
+    label: 'Privacy Proof',
+    step: '6',
+    desc: 'Zero Raw PII Storage Audit & SHA-256 Merkle Chain'
   },
 ];
 
@@ -101,25 +101,25 @@ export default function AppShell({ children }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#EAF0F6] flex items-center justify-center p-2 sm:p-4 md:p-6 font-body text-ink antialiased">
-      {/* ── Outer Device / Tablet Frame Chassis ─────────────────────────────────── */}
-      <div className="w-full max-w-[1440px] bg-[#0E1116] rounded-[36px] shadow-2xl flex flex-col md:flex-row overflow-hidden border border-black/30 min-h-[860px]">
+    <div className="min-h-screen bg-[#F1F5F9] flex items-center justify-center p-2 sm:p-4 md:p-6 font-body text-gray-900 antialiased">
+      {/* ── Outer Device Chassis ─────────────────────────────────── */}
+      <div className="w-full max-w-[1380px] bg-[#181A20] rounded-[32px] shadow-2xl flex flex-col md:flex-row overflow-hidden border border-black/30 min-h-[820px]">
         
         {/* ── LEFT DARK ICON SIDEBAR ────────────────────────────────────────────── */}
-        <aside className="w-full md:w-20 bg-[#0E1116] flex md:flex-col items-center justify-between p-4 md:py-7 border-b md:border-b-0 md:border-r border-[#1B202A] flex-shrink-0 z-20">
-          {/* Top Logo Badge */}
+        <aside className="w-full md:w-20 bg-[#181A20] flex md:flex-col items-center justify-between p-4 md:py-6 border-b md:border-b-0 md:border-r border-[#262A32] flex-shrink-0 z-20">
+          {/* Top Logo Badge (Cream rounded square matching reference) */}
           <div className="flex md:flex-col items-center gap-2">
             <button
               onClick={() => navigate('/')}
-              className="w-12 h-12 rounded-2xl bg-[#F9F7E8] text-[#0E1116] flex items-center justify-center font-display font-black text-xl shadow-md hover:scale-105 transition"
-              title="SAKSHI — Enrolment Integrity Witness"
+              className="w-11 h-11 rounded-2xl bg-[#FFF9EA] text-[#181A20] flex items-center justify-center font-display font-black text-xl shadow-sm hover:scale-105 transition"
+              title="SAKSHI — Enrolment Integrity Platform"
             >
               <span className="tracking-tighter">सा</span>
             </button>
           </div>
 
           {/* Navigation Icon List */}
-          <nav className="flex md:flex-col items-center gap-2 my-auto">
+          <nav className="flex md:flex-col items-center gap-2.5 my-auto">
             {NAV_ITEMS.map((item) => {
               const Icon = item.icon;
               const isActive = item.exact
@@ -130,18 +130,20 @@ export default function AppShell({ children }) {
                 <NavLink
                   key={item.to}
                   to={item.to}
-                  className={`relative group w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-200 ${
+                  className={`relative group w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-150 ${
                     isActive
-                      ? 'bg-white text-ink shadow-md font-bold'
-                      : 'text-slate/60 hover:text-white hover:bg-white/10'
+                      ? 'bg-white text-gray-950 shadow-md font-bold'
+                      : 'text-gray-400 hover:text-white hover:bg-white/10'
                   }`}
-                  title={`${item.step}: ${item.label}`}
+                  title={`${item.step === 'Home' ? 'Overview' : 'Step ' + item.step}: ${item.label}`}
                 >
-                  <Icon size={20} strokeWidth={isActive ? 2.4 : 1.8} />
+                  <Icon size={19} strokeWidth={isActive ? 2.4 : 1.8} />
 
                   {/* Desktop Hover Tooltip */}
-                  <span className="hidden md:group-hover:block absolute left-16 bg-ink text-white text-xs font-semibold px-3 py-1.5 rounded-xl whitespace-nowrap shadow-xl z-50 pointer-events-none">
-                    <span className="text-white/60 block text-[10px] uppercase font-mono">{item.step}</span>
+                  <span className="hidden md:group-hover:block absolute left-14 bg-gray-900 text-white text-xs font-semibold px-3 py-1.5 rounded-xl whitespace-nowrap shadow-xl z-50 pointer-events-none">
+                    <span className="text-gray-400 block text-[10px] uppercase font-mono">
+                      {item.step === 'Home' ? 'Overview' : `Step ${item.step}`}
+                    </span>
                     {item.label}
                   </span>
                 </NavLink>
@@ -153,11 +155,11 @@ export default function AppShell({ children }) {
           <div className="flex md:flex-col items-center gap-2">
             <button
               onClick={() => setShowDemoModal(true)}
-              className="w-11 h-11 rounded-2xl bg-crimson text-white flex items-center justify-center shadow-lg hover:bg-crimson/90 transition group relative"
+              className="w-10 h-10 rounded-xl bg-[#2A2E39] hover:bg-purple-600 text-purple-300 hover:text-white flex items-center justify-center transition shadow-sm group relative"
               title="Start 2-Minute Judge Guided Tour"
             >
-              <Sparkles size={18} className="animate-pulse" />
-              <span className="hidden md:group-hover:block absolute left-16 bg-crimson text-white text-xs font-semibold px-3 py-1.5 rounded-xl whitespace-nowrap shadow-xl z-50 pointer-events-none">
+              <Sparkles size={17} className="animate-pulse" />
+              <span className="hidden md:group-hover:block absolute left-14 bg-gray-900 text-white text-xs font-semibold px-3 py-1.5 rounded-xl whitespace-nowrap shadow-xl z-50 pointer-events-none">
                 Start Judge Guided Tour
               </span>
             </button>
@@ -165,100 +167,83 @@ export default function AppShell({ children }) {
         </aside>
 
         {/* ── MAIN WHITE CANVAS CONTAINER ───────────────────────────────────────── */}
-        <div className="flex-1 bg-white rounded-[28px] m-2 md:m-3 p-5 sm:p-7 md:p-9 overflow-y-auto flex flex-col justify-between shadow-inner min-h-[780px]">
+        <div className="flex-1 bg-white rounded-[24px] m-2 md:m-2.5 p-5 sm:p-7 md:p-8 overflow-y-auto flex flex-col justify-between shadow-inner">
           <div>
-            {/* ── TOP HEADER BAR ─────────────────────────────────────────────────── */}
-            <header className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-fog mb-6">
-              {/* Left Title & Plain Explanation */}
+            {/* ── TOP HEADER BAR (Clean, Airy, Compact) ────────────────────────────── */}
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-gray-100 mb-6">
+              {/* Left Title & Plain Subtitle */}
               <div>
-                <div className="flex items-center gap-3">
-                  <h1 className="text-2xl sm:text-3xl font-display font-extrabold text-ink tracking-tight">
-                    {currentNav.label.replace(/^\d+\.\s*/, '')}
+                <div className="flex items-center gap-2.5">
+                  <h1 className="text-2xl font-bold font-display text-gray-950 tracking-tight">
+                    {currentNav.label}
                   </h1>
-                  <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-full bg-paper border border-fog text-slate">
-                    {currentNav.step}
-                  </span>
+                  {currentNav.step !== 'Home' && (
+                    <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                      Step {currentNav.step} of 6
+                    </span>
+                  )}
                 </div>
-                <p className="text-xs sm:text-sm text-slate mt-1 font-medium">
+                <p className="text-xs text-gray-500 font-medium mt-0.5">
                   {currentNav.desc}
                 </p>
               </div>
 
-              {/* Center Step-by-Step Flow Pills (Addresses: "what option means what") */}
-              <div className="hidden xl:flex items-center bg-[#F4F6F9] p-1.5 rounded-2xl border border-fog text-xs gap-1">
-                <span className="text-[10px] font-bold text-slate/80 uppercase px-2">Pipeline:</span>
-                {NAV_ITEMS.slice(1).map((stepItem, idx) => {
-                  const isCurrent = location.pathname.startsWith(stepItem.to);
-                  return (
-                    <button
-                      key={stepItem.to}
-                      onClick={() => navigate(stepItem.to)}
-                      className={`px-3 py-1.5 rounded-xl font-medium transition flex items-center gap-1 ${
-                        isCurrent
-                          ? 'bg-ink text-white font-bold shadow-sm'
-                          : 'text-slate hover:text-ink hover:bg-white/60'
-                      }`}
-                    >
-                      <span className="opacity-60">{idx + 1}.</span>
-                      <span>{stepItem.label.split('. ')[1]}</span>
-                    </button>
-                  );
-                })}
-              </div>
+              {/* Right Controls: Gateway Status, Hindi Toggle, Role Selector */}
+              <div className="flex items-center gap-2.5 self-end sm:self-auto">
+                {/* Live Gateway Pill */}
+                <div className="hidden lg:flex items-center gap-1.5 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-full text-[11px] font-semibold text-emerald-800">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Gateway Active (12ms)</span>
+                </div>
 
-              {/* Right Profile & Controls */}
-              <div className="flex items-center gap-3 self-end lg:self-auto">
                 <HindiToggle />
 
-                {/* Role Switcher Dropdown */}
+                {/* Perspective Dropdown */}
                 <div className="relative">
                   <button
                     onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
-                    className="flex items-center gap-2.5 bg-paper hover:bg-fog/60 border border-fog px-3.5 py-2 rounded-2xl transition text-xs font-medium text-ink shadow-sm"
+                    className="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 border border-gray-200 px-3 py-1.5 rounded-full transition text-xs font-semibold text-gray-900 shadow-xs"
                   >
-                    <div className="w-7 h-7 rounded-full bg-ink text-white flex items-center justify-center font-bold text-xs">
+                    <div className="w-5 h-5 rounded-full bg-gray-900 text-white flex items-center justify-center font-bold text-[10px]">
                       {role === 'student' ? 'S' : role === 'institution' ? 'C' : 'A'}
                     </div>
-                    <div className="text-left hidden sm:block">
-                      <p className="text-[10px] text-slate uppercase font-semibold leading-none">Perspective</p>
-                      <p className="font-bold text-ink leading-tight capitalize mt-0.5">
-                        {role === 'student' ? 'Student View' : role === 'institution' ? 'College Admin' : 'AICTE Regulator'}
-                      </p>
-                    </div>
-                    <ChevronDown size={14} className="text-slate" />
+                    <span className="hidden sm:inline">
+                      {role === 'student' ? 'Student View' : role === 'institution' ? 'College Registrar' : 'AICTE Regulator'}
+                    </span>
+                    <ChevronDown size={13} className="text-gray-500" />
                   </button>
 
                   {roleDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-56 bg-white border border-fog rounded-2xl shadow-xl p-2 z-50 text-xs">
-                      <p className="px-3 py-2 text-[10px] font-bold uppercase text-slate border-b border-fog">
-                        Switch Live Perspective:
+                    <div className="absolute right-0 mt-2 w-52 bg-white border border-gray-200 rounded-2xl shadow-xl p-1.5 z-50 text-xs">
+                      <p className="px-3 py-1.5 text-[10px] font-bold uppercase text-gray-400 border-b border-gray-100">
+                        Switch Perspective:
                       </p>
                       <button
                         onClick={() => handleRoleSwitch('officer')}
-                        className={`w-full text-left px-3 py-2.5 rounded-xl transition flex items-center justify-between ${
-                          role === 'officer' ? 'bg-ink text-white font-bold' : 'hover:bg-paper text-ink'
+                        className={`w-full text-left px-3 py-2 rounded-xl transition flex items-center justify-between ${
+                          role === 'officer' ? 'bg-gray-950 text-white font-bold' : 'hover:bg-gray-50 text-gray-700'
                         }`}
                       >
                         <span>AICTE Central Regulator</span>
-                        {role === 'officer' && <CheckCircle2 size={14} />}
+                        {role === 'officer' && <CheckCircle2 size={13} />}
                       </button>
                       <button
                         onClick={() => handleRoleSwitch('institution')}
-                        className={`w-full text-left px-3 py-2.5 rounded-xl transition flex items-center justify-between ${
-                          role === 'institution' ? 'bg-ink text-white font-bold' : 'hover:bg-paper text-ink'
+                        className={`w-full text-left px-3 py-2 rounded-xl transition flex items-center justify-between ${
+                          role === 'institution' ? 'bg-gray-950 text-white font-bold' : 'hover:bg-gray-50 text-gray-700'
                         }`}
                       >
-                        <span>College Registrar View</span>
-                        {role === 'institution' && <CheckCircle2 size={14} />}
+                        <span>College Registrar</span>
+                        {role === 'institution' && <CheckCircle2 size={13} />}
                       </button>
                       <button
                         onClick={() => handleRoleSwitch('student')}
-                        className={`w-full text-left px-3 py-2.5 rounded-xl transition flex items-center justify-between ${
-                          role === 'student' ? 'bg-ink text-white font-bold' : 'hover:bg-paper text-ink'
+                        className={`w-full text-left px-3 py-2 rounded-xl transition flex items-center justify-between ${
+                          role === 'student' ? 'bg-gray-950 text-white font-bold' : 'hover:bg-gray-50 text-gray-700'
                         }`}
                       >
                         <span>Student Citizen Portal</span>
-                        {role === 'student' && <CheckCircle2 size={14} />}
+                        {role === 'student' && <CheckCircle2 size={13} />}
                       </button>
                     </div>
                   )}
@@ -266,72 +251,29 @@ export default function AppShell({ children }) {
               </div>
             </header>
 
-            {/* ── LIVE TELEMETRY & DPDP AUDIT STRIP ───────────────────────────── */}
-            <div className="flex flex-wrap items-center justify-between gap-2.5 bg-[#0F172A] text-white rounded-2xl px-4 py-2.5 text-xs mb-6 shadow-sm border border-slate/20">
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="flex items-center gap-2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 font-bold px-2.5 py-1 rounded-xl text-[11px] tracking-wide">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
-                  APAAR GATEWAY ACTIVE
-                </div>
-
-                <span className="text-slate/40 hidden sm:inline">•</span>
-
-                <div className="flex items-center gap-1.5 text-slate-300">
-                  <Activity size={13} className="text-emerald-400" />
-                  <span>Latency: <strong className="text-white font-mono">12ms</strong></span>
-                </div>
-
-                <span className="text-slate/40 hidden md:inline">•</span>
-
-                <div className="hidden md:flex items-center gap-1.5 text-slate-300">
-                  <Lock size={13} className="text-amber-400" />
-                  <span>KMS Key: <strong className="text-white font-mono">K_2026_COHORT (HMAC)</strong></span>
-                </div>
-
-                <span className="text-slate/40 hidden lg:inline">•</span>
-
-                <div className="hidden lg:flex items-center gap-1.5 text-emerald-400 font-medium">
-                  <ShieldCheck size={13} />
-                  <span>RAM Buffer: <strong className="text-white font-mono">0 Bytes (Zero PII)</strong></span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 text-slate-400 text-[11px] font-mono ml-auto">
-                <span className="hidden xl:inline bg-slate-800/80 px-2.5 py-0.5 rounded-lg border border-slate-700">
-                  Audit Root: <strong className="text-emerald-400">0x8f2c...e12d</strong>
-                </span>
-                <span className="text-white font-semibold flex items-center gap-1 bg-slate-800/60 px-2 py-0.5 rounded-lg">
-                  <Clock size={11} className="text-slate-400" />
-                  {liveTime} IST
-                </span>
-              </div>
-            </div>
-
             {/* ── SCREEN CONTENT ──────────────────────────────────────────────── */}
             <main>
               {children}
             </main>
           </div>
 
-          {/* ── FOOTER BAR ────────────────────────────────────────────────────── */}
-          <footer className="mt-8 pt-4 border-t border-fog flex flex-col sm:flex-row items-center justify-between text-xs text-slate gap-2">
-            <div>
-              <strong className="text-ink font-semibold">SAKSHI</strong> · Smart India Hackathon 2026 (PS SIH26263, AICTE Regulation Bureau)
-            </div>
-            <div className="flex items-center gap-4">
-              <span className="text-jade font-semibold flex items-center gap-1">
-                <CheckCircle2 size={13} /> Zero Raw PII Stored
+          {/* ── FOOTER BAR (Clean, Informative Telemetry) ────────────────────────── */}
+          <footer className="mt-8 pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-2">
+            <div className="flex items-center gap-3">
+              <strong className="text-gray-900 font-semibold">SAKSHI</strong>
+              <span>·</span>
+              <span>AICTE Regulation Bureau (SIH 2026, PS SIH26263)</span>
+              <span>·</span>
+              <span className="text-emerald-700 font-semibold flex items-center gap-1">
+                <CheckCircle2 size={12} /> DPDP Act 2023 Compliant (Zero PII)
               </span>
-              <span>•</span>
-              <button
-                onClick={() => setShowDemoModal(true)}
-                className="text-crimson font-bold hover:underline flex items-center gap-1"
-              >
-                <Sparkles size={13} /> Open Judge Demo Walkthrough
-              </button>
+            </div>
+            <div className="flex items-center gap-4 text-[11px] font-mono text-gray-400">
+              <span>KMS: K_2026_ACTIVE</span>
+              <span>·</span>
+              <span>Merkle Root: 0x8f2c...e12d</span>
+              <span>·</span>
+              <span className="text-gray-700 font-medium">{liveTime} IST</span>
             </div>
           </footer>
         </div>

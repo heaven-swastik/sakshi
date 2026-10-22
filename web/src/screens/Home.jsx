@@ -1,11 +1,11 @@
 /**
  * Home.jsx — Executive Overview & Navigation Center.
  *
- * Modeled directly on the executive tablet frame:
- * - Top Left: Hero Card (National Enrolment Volume & verification chart).
- * - Top Right: 3 Pastel Stat Cards (Duplicates, Lawful Opt-outs, Capacity Overruns).
- * - Bottom Left: Active Anomaly Incidents Table with one-click inspection.
- * - Bottom Right: High-contrast Dark Judge Tour Card with 1-click test scenarios.
+ * Implements layout and harmonic palette matching the executive reference:
+ * - Top Left: Hero Card (Portfolio Enrolment Volume & verification chart).
+ * - Top Right: 3 Pastel Stat Cards (Duplicate Cases, Lawful Opt-outs, Capacity Overruns).
+ * - Bottom Left: Flagged Admission Incidents with clean icon rows.
+ * - Bottom Right: High-contrast Dark Judge Tour Card.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   UploadCloud, RadioTower, BarChart3, Award, UserCheck,
   ShieldCheck, Sparkles, ArrowRight, CheckCircle2, AlertTriangle,
-  ChevronRight, Filter, Shield, Clock, ExternalLink
+  ChevronRight, Filter, Shield, Clock, ExternalLink, SlidersHorizontal
 } from 'lucide-react';
 import { useI18n } from '../i18n';
 import { useAuth } from '../App';
@@ -42,8 +42,8 @@ export default function Home() {
         setStats({
           total_institutions: 15,
           total_seats: 3333,
-          verified_seats: 2410,
-          coverage_pct: 72.3,
+          verified_seats: 2570,
+          coverage_pct: 77.1,
           open_flags: 123,
           open_cases: 6,
         });
@@ -55,269 +55,321 @@ export default function Home() {
   const INCIDENTS = [
     {
       id: 1,
+      code: 'R1',
       college: 'MIT Pune & RV College Bengaluru',
-      program: 'B.Tech Computer Science & Engineering',
-      rule: 'R1 — Cross-Institution Duplicate',
-      explanation: 'Identical student seal appears in two colleges for full-time regular seats.',
+      subtext: 'B.Tech CSE · Regular Full-Time',
+      rule: 'R1 — Dual Enrolment',
+      explanation: 'Identical student seal active in 2 institutions simultaneously.',
       severity: 'High',
+      tag: 'Duplicate Seat',
       route: '/radar',
-      tag: 'Duplicate Student'
     },
     {
       id: 2,
-      college: 'Maharashtra Institute of Technology, Pune',
-      program: 'B.Tech CSE (Cohort 2026)',
-      rule: 'R3 — Approved Intake Overrun',
-      explanation: 'College reports 312 admissions against approved capacity of 240 (130%).',
+      code: 'R3',
+      college: 'MIT Pune (Cohort 2026)',
+      subtext: 'B.Tech CSE · Approved 240 / Actual 312',
+      rule: 'R3 — Intake Overrun',
+      explanation: 'College admitted 312 students against 240 approved intake (130%).',
       severity: 'Critical',
+      tag: 'Over Capacity',
       route: '/integrity',
-      tag: 'Capacity Breach'
     },
     {
       id: 3,
+      code: 'R4',
       college: 'SSN College of Engineering, Chennai',
-      program: 'B.Tech Information Technology',
-      rule: 'R4 — Velocity Burst Upload',
-      explanation: 'Uploaded batch volume is 3x higher than regional peer colleges.',
+      subtext: 'B.Tech IT · Burst Batch Upload',
+      rule: 'R4 — Upload Burst',
+      explanation: 'Batch reporting velocity is 3.1x higher than regional peer average.',
       severity: 'Medium',
+      tag: 'Volume Spike',
       route: '/integrity',
-      tag: 'Unusual Volume'
     },
     {
       id: 4,
-      college: 'SSN College of Engineering, Chennai',
-      program: 'B.Tech CSE (Meera Pillai Claim)',
-      rule: 'Student Dispute — "This is not me"',
-      explanation: 'Student flagged unauthorized enrolment registered in their name.',
+      code: 'DISP',
+      college: 'SSN Chennai (Meera Pillai Claim)',
+      subtext: 'B.Tech CSE · Student Dispute',
+      rule: 'Citizen Dispute',
+      explanation: 'Student pressed "This is not me" against unauthorized registration.',
       severity: 'High',
+      tag: 'Ghost Seat',
       route: '/citizen',
-      tag: 'Ghost Enrolment'
     },
   ];
 
   return (
     <div className="space-y-6">
-      {/* ── TOP SECTION: HERO CARD & 3 PASTEL METRICS ──────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        
-        {/* Left Hero Card: National Enrolment Portfolio (Matches crypto hero card in reference) */}
-        <div className="lg:col-span-6 bg-[#F0F5FD] border border-[#D8E6F8] rounded-3xl p-6 sm:p-7 flex flex-col justify-between shadow-sm relative overflow-hidden">
-          {/* Header */}
-          <div className="flex items-start justify-between">
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate">
-                National Enrolment Portfolio
-              </span>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-3xl sm:text-4xl font-display font-black text-ink">
-                  {loading ? '…' : (stats?.total_seats || 3333).toLocaleString()}
-                </span>
-                <span className="text-sm font-semibold text-slate">
-                  Active Seats
-                </span>
-              </div>
-              <p className="text-xs text-slate/80 mt-0.5">
-                Across {stats?.total_institutions || 15} Institutions · Verified by Blind HMAC Seals
-              </p>
-            </div>
-
-            {/* Interactive Callout Pill */}
-            <div className="bg-[#14161D] text-white px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-md flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-jade animate-pulse" />
-              <span>100% Privacy Verified</span>
-            </div>
+      {/* ── ROW 1: PORTFOLIO & ASSET STAT CARDS ───────────────────────────── */}
+      <div>
+        {/* Section Titles Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-2.5 px-0.5">
+          <div className="lg:col-span-6 flex items-center justify-between">
+            <h2 className="text-base font-bold text-gray-900 tracking-tight font-display">
+              Admission Portfolio
+            </h2>
+            <span className="text-xs text-gray-500 font-medium hidden sm:inline">
+              15 AICTE Institutions
+            </span>
           </div>
-
-          {/* SVG Sparkline Intake Curve */}
-          <div className="py-4 my-2">
-            <svg viewBox="0 0 400 90" className="w-full h-20 overflow-visible">
-              <defs>
-                <linearGradient id="curveGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#4A8BF4" stopOpacity="0.25" />
-                  <stop offset="100%" stopColor="#4A8BF4" stopOpacity="0.0" />
-                </linearGradient>
-              </defs>
-              <path
-                d="M 0,75 Q 60,65 120,55 T 200,42 T 280,30 T 340,15 L 400,10 L 400,90 L 0,90 Z"
-                fill="url(#curveGradient)"
-              />
-              <path
-                d="M 0,75 Q 60,65 120,55 T 200,42 T 280,30 T 340,15 L 400,10"
-                fill="none"
-                stroke="#2B6DE4"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-              />
-              {/* Highlight Dot */}
-              <circle cx="340" cy="15" r="5" fill="#2B6DE4" stroke="#ffffff" strokeWidth="2" />
-            </svg>
-          </div>
-
-          {/* Timeframe Filter Pills */}
-          <div className="flex items-center justify-between pt-3 border-t border-[#D8E6F8]/60 text-xs">
-            <div className="flex items-center gap-1">
-              {['1W', '1M', 'Season', 'All'].map((period) => (
-                <button
-                  key={period}
-                  onClick={() => setChartPeriod(period)}
-                  className={`px-3 py-1 rounded-xl font-medium transition ${
-                    chartPeriod === period
-                      ? 'bg-ink text-white font-bold shadow-sm'
-                      : 'text-slate hover:text-ink'
-                  }`}
-                >
-                  {period}
-                </button>
-              ))}
-            </div>
-
+          <div className="lg:col-span-6 flex items-center justify-between">
+            <h2 className="text-base font-bold text-gray-900 tracking-tight font-display">
+              Integrity Assets
+            </h2>
             <button
-              onClick={() => navigate('/upload')}
-              className="font-bold text-ink hover:underline flex items-center gap-1 text-xs"
+              onClick={() => navigate('/integrity')}
+              className="text-xs text-gray-500 hover:text-gray-900 flex items-center gap-1 font-medium transition"
             >
-              <span>Upload College CSV</span>
-              <ArrowRight size={13} />
+              <SlidersHorizontal size={12} />
+              <span>Filter Rules</span>
             </button>
           </div>
         </div>
 
-        {/* Right 3 Pastel Stat Cards (Matches 1.25 BTC, 0.32 LTC, 1.25 ETH from image) */}
-        <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-          
-          {/* Card 1: Duplicate Radar (Pastel Lavender) */}
-          <div
-            onClick={() => navigate('/radar')}
-            className="bg-[#F1EEF8] border border-[#E3DCF0] rounded-3xl p-5 flex flex-col justify-between hover:scale-[1.02] transition cursor-pointer shadow-sm group"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate uppercase tracking-wider">
-                Duplicate Radar
-              </span>
-              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-crimson shadow-xs group-hover:scale-110 transition">
-                <RadioTower size={16} />
+        {/* Cards Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
+          {/* Left Hero Card: National Enrolment Portfolio (Light Blue Tint) */}
+          <div className="lg:col-span-6 bg-[#F0F6FF] border border-[#DBEAFE] rounded-2xl p-5 sm:p-6 flex flex-col justify-between shadow-xs relative overflow-hidden">
+            {/* Top Stat */}
+            <div className="flex items-start justify-between">
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                  Total Active Enrolments
+                </span>
+                <div className="flex items-baseline gap-2 mt-1">
+                  <span className="text-3xl sm:text-4xl font-extrabold text-gray-950 font-display tracking-tight">
+                    {loading ? '…' : (stats?.total_seats || 3333).toLocaleString()}
+                  </span>
+                  <span className="text-xs font-semibold text-gray-500">
+                    Seats Indexed
+                  </span>
+                </div>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  Across 15 approved institutions · Verified via blind HMAC seals
+                </p>
+              </div>
+
+              {/* Verified Pill Badge (Dark obsidian pill like reference image) */}
+              <div className="bg-[#181A20] text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-xs flex items-center gap-1.5 flex-shrink-0">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>2,570 Verified (77.1%)</span>
               </div>
             </div>
-            <div className="my-3">
-              <span className="text-2xl sm:text-3xl font-display font-black text-ink">
-                6 Cases
-              </span>
-              <p className="text-[11px] text-slate mt-0.5">
-                Students enrolled in 2 colleges
-              </p>
+
+            {/* Smooth SVG Intake Curve with Gradient */}
+            <div className="py-2 my-1">
+              <svg viewBox="0 0 400 80" className="w-full h-18 overflow-visible">
+                <defs>
+                  <linearGradient id="blueCurveGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#3B82F6" stopOpacity="0.25" />
+                    <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.0" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M 0,65 Q 60,55 120,45 T 200,38 T 280,26 T 340,12 L 400,8 L 400,80 L 0,80 Z"
+                  fill="url(#blueCurveGrad)"
+                />
+                <path
+                  d="M 0,65 Q 60,55 120,45 T 200,38 T 280,26 T 340,12 L 400,8"
+                  fill="none"
+                  stroke="#2563EB"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                />
+                <circle cx="340" cy="12" r="4.5" fill="#2563EB" stroke="#FFFFFF" strokeWidth="2" />
+              </svg>
             </div>
-            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-crimson bg-white px-2 py-1 rounded-full self-start shadow-xs">
-              Rule R1 Active
-            </span>
+
+            {/* Bottom Controls */}
+            <div className="flex items-center justify-between pt-3 border-t border-[#DBEAFE]/80 text-xs">
+              <div className="flex items-center gap-1">
+                {['1W', '1M', 'Season', 'All'].map((period) => (
+                  <button
+                    key={period}
+                    onClick={() => setChartPeriod(period)}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition ${
+                      chartPeriod === period
+                        ? 'bg-gray-950 text-white shadow-xs'
+                        : 'text-gray-500 hover:text-gray-900'
+                    }`}
+                  >
+                    {period}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => navigate('/upload')}
+                className="font-bold text-gray-900 hover:text-blue-600 flex items-center gap-1 text-xs transition"
+              >
+                <span>Upload Batch CSV</span>
+                <ArrowRight size={13} />
+              </button>
+            </div>
           </div>
 
-          {/* Card 2: Lawful Opt-Outs (Pastel Soft Green) */}
-          <div
-            onClick={() => navigate('/integrity')}
-            className="bg-[#EDF7F1] border border-[#D5EFE0] rounded-3xl p-5 flex flex-col justify-between hover:scale-[1.02] transition cursor-pointer shadow-sm group"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate uppercase tracking-wider">
-                Lawful Opt-Outs
-              </span>
-              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-jade shadow-xs group-hover:scale-110 transition">
-                <Shield size={16} />
+          {/* Right 3 Pastel Stat Cards (Matches Lavender BTC, Mint LTC, Cream ETH) */}
+          <div className="lg:col-span-6 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            
+            {/* Card 1: Duplicate Radar (Soft Pastel Lavender) */}
+            <div
+              onClick={() => navigate('/radar')}
+              className="bg-[#F3E8FF] border border-[#E9D5FF] rounded-2xl p-4 flex flex-col justify-between hover:scale-[1.02] transition cursor-pointer shadow-xs group"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-[#6B21A8] uppercase tracking-wider">
+                    Duplicates
+                  </span>
+                  <div className="w-7 h-7 rounded-lg bg-white/80 flex items-center justify-center text-[#7E22CE] shadow-2xs group-hover:bg-white transition">
+                    <RadioTower size={14} />
+                  </div>
+                </div>
+                <div className="mt-2.5">
+                  <span className="text-2xl font-extrabold text-gray-950 font-display">
+                    6 Cases
+                  </span>
+                  <p className="text-[11px] text-[#6B21A8] font-medium mt-0.5">
+                    Dual college seats
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center justify-between">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-[#7E22CE] shadow-2xs">
+                  Rule R1
+                </span>
+                <span className="text-[11px] font-bold text-[#7E22CE]">
+                  100% Prec.
+                </span>
               </div>
             </div>
-            <div className="my-3">
-              <span className="text-2xl sm:text-3xl font-display font-black text-ink">
-                72% Safe
-              </span>
-              <p className="text-[11px] text-slate mt-0.5">
-                APAAR Refusal / Inst. ID
-              </p>
-            </div>
-            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-jade bg-white px-2 py-1 rounded-full self-start shadow-xs">
-              DPDP 2023 Compliant
-            </span>
-          </div>
 
-          {/* Card 3: Capacity Overruns (Pastel Warm Cream) */}
-          <div
-            onClick={() => navigate('/integrity')}
-            className="bg-[#FEF6E8] border border-[#FDEBCF] rounded-3xl p-5 flex flex-col justify-between hover:scale-[1.02] transition cursor-pointer shadow-sm group"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate uppercase tracking-wider">
-                Capacity Alert
-              </span>
-              <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-amber shadow-xs group-hover:scale-110 transition">
-                <AlertTriangle size={16} />
+            {/* Card 2: Lawful Opt-Outs (Soft Pastel Mint) */}
+            <div
+              onClick={() => navigate('/integrity')}
+              className="bg-[#DCFCE7] border border-[#BBF7D0] rounded-2xl p-4 flex flex-col justify-between hover:scale-[1.02] transition cursor-pointer shadow-xs group"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-[#15803D] uppercase tracking-wider">
+                    Coverage
+                  </span>
+                  <div className="w-7 h-7 rounded-lg bg-white/80 flex items-center justify-center text-[#16A34A] shadow-2xs group-hover:bg-white transition">
+                    <Shield size={14} />
+                  </div>
+                </div>
+                <div className="mt-2.5">
+                  <span className="text-2xl font-extrabold text-gray-950 font-display">
+                    15 Insts.
+                  </span>
+                  <p className="text-[11px] text-[#15803D] font-medium mt-0.5">
+                    5 States monitored
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center justify-between">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-[#15803D] shadow-2xs">
+                  AICTE OK
+                </span>
+                <span className="text-[11px] font-bold text-[#15803D]">
+                  +77.1%
+                </span>
               </div>
             </div>
-            <div className="my-3">
-              <span className="text-2xl sm:text-3xl font-display font-black text-ink">
-                3 Overruns
-              </span>
-              <p className="text-[11px] text-slate mt-0.5">
-                Exceeding approved intake
-              </p>
-            </div>
-            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber bg-white px-2 py-1 rounded-full self-start shadow-xs">
-              Rule R3 Overrun
-            </span>
-          </div>
 
+            {/* Card 3: DPDP Compliant (Soft Pastel Butter) */}
+            <div
+              onClick={() => navigate('/proof')}
+              className="bg-[#FEF3C7] border border-[#FDE68A] rounded-2xl p-4 flex flex-col justify-between hover:scale-[1.02] transition cursor-pointer shadow-xs group"
+            >
+              <div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold text-[#B45309] uppercase tracking-wider">
+                    DPDP Proof
+                  </span>
+                  <div className="w-7 h-7 rounded-lg bg-white/80 flex items-center justify-center text-[#D97706] shadow-2xs group-hover:bg-white transition">
+                    <CheckCircle2 size={14} />
+                  </div>
+                </div>
+                <div className="mt-2.5">
+                  <span className="text-2xl font-extrabold text-gray-950 font-display">
+                    0 PII
+                  </span>
+                  <p className="text-[11px] text-[#B45309] font-medium mt-0.5">
+                    Zero raw IDs stored
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 flex items-center justify-between">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-[#B45309] shadow-2xs">
+                  DPDP 2023
+                </span>
+                <span className="text-[11px] font-bold text-[#B45309]">
+                  100% Legal
+                </span>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
 
-      {/* ── BOTTOM SECTION: INCIDENT RADAR TABLE & DARK CALLOUT CARD ───────────── */}
+      {/* ── ROW 2: INCIDENT RADAR TABLE & OBSIDIAN TOUR CARD ─────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
         
-        {/* Left Section: Live Incident Feed (Matches the crypto list in reference) */}
-        <div className="lg:col-span-8 bg-white border border-fog rounded-3xl p-6 shadow-sm flex flex-col justify-between">
+        {/* Left Section: Live Incidents Table (Clean, Compact, Easy to Read) */}
+        <div className="lg:col-span-7 bg-white border border-gray-200/90 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-4 border-b border-fog mb-4">
+            <div className="flex items-center justify-between pb-3.5 border-b border-gray-100 mb-3">
               <div>
-                <h3 className="font-display font-bold text-lg text-ink">
-                  Flagged Admission Incidents
+                <h3 className="text-base font-bold text-gray-900 font-display">
+                  Recent Verification Incidents
                 </h3>
-                <p className="text-xs text-slate mt-0.5">
-                  Algorithmic detections requiring regulator confirmation
+                <p className="text-xs text-gray-500 font-medium mt-0.5">
+                  Algorithmic detections requiring regulator notice or review
                 </p>
               </div>
 
               <div className="flex items-center gap-2 text-xs">
-                <span className="px-3 py-1.5 rounded-xl bg-paper border border-fog font-medium text-slate flex items-center gap-1">
-                  <Filter size={12} /> All States
-                </span>
-                <span className="px-3 py-1.5 rounded-xl bg-paper border border-fog font-medium text-slate">
+                <span className="px-2.5 py-1 rounded-full bg-gray-50 border border-gray-200 text-gray-600 font-medium">
                   Active (4)
                 </span>
               </div>
             </div>
 
-            {/* Incident Rows */}
-            <div className="divide-y divide-fog">
+            {/* Compact Incident Rows */}
+            <div className="divide-y divide-gray-100">
               {INCIDENTS.map((item) => (
                 <div
                   key={item.id}
-                  className="py-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-paper/50 rounded-xl px-2 transition"
+                  className="py-3 flex items-center justify-between gap-3 hover:bg-gray-50/70 rounded-xl px-2 transition group"
                 >
-                  <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-paper border border-fog flex items-center justify-center font-mono font-bold text-xs text-ink flex-shrink-0 mt-0.5">
-                      R{item.id}
+                  <div className="flex items-center gap-3 min-w-0">
+                    {/* Clean black square icon */}
+                    <div className="w-8 h-8 rounded-lg bg-gray-950 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-2xs">
+                      {item.code}
                     </div>
-                    <div>
+
+                    <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-bold text-ink text-sm">
+                        <span className="font-bold text-gray-900 text-xs sm:text-sm truncate">
                           {item.college}
                         </span>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${
                           item.severity === 'Critical'
-                            ? 'bg-crimson-light text-crimson'
+                            ? 'bg-red-50 text-red-700 border border-red-200/60'
                             : item.severity === 'High'
-                            ? 'bg-amber-light text-amber'
-                            : 'bg-paper text-slate'
+                            ? 'bg-amber-50 text-amber-800 border border-amber-200/60'
+                            : 'bg-gray-100 text-gray-600'
                         }`}>
                           {item.severity}
                         </span>
                       </div>
-                      <p className="text-xs text-slate mt-0.5">
+                      <p className="text-xs text-gray-500 truncate mt-0.5">
                         {item.explanation}
                       </p>
                     </div>
@@ -325,21 +377,21 @@ export default function Home() {
 
                   <button
                     onClick={() => navigate(item.route)}
-                    className="self-end sm:self-center px-3.5 py-1.5 rounded-xl bg-paper hover:bg-ink hover:text-white border border-fog text-xs font-semibold text-ink transition flex items-center gap-1 flex-shrink-0"
+                    className="px-3 py-1.5 rounded-xl bg-gray-50 hover:bg-gray-950 hover:text-white border border-gray-200 text-xs font-semibold text-gray-800 transition flex items-center gap-1 flex-shrink-0 shadow-2xs"
                   >
                     <span>Inspect</span>
-                    <ChevronRight size={14} />
+                    <ChevronRight size={13} />
                   </button>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="pt-4 border-t border-fog flex items-center justify-between text-xs text-slate">
-            <span>Every flag cites AICTE Approval Process Handbook clauses</span>
+          <div className="pt-3 mt-2 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+            <span>Deterministic detection · Cites AICTE Handbook clauses</span>
             <button
               onClick={() => navigate('/radar')}
-              className="text-ink font-bold hover:underline flex items-center gap-1"
+              className="text-gray-900 font-bold hover:text-blue-600 flex items-center gap-1 transition"
             >
               <span>View All 123 Flags</span>
               <ArrowRight size={13} />
@@ -347,60 +399,61 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Right Section: Dark Callout Card (Matches "Earn free crypto" card in reference) */}
-        <div className="lg:col-span-4 bg-[#12141A] text-white rounded-3xl p-7 flex flex-col justify-between shadow-xl relative overflow-hidden">
-          {/* Subtle Watermark Decoration */}
-          <div className="absolute -right-8 -bottom-8 opacity-10 pointer-events-none">
-            <Seal token="SAKSHI-HERO-SEAL" size={200} />
+        {/* Right Section: Obsidian Guided Tour Card (Exact match to Coinview Earn card) */}
+        <div className="lg:col-span-5 bg-[#181A20] text-white rounded-2xl p-6 shadow-md flex flex-col justify-between relative overflow-hidden">
+          {/* Subtle Decorative Geometric Wireframe lines */}
+          <div className="absolute right-0 bottom-0 opacity-15 pointer-events-none">
+            <svg width="220" height="180" viewBox="0 0 220 180" fill="none">
+              <path d="M 40,160 L 180,60 L 210,140 Z" stroke="#FFFFFF" strokeWidth="1.5" />
+              <path d="M 10,130 L 150,30 L 190,110 Z" stroke="#FFFFFF" strokeWidth="1.5" />
+              <path d="M 60,170 L 200,80" stroke="#FFFFFF" strokeWidth="1.5" />
+            </svg>
           </div>
 
-          <div className="space-y-4 relative z-10">
-            <div className="inline-flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full text-xs font-semibold text-[#D4E4FA]">
-              <Sparkles size={13} className="text-[#D4E4FA]" />
-              <span>For SIH Evaluators</span>
+          <div className="space-y-3 relative z-10">
+            <div className="inline-flex items-center gap-1.5 bg-white/10 px-2.5 py-1 rounded-full text-[11px] font-semibold text-[#BFDBFE]">
+              <Sparkles size={12} className="text-[#BFDBFE]" />
+              <span>SIH Evaluator Quick-Start</span>
             </div>
 
-            <h3 className="font-display font-extrabold text-2xl sm:text-3xl leading-snug tracking-tight">
+            <h3 className="font-display font-extrabold text-xl sm:text-2xl leading-tight text-white tracking-tight">
               Judge 2-Minute Guided Tour
             </h3>
 
-            <p className="text-xs sm:text-sm text-white/70 leading-relaxed">
-              Test the core innovation of SAKSHI in 4 simple clicks. See how we catch fraud without holding a single student's name.
+            <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
+              Experience the 4 real-world test scenarios: Asha's opt-out, Ravi's dual seat, Meera's ghost seat, and employer QR verification.
             </p>
 
-            <button
-              onClick={() => setShowDemoModal(true)}
-              className="w-full py-3.5 bg-[#D4E4FA] text-ink font-bold text-xs rounded-2xl hover:bg-white transition shadow-md flex items-center justify-center gap-2 mt-2"
-            >
-              <span>Start Interactive Tour ➔</span>
-            </button>
+            <div className="pt-2">
+              <button
+                onClick={() => setShowDemoModal(true)}
+                className="bg-[#BFDBFE] hover:bg-white text-gray-950 font-bold text-xs py-2.5 px-5 rounded-full transition shadow-sm flex items-center gap-2"
+              >
+                <span>Start Interactive Tour ➔</span>
+              </button>
+            </div>
           </div>
 
-          {/* Quick Scenario Jumps */}
-          <div className="pt-6 border-t border-white/10 space-y-2 text-xs relative z-10 mt-6">
-            <p className="text-[10px] uppercase font-bold text-white/50 tracking-wider">
-              Quick Test Scenarios:
+          {/* Quick Scenario Shortcuts */}
+          <div className="pt-4 border-t border-white/10 space-y-2 text-xs relative z-10 mt-5">
+            <p className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+              One-Click Demonstrations:
             </p>
-            <div
-              onClick={() => navigate('/radar')}
-              className="p-2 rounded-xl bg-white/5 hover:bg-white/10 cursor-pointer transition flex items-center justify-between"
-            >
-              <span className="text-white/80">Ravi holds 2 seats (Radar)</span>
-              <ArrowRight size={12} className="text-[#D4E4FA]" />
-            </div>
-            <div
-              onClick={() => navigate('/citizen')}
-              className="p-2 rounded-xl bg-white/5 hover:bg-white/10 cursor-pointer transition flex items-center justify-between"
-            >
-              <span className="text-white/80">Meera disputes ghost seat</span>
-              <ArrowRight size={12} className="text-[#D4E4FA]" />
-            </div>
-            <div
-              onClick={() => navigate('/proof')}
-              className="p-2 rounded-xl bg-white/5 hover:bg-white/10 cursor-pointer transition flex items-center justify-between"
-            >
-              <span className="text-white/80">Live Privacy Leak Scan</span>
-              <ArrowRight size={12} className="text-[#D4E4FA]" />
+            <div className="grid grid-cols-2 gap-2">
+              <div
+                onClick={() => navigate('/radar')}
+                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 cursor-pointer transition flex items-center justify-between"
+              >
+                <span className="text-gray-300 text-[11px] truncate">Ravi: 2 Seats</span>
+                <ArrowRight size={11} className="text-[#BFDBFE]" />
+              </div>
+              <div
+                onClick={() => navigate('/citizen')}
+                className="p-2 rounded-xl bg-white/5 hover:bg-white/10 cursor-pointer transition flex items-center justify-between"
+              >
+                <span className="text-gray-300 text-[11px] truncate">Meera: Ghost Seat</span>
+                <ArrowRight size={11} className="text-[#BFDBFE]" />
+              </div>
             </div>
           </div>
         </div>
