@@ -33,3 +33,37 @@ All UI micro-animations adhere to strict UX constraints:
 | **Framer Motion** (`v11.11`) | Physics-based spring transitions and modal entry animations | [framer.com/motion](https://www.framer.com/motion/) | MIT License |
 | **Procedural Seal Engine** | Generates deterministic geometric SVG seals based on SHA-256 tokens | Self-authored (`Seal.jsx`) | MIT License |
 | **Tailwind CSS** (`v3.4`) | Utility design system and responsive color palette | [tailwindcss.com](https://tailwindcss.com) | MIT License |
+
+---
+
+## 4. Exported Media & Demo Production Artifacts (Phase 4)
+
+All demo media are deterministically recorded via automated Playwright navigation (`scripts/record_demo.py`) against seed 42 synthetic data. Zero external audio or music is used.
+
+### Demo Videos
+- **`demo/sakshi-demo.mp4`** (2.7 MB, 1080p Full HD @ 30fps, 1m 05s):
+  Complete deterministic walkthrough covering:
+  1. Executive Portfolio & Problem Statement Hook
+  2. CSV Batch Ingestion & ID Dissolve/Sealing Animation
+  3. Blind Duplicate Radar & Dual-Control Formal Inquiry Notice
+  4. Citizen Window & "This is not me" Ghost Seat Dispute Filing
+  5. Public Verifier Portal & Stateless Ed25519 Credential Verification
+  6. Lock 3 Admission Season Replay & 5-Quota Ledger Breakdown
+  7. Automated Privacy Proof & Closing Statement
+- **`demo/sakshi-60s.mp4`** (1.7 MB, 1080p Full HD @ 30fps, 33s condensed cut):
+  Fast-paced judging trailer suitable for short elevator pitches and screening rounds.
+
+### Presentation Screenshots (1920x1080 Full HD PNGs)
+1. **`demo/screenshots/01-executive-portfolio.png`**: Multi-campus intake monitoring & system health indicators.
+2. **`demo/screenshots/02-upload-sealing.png`**: In-browser client-side hashing & instant cryptographic tokenization.
+3. **`demo/screenshots/03-duplicate-radar.png`**: Cross-institution duplicate detection with dual-control privacy reveal.
+4. **`demo/screenshots/04-citizen-dispute.png`**: Citizen Window showing 1-click login and verified dispute docket confirmation.
+5. **`demo/screenshots/05-credential-verification.png`**: Public instant verification card with concentric ring checkmark.
+6. **`demo/screenshots/06-privacy-proof.png`**: Real-time automated regex database inspection proving zero PII storage.
+
+### Presentation Animated GIFs (800x450, Optimized)
+1. **`demo/gifs/01-upload-sealing.gif`** (518 KB): The sealing moment — raw digits dissolving into cryptographic seals.
+2. **`demo/gifs/02-radar-dual-control.gif`** (446 KB): Dual-control bilateral inquiry dispatch modal.
+3. **`demo/gifs/03-citizen-dispute.gif`** (308 KB): "This is not me" dispute submission and sealed envelope badge.
+
+
