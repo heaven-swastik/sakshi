@@ -1,0 +1,198 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── CSS Design Tokens ─────────────────────────────────────────── */
+:root {
+  --paper:   #F5F6F8;
+  --ink:     #0F1217;
+  --slate:   #667085;
+  --fog:     #E4E7EC;
+  --crimson: #C0153F;
+  --jade:    #12805C;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --shadow-card:  0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-lifted: 0 2px 8px rgba(0,0,0,0.08), 0 1px 3px rgba(0,0,0,0.05);
+}
+
+/* ─── Base ──────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Hanken Grotesk', sans-serif;
+  background-color: var(--paper);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  /* Bottom padding for pill dock */
+  padding-bottom: 100px;
+}
+
+/* ─── Typography ────────────────────────────────────────────────── */
+h1, h2, h3, h4 {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.devanagari {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+}
+
+/* ─── Focus Styles (AA compliant) ───────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ─── Scrollbar (minimal) ───────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--fog);
+  border-radius: 3px;
+}
+
+/* ─── Utility Layer ─────────────────────────────────────────────── */
+@layer utilities {
+  .hairline {
+    border: 1px solid var(--fog);
+  }
+
+  .card-flat {
+    background: white;
+    border: 1px solid var(--fog);
+    border-radius: var(--radius-md);
+  }
+
+  .card-lifted {
+    background: white;
+    box-shadow: var(--shadow-lifted);
+    border-radius: var(--radius-lg);
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* ─── Reduced Motion ─────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── Page transition wrapper ───────────────────────────────────── */
+.page-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+@media (min-width: 768px) {
+  .page-wrapper {
+    padding: 40px 32px;
+  }
+}
+
+/* ─── Loading skeleton shimmer ──────────────────────────────────── */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--fog) 25%, #eceef1 50%, var(--fog) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+
+/* ─── Input styles ──────────────────────────────────────────────── */
+.input-field {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--fog);
+  border-radius: var(--radius-sm);
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 15px;
+  color: var(--ink);
+  background: white;
+  transition: border-color 0.15s ease;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: var(--ink);
+}
+
+.input-field::placeholder {
+  color: var(--slate);
+}
+
+/* ─── Button base ───────────────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+  white-space: nowrap;
+}
+
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn-primary {
+  background: var(--ink);
+  color: white;
+}
+.btn-primary:hover:not(:disabled) { opacity: 0.85; }
+
+.btn-secondary {
+  background: white;
+  color: var(--ink);
+  border: 1px solid var(--fog);
+}
+.btn-secondary:hover:not(:disabled) { background: var(--paper); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--slate);
+  padding: 8px 12px;
+}
+.btn-ghost:hover { color: var(--ink); background: var(--fog); }
