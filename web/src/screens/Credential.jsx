@@ -23,9 +23,9 @@ import HindiToggle from '../components/HindiToggle';
 // ─── Demo enrolments ──────────────────────────────────────────────────────────
 
 const DEMO_ENROLMENTS = [
-  { id: 'enrol-001', label: 'Ravi Kumar — B.Tech CSE, MIT Pune, 2026', token: 'ravi-dual-seat-2026', apaarMasked: '•••• •••• 8942', studentId: 'MITP-2026-CSE-042' },
-  { id: 'enrol-002', label: 'Asha Sharma — B.Tech CSE, MIT Pune (Opted Out), 2026', token: 'asha-token-opt-out-2026', apaarMasked: 'OPTED-OUT (INST-ID)', studentId: 'MITP-2026-CSE-091' },
-  { id: 'enrol-003', label: 'Meera Pillai — B.Tech CSE, SSN Chennai, 2026', token: 'meera-ghost-2026', apaarMasked: '•••• •••• 5518', studentId: 'SSN-2026-CSE-118' },
+  { id: 'enrol-001', label: 'Ravi Kumar — B.Tech CSE, MIT Pune, 2026', token: 'STU-AXECI4H4VCDL6', apaarMasked: '9876 •••• 4002', studentId: 'MITP-2026-CSE-042', handle: '6BRQOTU4L7UB' },
+  { id: 'enrol-002', label: 'Asha Sharma — B.Tech CSE, MIT Pune (Opted Out), 2026', token: 'STU-ZRQO3SOOJFVMO', apaarMasked: 'LAWFUL OPT-OUT (INST-ID)', studentId: 'MITP-2026-CSE-091', handle: 'ASHA-MITP-2026' },
+  { id: 'enrol-003', label: 'Meera Pillai — B.Tech CSE, SSN Chennai (Disputed), 2026', token: 'STU-7RB5JFZR54FMI', apaarMasked: '9876 •••• 4003', studentId: 'SSN-2026-CSE-118', handle: 'MEERA-SSN-2026' },
 ];
 
 // ─── Credential Card ──────────────────────────────────────────────────────────
@@ -91,46 +91,65 @@ function CredentialCard({ cred, onRevoke }) {
   );
 }
 
-// ─── Verify Result Card ───────────────────────────────────────────────────────
+// ─── Verify Result Card with Phase 3 Animation ────────────────────────────────
 
 function VerifyResult({ result }) {
   const { t } = useI18n();
 
   if (result.status === 'active' || result.valid) {
     return (
-      <div className="rounded-2xl bg-jade-light border border-jade/30 p-6 shadow-sm">
-        <div className="flex items-center gap-3 mb-4">
-          <CheckCircle size={32} className="text-jade flex-shrink-0" />
+      <div className="rounded-2xl bg-[#DCFCE7] border border-[#BBF7D0] p-4.5 shadow-2xs animate-fade-in">
+        <div className="flex items-center gap-3.5 mb-3">
+          {/* Animated SVG ring drawing in */}
+          <div className="relative w-11 h-11 flex items-center justify-center flex-shrink-0">
+            <svg className="w-11 h-11 transform -rotate-90" viewBox="0 0 44 44">
+              <circle
+                cx="22" cy="22" r="18"
+                stroke="#BBF7D0" strokeWidth="3" fill="none"
+              />
+              <circle
+                cx="22" cy="22" r="18"
+                stroke="#15803D" strokeWidth="3.5" fill="none"
+                strokeDasharray="113" strokeDashoffset="0"
+                className="transition-all duration-500 ease-out"
+              />
+            </svg>
+            <CheckCircle size={22} className="absolute text-emerald-800 animate-scale-in" />
+          </div>
           <div>
-            <p className="font-display text-xl font-bold text-jade">{t('enrolled')}</p>
-            <p className="text-xs text-jade/80">Authenticated by AICTE Academic Verification Gateway</p>
+            <p className="font-display text-base font-bold text-emerald-950">{t('enrolled')}</p>
+            <p className="text-[11px] text-emerald-800">Authenticated via Ed25519 signature & AICTE Gateway</p>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4 text-xs">
-          <div className="p-3 bg-white/70 rounded-xl">
-            <p className="text-slate font-medium">{t('programme')}</p>
-            <p className="font-bold text-ink text-sm mt-0.5">{result.programme || 'B.Tech CSE'}</p>
+        <div className="grid grid-cols-2 gap-2 text-xs">
+          <div className="p-2.5 bg-white/80 rounded-xl border border-emerald-200/60">
+            <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">{t('programme')}</p>
+            <p className="font-bold text-gray-900 text-xs mt-0.5">{result.programme || 'B.Tech CSE'}</p>
           </div>
-          <div className="p-3 bg-white/70 rounded-xl">
-            <p className="text-slate font-medium">{t('cohort')}</p>
-            <p className="font-bold text-ink text-sm mt-0.5">{result.cohort_year || '2026'}</p>
+          <div className="p-2.5 bg-white/80 rounded-xl border border-emerald-200/60">
+            <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wider">{t('cohort')}</p>
+            <p className="font-bold text-gray-900 text-xs mt-0.5">{result.cohort_year || '2026'}</p>
           </div>
         </div>
-        <p className="text-[11px] text-jade/80 mt-4 border-t border-jade/20 pt-3 flex items-center gap-1.5">
-          <ShieldCheck size={14} />
-          <span>{t('verifyNote')}</span>
+        <p className="text-[11px] text-emerald-900 mt-2.5 border-t border-emerald-200/60 pt-2 flex items-center gap-1.5 font-medium">
+          <ShieldCheck size={13} className="text-emerald-700 flex-shrink-0" />
+          <span>Stateless verification — zero student personal data queried or revealed.</span>
         </p>
       </div>
     );
   }
 
+  // Revoked credential with cracked seal representation
   return (
-    <div className="rounded-2xl bg-crimson-light border border-crimson/30 p-6 text-crimson shadow-sm">
-      <div className="flex items-center gap-3">
-        <XCircle size={32} className="text-crimson flex-shrink-0" />
+    <div className="rounded-2xl bg-[#FFF1F2] border border-[#FFE4E6] p-4.5 text-rose-900 shadow-2xs animate-shake">
+      <div className="flex items-center gap-3.5">
+        <div className="w-11 h-11 rounded-2xl bg-rose-100 flex items-center justify-center flex-shrink-0 text-rose-600 relative overflow-hidden">
+          <XCircle size={24} />
+          <div className="absolute inset-0 border-t-2 border-rose-500 transform rotate-45 pointer-events-none opacity-60" />
+        </div>
         <div>
-          <p className="font-display text-lg font-bold text-crimson">{t('credRevoked')}</p>
-          <p className="text-xs text-crimson/80">This credential is no longer valid or has been revoked by the institution.</p>
+          <p className="font-display text-base font-bold text-rose-950">{t('credRevoked')}</p>
+          <p className="text-xs text-rose-800 mt-0.5">Credential revoked by institution. Handle invalid.</p>
         </div>
       </div>
     </div>
@@ -151,7 +170,7 @@ export default function Credential() {
   const [credential, setCredential] = useState(null);
   const [issuing, setIssuing] = useState(false);
 
-  const [verifyHandle, setVerifyHandle] = useState(urlHandle ?? '');
+  const [verifyHandle, setVerifyHandle] = useState(urlHandle ?? '6BRQOTU4L7UB');
   const [verifying, setVerifying] = useState(false);
   const [verifyResult, setVerifyResult] = useState(null);
   const [copied, setCopied] = useState(false);

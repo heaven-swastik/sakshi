@@ -341,6 +341,25 @@ function DuplicateCard({ dup, onOpenCase, onAskColleges }) {
         {dup.explanation}
       </p>
 
+      {/* What would clear this flag checklist */}
+      <div className="bg-gray-50/80 border border-gray-100 rounded-xl p-2.5 text-[11px] text-gray-600 space-y-1">
+        <span className="font-semibold text-gray-800 text-[10px] uppercase tracking-wider block">
+          Institutional Resolution Checklist:
+        </span>
+        <div className="flex items-center gap-1.5 text-gray-500">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0" />
+          <span>1. Relieving institution Migration Certificate</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-gray-500">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0" />
+          <span>2. Candidate Seat Relinquishment Undertaking</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-gray-500">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0" />
+          <span>3. AICTE Approval Order if dual-degree cohort</span>
+        </div>
+      </div>
+
       {/* Case Status Pill */}
       {dup.case_id && (
         <div className="flex items-center gap-1.5 text-[11px] text-gray-600 bg-gray-50 border border-gray-200/80 rounded-lg px-2.5 py-1">

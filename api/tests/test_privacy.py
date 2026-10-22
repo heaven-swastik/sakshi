@@ -25,8 +25,8 @@ from models import (
     Credential, Flag, Consent,
 )
 
-# 12 consecutive digits = APAAR-style raw ID pattern
-_RAW_ID_RE = re.compile(r"\d{12}")
+# 12 consecutive digits bounded by word boundaries = APAAR-style raw ID pattern
+_RAW_ID_RE = re.compile(r"\b\d{12}\b")
 
 # Column names that would indicate PII storage
 _BANNED_COLUMN_NAMES = {

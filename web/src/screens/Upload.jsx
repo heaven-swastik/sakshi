@@ -14,32 +14,31 @@ import { api } from '../api';
 import SealingRow from '../components/SealingRow';
 import HindiToggle from '../components/HindiToggle';
 
-// ─── Demo CSV data ────────────────────────────────────────────────────────────
-
+// ─── Demo CSV data (with diverse categories per Requirement 2) ────────────────
 const DEMO_CSV = `id_type,id_value,program_code,cohort_year,mode,seat_category
-APAAR,APAAR202400001,CSE,2024,full-time,general
-APAAR,APAAR202400002,ECE,2024,full-time,obc
-APAAR,APAAR202400003,MECH,2024,part-time,sc
-ABC,ABC202400004,CSE,2024,full-time,general
-APAAR,APAAR202400005,CIVIL,2024,full-time,st
-APAAR,APAAR202400006,IT,2024,full-time,general
-APAAR,APAAR202400007,MBA,2024,full-time,obc
-APAAR,APAAR202400008,CSE,2024,full-time,general
-ABC,ABC202400009,ECE,2024,part-time,general
-APAAR,APAAR202400010,CSE,2024,full-time,ews`;
+APAAR,987654321001,B.Tech CSE,2026,regular,GEN
+APAAR,987654321002,B.Tech CSE,2026,regular,SUPERNUMERARY
+APAAR,987654321003,B.Tech CSE,2026,regular,NRI
+APAAR,987654321004,B.Tech CSE,2026,regular,OCI
+APAAR,987654321005,B.Tech CSE,2026,regular,FN
+INST,INST202600101,B.Tech ECE,2026,regular,GEN
+APAAR,987654321007,B.Tech ECE,2026,regular,EWS
+APAAR,987654321008,B.Tech CSE,2026,regular,GEN
+APAAR,987654321009,MBA,2026,regular,GEN
+APAAR,987654321010,MBA,2026,regular,OBC`;
 
 // Deterministic demo results (so demo works without backend)
 const DEMO_RESULTS = [
-  { row: 1, status: 'accepted', reason: null, token: 'STU-A48FE9B27C12' },
-  { row: 2, status: 'accepted', reason: null, token: 'STU-B19CD47E82FA' },
-  { row: 3, status: 'attested', reason: 'Opted out of APAAR — attested status applied (SC Ruling)', token: 'STU-C783EF9104DA' },
-  { row: 4, status: 'accepted', reason: null, token: 'STU-D526A37F91BC' },
-  { row: 5, status: 'accepted', reason: null, token: 'STU-E814B29CD3FE' },
-  { row: 6, status: 'accepted', reason: null, token: 'STU-F372C81AE49B' },
-  { row: 7, status: 'accepted', reason: null, token: 'STU-7A39F18B4CD2' },
+  { row: 1, status: 'accepted', reason: 'General quota seat confirmed', token: 'STU-A48FE9B27C12' },
+  { row: 2, status: 'accepted', reason: 'Supernumerary (TFW) quota verified', token: 'STU-B19CD47E82FA' },
+  { row: 3, status: 'accepted', reason: 'NRI category seat allocation verified', token: 'STU-C783EF9104DA' },
+  { row: 4, status: 'accepted', reason: 'OCI category quota approved', token: 'STU-D526A37F91BC' },
+  { row: 5, status: 'accepted', reason: 'Foreign National (FN) seat confirmed', token: 'STU-E814B29CD3FE' },
+  { row: 6, status: 'attested', reason: 'Opted out of APAAR — institutional attestation applied', token: 'STU-F372C81AE49B' },
+  { row: 7, status: 'accepted', reason: 'Economically Weaker Section (EWS) quota', token: 'STU-7A39F18B4CD2' },
   { row: 8, status: 'flagged',  reason: 'Duplicate seal detected — R1 cross-institution', token: 'STU-AXECI4H4VCDL' },
-  { row: 9, status: 'accepted', reason: null, token: 'STU-8C21E4B923FA' },
-  { row:10, status: 'accepted', reason: null, token: 'STU-9D34F12AB84C' },
+  { row: 9, status: 'accepted', reason: 'Regular seat verified via APAAR', token: 'STU-8C21E4B923FA' },
+  { row:10, status: 'accepted', reason: 'OBC quota seat verified', token: 'STU-9D34F12AB84C' },
 ];
 
 // ─── Stat summary tile ───────────────────────────────────────────────────────

@@ -188,8 +188,14 @@ export default function AppShell({ children }) {
                 </p>
               </div>
 
-              {/* Right Controls: Gateway Status, Hindi Toggle, Role Selector */}
+              {/* Right Controls: Gateway Status, Trust Badge, Hindi Toggle, Role Selector */}
               <div className="flex items-center gap-2.5 self-end sm:self-auto">
+                {/* Synthetic Data Trust Badge */}
+                <div className="hidden xl:flex items-center gap-1.5 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full text-[11px] font-semibold text-amber-900">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  <span>Synthetic Dataset (Seed 42) · Mock Registry Adapter</span>
+                </div>
+
                 {/* Live Gateway Pill */}
                 <div className="hidden lg:flex items-center gap-1.5 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-full text-[11px] font-semibold text-emerald-800">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />

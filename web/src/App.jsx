@@ -18,6 +18,7 @@ import Integrity from './screens/Integrity';
 import Credential from './screens/Credential';
 import CitizenWindow from './screens/CitizenWindow';
 import PrivacyProof from './screens/PrivacyProof';
+import PublicVerify from './screens/PublicVerify';
 
 // ─── Authentication Context ──────────────────────────────────────────────────
 
@@ -95,6 +96,8 @@ export default function App() {
               <Route path="/integrity" element={<Integrity />} />
               <Route path="/credential" element={<Credential />} />
               <Route path="/credential/verify/:handle" element={<Credential />} />
+              <Route path="/verify" element={<PublicVerify />} />
+              <Route path="/verify/:handle" element={<PublicVerify />} />
               <Route path="/citizen" element={<CitizenWindow />} />
               <Route path="/proof" element={<PrivacyProof />} />
               <Route path="*" element={<Navigate to="/" replace />} />
