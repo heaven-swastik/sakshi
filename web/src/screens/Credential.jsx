@@ -19,6 +19,7 @@ import { useAuth } from '../App';
 import { api } from '../api';
 import Seal from '../components/Seal';
 import HindiToggle from '../components/HindiToggle';
+import CollegeEmblem from '../components/CollegeEmblem';
 
 // ─── Demo enrolments ──────────────────────────────────────────────────────────
 
@@ -319,6 +320,7 @@ export default function Credential() {
 
             {/* Header Banner */}
             <div className="text-center pb-5 border-b border-gray-200 space-y-1.5">
+              <CollegeEmblem name="MIT Pune" size={46} className="mx-auto mb-1" />
               <span className="text-[10px] font-mono tracking-widest text-gray-400 uppercase block">
                 All India Council for Technical Education · Ministry of Education (Govt. of India)
               </span>

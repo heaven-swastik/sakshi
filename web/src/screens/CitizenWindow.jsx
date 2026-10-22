@@ -17,6 +17,8 @@ import { useAuth } from '../App';
 import { api } from '../api';
 import Seal from '../components/Seal';
 import StatusBadge from '../components/StatusBadge';
+import StudentAvatar from '../components/StudentAvatar';
+import CollegeEmblem from '../components/CollegeEmblem';
 
 export default function CitizenWindow() {
   const { t } = useI18n();
@@ -305,9 +307,7 @@ export default function CitizenWindow() {
               onClick={() => handlePersonaLogin('9876543001')}
               className="w-full text-left p-3.5 rounded-2xl bg-[#DCFCE7] border border-[#BBF7D0] hover:border-emerald-400 transition-all shadow-sm flex items-start gap-3 group"
             >
-              <div className="w-8 h-8 rounded-xl bg-white/80 text-emerald-800 flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs">
-                A
-              </div>
+              <StudentAvatar persona="asha" size={38} className="flex-shrink-0" />
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-0.5">
                   <h4 className="font-semibold text-gray-900 text-xs">
@@ -327,9 +327,7 @@ export default function CitizenWindow() {
               onClick={() => handlePersonaLogin('9876543002')}
               className="w-full text-left p-3.5 rounded-2xl bg-[#F3E8FF] border border-[#E9D5FF] hover:border-purple-400 transition-all shadow-sm flex items-start gap-3 group"
             >
-              <div className="w-8 h-8 rounded-xl bg-white/80 text-purple-800 flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs">
-                R
-              </div>
+              <StudentAvatar persona="ravi" size={38} className="flex-shrink-0" />
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-0.5">
                   <h4 className="font-semibold text-gray-900 text-xs">
@@ -349,9 +347,7 @@ export default function CitizenWindow() {
               onClick={() => handlePersonaLogin('9876543003')}
               className="w-full text-left p-3.5 rounded-2xl bg-[#FFF1F2] border border-[#FFE4E6] hover:border-rose-400 transition-all shadow-sm flex items-start gap-3 group"
             >
-              <div className="w-8 h-8 rounded-xl bg-white/80 text-rose-800 flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs">
-                M
-              </div>
+              <StudentAvatar persona="meera" size={38} className="flex-shrink-0" />
               <div className="flex-1">
                 <div className="flex items-center justify-between mb-0.5">
                   <h4 className="font-semibold text-gray-900 text-xs">
@@ -380,6 +376,7 @@ export default function CitizenWindow() {
       {/* Top Banner & Session Controls */}
       <div className="bg-white border border-gray-200/90 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
         <div className="flex items-center gap-3">
+          <StudentAvatar persona={tokenHandle.includes('7RB5') ? 'meera' : tokenHandle.includes('AXEC') ? 'ravi' : 'asha'} size={44} className="flex-shrink-0" />
           <Seal token={tokenHandle} size={42} className="flex-shrink-0" />
           <div>
             <div className="flex items-center gap-2">
@@ -470,8 +467,8 @@ export default function CitizenWindow() {
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 rounded-xl bg-[#F0F6FF] text-blue-700 flex items-center justify-center flex-shrink-0 mt-0.5">
-                          <Building2 size={16} />
+                        <div className="w-9 h-9 rounded-xl bg-gray-50 border border-gray-200/80 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs">
+                          <CollegeEmblem name={enrol.institution} size={28} />
                         </div>
                         <div>
                           <div className="flex items-center gap-2 mb-0.5">

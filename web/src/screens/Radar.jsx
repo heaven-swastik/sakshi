@@ -16,6 +16,7 @@ import { useAuth } from '../App';
 import { api } from '../api';
 import Seal from '../components/Seal';
 import HindiToggle from '../components/HindiToggle';
+import CollegeEmblem from '../components/CollegeEmblem';
 
 // ─── Seeded demo duplicates ───────────────────────────────────────────────────
 
@@ -123,15 +124,21 @@ function DualControlNoticeModal({ dup, onClose }) {
               Recipients of Cryptographic Challenge:
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-              <div className="bg-[#FAF5FF] border border-[#E9D5FF] p-3 rounded-xl">
-                <p className="text-[10px] font-bold text-[#7E22CE] uppercase">Registrar A</p>
-                <p className="font-bold text-xs text-ink mt-0.5">{instA.institution}</p>
-                <p className="text-[11px] text-slate">{instA.programme} · {instA.state}</p>
+              <div className="bg-[#FAF5FF] border border-[#E9D5FF] p-3 rounded-xl flex items-center gap-3">
+                <CollegeEmblem name={instA.institution} size={30} />
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold text-[#7E22CE] uppercase">Registrar A</p>
+                  <p className="font-bold text-xs text-ink mt-0.5 truncate">{instA.institution}</p>
+                  <p className="text-[11px] text-slate truncate">{instA.programme} · {instA.state}</p>
+                </div>
               </div>
-              <div className="bg-[#EFF6FF] border border-[#BFDBFE] p-3 rounded-xl">
-                <p className="text-[10px] font-bold text-[#1D4ED8] uppercase">Registrar B</p>
-                <p className="font-bold text-xs text-ink mt-0.5">{instB.institution}</p>
-                <p className="text-[11px] text-slate">{instB.programme} · {instB.state}</p>
+              <div className="bg-[#EFF6FF] border border-[#BFDBFE] p-3 rounded-xl flex items-center gap-3">
+                <CollegeEmblem name={instB.institution} size={30} />
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold text-[#1D4ED8] uppercase">Registrar B</p>
+                  <p className="font-bold text-xs text-ink mt-0.5 truncate">{instB.institution}</p>
+                  <p className="text-[11px] text-slate truncate">{instB.programme} · {instB.state}</p>
+                </div>
               </div>
             </div>
           </div>

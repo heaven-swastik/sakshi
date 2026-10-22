@@ -33,25 +33,29 @@ All UI micro-animations adhere to strict UX constraints:
 | **Framer Motion** (`v11.11`) | Physics-based spring transitions and modal entry animations | [framer.com/motion](https://www.framer.com/motion/) | MIT License |
 | **Procedural Seal Engine** | Generates deterministic geometric SVG seals based on SHA-256 tokens | Self-authored (`Seal.jsx`) | MIT License |
 | **Tailwind CSS** (`v3.4`) | Utility design system and responsive color palette | [tailwindcss.com](https://tailwindcss.com) | MIT License |
+| **Student Avatar Suite** | Synthetic, illustrative vector SVG student portraits (Asha, Ravi, Meera) | Self-authored (`StudentAvatar.jsx`) | MIT License |
+| **Collegiate Emblem Engine** | Procedural institutional crests (MIT Pune, RV College, SSN Chennai) | Self-authored (`CollegeEmblem.jsx`) | MIT License |
 
 ---
 
 ## 4. Exported Media & Demo Production Artifacts (Phase 4)
 
-All demo media are deterministically recorded via automated Playwright navigation (`scripts/record_demo.py`) against seed 42 synthetic data. Zero external audio or music is used.
+All demo media are deterministically recorded via automated Playwright navigation (`scripts/record_demo.py`) against seed 42 synthetic data with smooth mouse interpolation and expanding click ripple rings. Zero external audio or music is used.
 
 ### Demo Videos
-- **`demo/sakshi-demo.mp4`** (2.7 MB, 1080p Full HD @ 30fps, 1m 05s):
-  Complete deterministic walkthrough covering:
-  1. Executive Portfolio & Problem Statement Hook
-  2. CSV Batch Ingestion & ID Dissolve/Sealing Animation
-  3. Blind Duplicate Radar & Dual-Control Formal Inquiry Notice
-  4. Citizen Window & "This is not me" Ghost Seat Dispute Filing
-  5. Public Verifier Portal & Stateless Ed25519 Credential Verification
-  6. Lock 3 Admission Season Replay & 5-Quota Ledger Breakdown
-  7. Automated Privacy Proof & Closing Statement
-- **`demo/sakshi-60s.mp4`** (1.7 MB, 1080p Full HD @ 30fps, 33s condensed cut):
-  Fast-paced judging trailer suitable for short elevator pitches and screening rounds.
+- **`demo/sakshi-demo.mp4`** (1080p Full HD @ 30fps, ~4 minutes):
+  Leisurely-paced, human-speed judging presentation covering:
+  1. Scene 1: AICTE Problem Statement & Crisis Overview (Ghost seats, dual admissions, overruns, DPDP risk)
+  2. Scene 2: National Admission Portfolio with collegiate emblems & real-time telemetry
+  3. Scene 3: Lock 1 & 2 Ephemeral CSV Ingestion with ID dissolve-to-seal animation & 5 quotas
+  4. Scene 4: Lock 2 Blind Duplicate Radar with bilateral registrar inquiry modal
+  5. Scene 5: Lock 3 Admission Season Replay scrubber & NBA/NAAC accreditation reports
+  6. Scene 6: Citizen Window with student avatars & "This is not me" dispute submission
+  7. Scene 7: Stateless Public Employer Verification with concentric checkmark ring (< 1s)
+  8. Scene 8: Mathematical Privacy Proof & Closing Statement
+- **`demo/sakshi-60s.mp4`** (1080p Full HD @ 30fps, ~60s condensed cut):
+  Rapid trailer suitable for elevator pitches and preliminary judging screens.
+- **`docs/SPEECH_SCRIPT.md`**: Complete word-for-word voiceover script matching the 4-minute video down to the second with on-screen visual cue markers.
 
 ### Presentation Screenshots (1920x1080 Full HD PNGs)
 1. **`demo/screenshots/01-executive-portfolio.png`**: Multi-campus intake monitoring & system health indicators.

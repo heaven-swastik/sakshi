@@ -17,6 +17,7 @@ import { useI18n } from '../i18n';
 import { useAuth } from '../App';
 import { api } from '../api';
 import HindiToggle from '../components/HindiToggle';
+import CollegeEmblem from '../components/CollegeEmblem';
 
 export default function Integrity() {
   const { t } = useI18n();
@@ -252,18 +253,21 @@ export default function Integrity() {
                   className="bg-white border border-gray-200/90 rounded-2xl p-4 shadow-2xs hover:border-gray-300 transition"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <h3 className="font-display font-bold text-sm text-gray-900">
-                          {inst.name}
-                        </h3>
-                        <span className="text-[10px] font-mono text-gray-500 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-200">
-                          {inst.state}
-                        </span>
+                    <div className="flex items-center gap-3">
+                      <CollegeEmblem name={inst.name} size={32} className="flex-shrink-0" />
+                      <div>
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <h3 className="font-display font-bold text-sm text-gray-900">
+                            {inst.name}
+                          </h3>
+                          <span className="text-[10px] font-mono text-gray-500 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-200">
+                            {inst.state}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                          Reported enrolment: <strong className="text-gray-900">{inst.enrolment_count ?? 240}</strong> seats
+                        </p>
                       </div>
-                      <p className="text-xs text-gray-500">
-                        Reported enrolment: <strong className="text-gray-900">{inst.enrolment_count ?? 240}</strong> seats
-                      </p>
                     </div>
 
                     <div className="flex items-center gap-4">
