@@ -71,18 +71,20 @@ export default function PrivacyProof() {
   const tablesList = Object.entries(tableDetail);
 
   return (
-    <main className="min-h-screen bg-paper pb-28 pt-8 px-4 sm:px-6 max-w-5xl mx-auto">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl sm:text-4xl font-display font-bold text-ink">
-            {t('proof')}
-          </h1>
-          <p className="text-sm sm:text-base text-slate mt-1">
-            {t('proofSubtitle')}
+    <div className="space-y-6">
+      {/* Step 6 Explainer Banner */}
+      <div className="bg-[#EDF7F1] border border-[#D5EFE0] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-sm">
+        <div className="w-9 h-9 rounded-xl bg-jade text-white flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5 shadow-sm">
+          6
+        </div>
+        <div className="flex-1">
+          <h2 className="font-display font-bold text-ink text-sm sm:text-base">
+            Step 6: Real-Time Privacy Proof & Immutable Hash-Chain Verification
+          </h2>
+          <p className="text-xs sm:text-sm text-slate mt-0.5 leading-relaxed">
+            <strong>What happens here:</strong> Press the button below to execute a real-time regex scan (<code className="font-mono text-xs bg-white px-1.5 py-0.5 rounded border border-fog">\d&#123;12&#125;</code>) across all 19 database tables. SAKSHI mathematically proves that <strong>zero student names or 12-digit APAAR IDs exist in the database</strong>, and verifies that the SHA-256 audit log is unbroken.
           </p>
         </div>
-        <HindiToggle />
       </div>
 
       {/* Hero Action Card */}
@@ -264,7 +266,7 @@ export default function PrivacyProof() {
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }
 

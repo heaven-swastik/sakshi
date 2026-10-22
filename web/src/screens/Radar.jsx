@@ -181,17 +181,20 @@ export default function Radar() {
   const handleAskColleges= (dup) => alert(`Sending notice to ${dup.appearances.map(a => a.institution).join(' and ')}…`);
 
   return (
-    <div className="page-wrapper">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <RadioTower size={20} className="text-crimson" />
-            <h1 className="font-display text-2xl font-bold text-ink">{t('radar')}</h1>
-          </div>
-          <p className="text-slate text-sm max-w-xl">{t('radarSubtitle')}</p>
+    <div className="space-y-6">
+      {/* Step 2 Explainer Banner */}
+      <div className="bg-[#FFF8F0] border border-[#FDE5CC] rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 shadow-sm">
+        <div className="w-9 h-9 rounded-xl bg-crimson text-white flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5 shadow-sm">
+          2
         </div>
-        <HindiToggle />
+        <div>
+          <h2 className="font-display font-bold text-ink text-sm sm:text-base">
+            Step 2: Cross-Institution Duplicate Radar (Rule R1)
+          </h2>
+          <p className="text-xs sm:text-sm text-slate mt-0.5 leading-relaxed">
+            <strong>What happens here:</strong> When Ravi Kumar enrolls in both MIT Pune and RV College Bengaluru, <strong>both colleges generate the identical geometric seal</strong>. SAKSHI detects this mathematical match across institutions without needing to store Ravi's name or personal ID.
+          </p>
+        </div>
       </div>
 
       {/* Filter bar */}
