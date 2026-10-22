@@ -165,15 +165,27 @@ flowchart TD
 
 ---
 
+## Presentation & Demo Media (SIH Judging Suite)
+
+- **Master 1080p Demo Video:** [`demo/sakshi-demo.mp4`](file:///e:/projects/sakshi%20sih%202nd/demo/sakshi-demo.mp4) (H.264, 1080p Full HD @ 30fps)
+  * Structured flow: Problem Statement ➔ 3D Cryptographic Vault & Approach ➔ Engineering Architecture Workflow ➔ Tech Stack ➔ Live System Walkthrough.
+- **Judging Trailer Cut:** [`demo/sakshi-60s.mp4`](file:///e:/projects/sakshi%20sih%202nd/demo/sakshi-60s.mp4) (1080p condensed trailer).
+- **Synchronized Voiceover Speech Script:** [`docs/SPEECH_SCRIPT.md`](file:///e:/projects/sakshi%20sih%202nd/docs/SPEECH_SCRIPT.md) with exact timestamp cues and kinetic on-screen keyword markers.
+- **Slide Graphics:** 6 high-resolution presentation screenshots in [`demo/screenshots/`](file:///e:/projects/sakshi%20sih%202nd/demo/screenshots/) and 3 animated GIFs in [`demo/gifs/`](file:///e:/projects/sakshi%20sih%202nd/demo/gifs/).
+
+---
+
 ## Tech stack
 
-| Layer | Choice |
-|-------|--------|
-| Backend | Python 3.11, FastAPI, SQLAlchemy, SQLite |
-| Crypto | Python `hmac`/`hashlib`, `cryptography` (Ed25519 for credentials) |
-| Frontend | React 18, Vite, Tailwind CSS, Framer Motion |
-| Icons | Lucide React |
-| QR | `qrcode` (Python), `qrcode.react` (frontend) |
+| Layer | Choice | Purpose |
+|---|---|---|
+| **Frontend UI** | React 18, Vite 5, Tailwind CSS 3.4 | High-performance tablet chassis layout |
+| **3D WebGL** | Three.js (r182) | Hardware-accelerated interactive 3D cryptographic vault |
+| **Micro-Animations** | Framer Motion 11 | Physics-based spring transitions & ID dissolve effects |
+| **Backend API** | Python 3.13, FastAPI (Async), Pydantic v2 | Sub-millisecond schema validation & REST OpenAPI 3.1 |
+| **Database** | SQLite 3 with Write-Ahead Logging (WAL) | Zero-configuration local database / PostgreSQL-ready |
+| **Cryptography** | Ed25519 (RFC 8037 JWS), HMAC-SHA256, SHA-256 Merkle Chain | Tamper-proof degrees, cohort-isolated blind tokens & immutable audit logs |
+| **Verification** | Web Crypto API (`SubtleCrypto`), `qrcode.react` | In-memory client-side hashing & offline QR codes |
 
 ---
 

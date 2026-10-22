@@ -13,7 +13,7 @@ import {
   LayoutDashboard, UploadCloud, RadioTower, BarChart3,
   Award, UserCheck, ShieldCheck, Sparkles, Bell, Search,
   ChevronDown, RotateCcw, ShieldAlert, CheckCircle2, User,
-  Activity, Lock, Clock, ExternalLink
+  Activity, Lock, Clock, ExternalLink, Cpu
 } from 'lucide-react';
 import { useI18n } from '../i18n';
 import { useAuth } from '../App';
@@ -63,6 +63,13 @@ const NAV_ITEMS = [
     label: 'Student Window',
     step: '5',
     desc: 'Student Citizen Consent & Ghost Seat Dispute'
+  },
+  {
+    to: '/architecture',
+    icon: Cpu,
+    label: 'Architecture & 3D',
+    step: 'Tech',
+    desc: '3D Cryptographic Vault, End-to-End Pipeline & Tech Stack'
   },
   {
     to: '/proof',
