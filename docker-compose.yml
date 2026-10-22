@@ -1,0 +1,46 @@
+version: "3.9"
+
+# SAKSHI demo stack — one command to run the whole thing
+# 
+# Usage:
+#   docker compose up --build
+#
+# After it starts:
+#   API:  http://localhost:8000
+#   Web:  http://localhost:5173
+#   Docs: http://localhost:8000/docs
+
+services:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - SAKSHI_TOKEN_SECRET=sakshi-dev-secret-change-in-prod
+      - SAKSHI_ENV=demo
+      - DATABASE_URL=sqlite:////data/sakshi.db
+    volumes:
+      - sakshi_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      - VITE_API_URL=http://localhost:8000
+
+volumes:
+  sakshi_data:
+

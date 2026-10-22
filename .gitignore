@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+*.db
+*.db-journal
+sakshi.db
+credential_key.pem
+
+# Node
+node_modules/
+.npm
+web/dist/
+web/.vite/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE
+.vscode/settings.json
+.idea/
+*.suo
+*.user
+
+# Logs
+*.log
+logs/
+
+# Generated
+seed/personas.json
+seed/ground_truth.json
+
