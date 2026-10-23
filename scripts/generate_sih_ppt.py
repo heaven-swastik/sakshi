@@ -576,3 +576,4 @@ for title, accent, items, left in ref_cols:
 out_pptx = "SAKSHI_SIH2026_Idea_Presentation.pptx"
 prs.save(out_pptx)
 print(f"Presentation saved successfully to: {out_pptx}")
+
