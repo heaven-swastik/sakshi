@@ -1,7 +1,7 @@
 # SAKSHI — Master Hackathon Judging Voiceover Script & Pitch Guide
 **Project:** SAKSHI — APAAR ID-Based Student Data Management & Verification Platform  
 **Problem Statement:** PS SIH26263 (AICTE Regulation Bureau, Smart Automation)  
-**Target Duration:** 3 minutes 15 seconds (195 seconds)  
+**Target Duration:** ~4 minutes (240 to 260 seconds)  
 **Tone:** Confident, articulate, authoritative, engineering-first, and regulatory-focused.  
 **Audience:** Smart India Hackathon (SIH) Evaluators, AICTE Regulatory Officers, and Technical Judges.  
 
@@ -18,7 +18,7 @@
 ---
 
 ## ═════════════════════════════════════════════════════════════════════
-## PART 1: THE PROBLEM WE ARE SOLVING [00:00 – 00:36]
+## PART 1: THE PROBLEM WE ARE SOLVING [00:00 – 00:40]
 ## ═════════════════════════════════════════════════════════════════════
 
 **[ON SCREEN: SAKSHI Home Page. Top Banner: "The Institutional Data Crisis & Why SAKSHI Was Built". HUD shows: `[REGULATORY VULNERABILITY 01: Ghost Enrolment Exploitation]`.]**
@@ -46,7 +46,7 @@
 ---
 
 ## ═════════════════════════════════════════════════════════════════════
-## PART 2: OUR APPROACH — THE 3 LOCKS & 3D CRYPTOGRAPHIC VAULT [00:36 – 01:08]
+## PART 2: OUR APPROACH — THE 3 LOCKS & 3D CRYPTOGRAPHIC VAULT [00:40 – 01:20]
 ## ═════════════════════════════════════════════════════════════════════
 
 **[ON SCREEN: Navigation to /architecture. Interactive 3D Cryptographic Vault rotates in WebGL. HUD shows: `[CORE ARCHITECTURAL PHILOSOPHY: Zero Knowledge, Zero PII]`.]**
@@ -69,7 +69,7 @@
 ---
 
 ## ═════════════════════════════════════════════════════════════════════
-## PART 3: ENGINEERING ARCHITECTURE WORKFLOW DIAGRAM [01:08 – 01:46]
+## PART 3: ENGINEERING ARCHITECTURE WORKFLOW DIAGRAM [01:20 – 02:05]
 ## ═════════════════════════════════════════════════════════════════════
 
 **[ON SCREEN: Screen scrolls to the 7-stage interactive workflow pipeline. HUD shows: `[PIPELINE STAGE 01: Institutional Ingestion]`.]**
@@ -92,7 +92,7 @@
 ---
 
 ## ═════════════════════════════════════════════════════════════════════
-## PART 4: ENTERPRISE TECHNOLOGY STACK MATRIX [01:46 – 02:08]
+## PART 4: ENTERPRISE TECHNOLOGY STACK MATRIX [02:05 – 02:35]
 ## ═════════════════════════════════════════════════════════════════════
 
 **[ON SCREEN: Screen scrolls to Enterprise Technology Stack Matrix. 4 quadrants visible. HUD shows: `[ENTERPRISE PRODUCTION STACK: 100% Production Ready]`.]**
@@ -108,10 +108,10 @@
 ---
 
 ## ═════════════════════════════════════════════════════════════════════
-## PART 5: LIVE SYSTEM DEMONSTRATION [02:08 – 03:15]
+## PART 5: LIVE SYSTEM DEMONSTRATION [02:35 – 04:30]
 ## ═════════════════════════════════════════════════════════════════════
 
-### Demo 1: Ingestion & The Sealing Moment [02:08 – 02:28]
+### Demo 1: Ingestion & The Sealing Moment [02:35 – 03:05]
 **[ON SCREEN: Navigation to /upload. Cursor clicks 'Load demo CSV', then 'Upload Admissions CSV'. Digits blur and dissolve into purple seals. HUD shows: `[LIVE DEMO: LOCK 1 & 2: Instant Sealing Animation]`.]**
 
 > **Speaker:**  
@@ -123,7 +123,7 @@
 
 ---
 
-### Demo 2: Blind Duplicate Radar & Bilateral Inquiry [02:28 – 02:46]
+### Demo 2: Blind Duplicate Radar & Bilateral Inquiry [03:05 – 03:35]
 **[ON SCREEN: Navigation to /radar. MIT Pune vs RV College Bengaluru duplicate card. Cursor clicks 'Ask Both Colleges'. Modal opens showing collegiate crests. Cursor clicks 'Dispatch Signed Notice'. HUD shows: `[LIVE DEMO: RULE R1 DETECTION: 100% Precision Dual-Seat Radar]`.]**
 
 > **Speaker:**  
@@ -135,7 +135,7 @@
 
 ---
 
-### Demo 3: Season Replay & 5-Quota Integrity Scrubber [02:46 – 02:56]
+### Demo 3: Season Replay & 5-Quota Integrity Scrubber [03:35 – 03:55]
 **[ON SCREEN: Navigation to /integrity. 'Season Replay' tab. Cursor scrubs the date slider from August 1 across counselling rounds. HUD shows: `[LIVE DEMO: SEASON REPLAY: Intake Velocity Temporal Scrubber]`.]**
 
 > **Speaker:**  
@@ -147,7 +147,7 @@
 
 ---
 
-### Demo 4: Citizen Window & Dispute Docket [02:56 – 03:04]
+### Demo 4: Citizen Window & Dispute Docket [03:55 – 04:15]
 **[ON SCREEN: Navigation to /citizen. Vector avatars for Asha, Ravi, Meera. Cursor clicks 'Login as Meera Pillai'. Enrolment at SSN Chennai displayed. Cursor clicks 'This is not me', then 'Submit Dispute'. Sealed envelope appears. HUD shows: `[LIVE DEMO: CITIZEN WINDOW: Student Sovereignty Defense]`.]**
 
 > **Speaker:**  
@@ -161,7 +161,7 @@
 
 ---
 
-### Demo 5: Stateless Public Credential Verification [03:04 – 03:10]
+### Demo 5: Stateless Public Credential Verification [04:15 – 04:30]
 **[ON SCREEN: Navigation to /verify/6BRQOTU4L7UB. Concentric green SVG ring fills 360 degrees. Checkmark scales in. HUD shows: `[LIVE DEMO: PUBLIC VERIFIER: Sub-Second Verification (< 1s)]`.]**
 
 > **Speaker:**  
@@ -171,7 +171,7 @@
 
 ---
 
-### Demo 6: Mathematical Privacy Proof & Closing [03:10 – 03:15]
+### Demo 6: Mathematical Privacy Proof & Closing [04:30 – 04:45]
 **[ON SCREEN: Navigation to /proof. Cursor clicks 'Run Automated Regex Inspection'. 19 database tables scanned. 0 PII leaks found. HUD shows: `[WINNING SIH 2026 SOLUTION: SAKSHI Real-Time APAAR Verification]`.]**
 
 > **Speaker:**  
