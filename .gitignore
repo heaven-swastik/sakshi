@@ -23,7 +23,10 @@ node_modules/
 web/dist/
 web/.vite/
 
-# Environment
+# Archives
+*.zip
+*.tar.gz
+
 .env
 .env.local
 .env.*.local
