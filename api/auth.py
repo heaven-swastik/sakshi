@@ -148,10 +148,28 @@ def demo_login(req: DemoLoginRequest):
         raise HTTPException(400, f"Unknown role '{req.role}'. Valid: {sorted(VALID_ROLES)}")
 
     extra = {}
-    if req.role == "institution" and req.institution_id:
-        extra["institution_id"] = req.institution_id
+    subject = req.actor_id
 
-    token = create_access_token(subject=req.actor_id, role=req.role, extra=extra)
+    if req.role == "institution":
+        inst_id = req.institution_id or 1
+        extra["institution_id"] = inst_id
+        extra["institution_name"] = "MIT Pune" if inst_id == 1 else f"Institution #{inst_id}"
+    elif req.role == "student":
+        # Map demo student personas to real seeded tokens in the database
+        if req.actor_id in ("ravi", "9876543002"):
+            subject = _make_student_token_from_phone("9876543002")
+            extra["name"] = "Ravi Kumar"
+            extra["scenario"] = "dual-seat"
+        elif req.actor_id in ("meera", "9876543003"):
+            subject = _make_student_token_from_phone("9876543003")
+            extra["name"] = "Meera Patel"
+            extra["scenario"] = "ghost-seat"
+        else:  # Default to Asha Sharma (Asha Sharma - Opt-out persona)
+            subject = _make_student_token_from_phone("9876543001")
+            extra["name"] = "Asha Sharma"
+            extra["scenario"] = "opt-out"
+
+    token = create_access_token(subject=subject, role=req.role, extra=extra)
     return TokenResponse(access_token=token, role=req.role)
 
 

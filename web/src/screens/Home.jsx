@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   UploadCloud, RadioTower, BarChart3, Award, UserCheck,
   ShieldCheck, Sparkles, ArrowRight, CheckCircle2, AlertTriangle,
-  ChevronRight, Filter, Shield, Clock, ExternalLink, SlidersHorizontal
+  ChevronRight, Filter, Shield, Clock, ExternalLink, SlidersHorizontal, RotateCcw
 } from 'lucide-react';
 import { useI18n } from '../i18n';
 import { useAuth } from '../App';
@@ -28,19 +28,40 @@ export default function Home() {
 
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [flags, setFlags] = useState([]);
   const [insts, setInsts] = useState([]);
   const [proof, setProof] = useState(null);
   const [replay, setReplay] = useState(null);
   const [chartPeriod, setChartPeriod] = useState('Season');
 
+  const fetchOverviewData = async (activeToken = token) => {
+    setLoading(true);
+    setRefreshing(true);
+    try {
+      const [statsRes, flagsRes, instsRes, proofRes, replayRes] = await Promise.allSettled([
+        api.getOverview(2026, activeToken),
+        api.getFlags({ limit: 200 }, activeToken),
+        api.getInstitutions(2026, undefined, activeToken),
+        api.runPrivacyProof(activeToken),
+        api.getReplay(2026, activeToken),
+      ]);
+
+      if (statsRes.status === 'fulfilled' && statsRes.value) setStats(statsRes.value);
+      if (flagsRes.status === 'fulfilled' && flagsRes.value) setFlags(flagsRes.value.flags || []);
+      if (instsRes.status === 'fulfilled' && instsRes.value) setInsts(instsRes.value.institutions || []);
+      if (proofRes.status === 'fulfilled' && proofRes.value) setProof(proofRes.value);
+      if (replayRes.status === 'fulfilled' && replayRes.value) setReplay(replayRes.value);
+    } catch (err) {
+      console.warn('Overview fetch error:', err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
   useEffect(() => {
-    if (!token) return;
-    api.getOverview(2026, token).then((d) => { setStats(d); setLoading(false); }).catch(() => setLoading(false));
-    api.getFlags({ limit: 200 }, token).then((r) => setFlags(r.flags || [])).catch(() => {});
-    api.getInstitutions(2026, undefined, token).then((r) => setInsts(r.institutions || [])).catch(() => {});
-    api.runPrivacyProof(token).then(setProof).catch(() => {});
-    api.getReplay(2026, token).then(setReplay).catch(() => {});
+    fetchOverviewData(token);
   }, [token]);
 
   // ── everything below is derived from the live API, nothing is hard-coded ──
@@ -95,11 +116,21 @@ export default function Home() {
         {/* Section Titles Row */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 mb-2.5 px-0.5">
           <div className="lg:col-span-6 flex items-center justify-between">
-            <h2 className="text-base font-bold text-gray-900 tracking-tight font-display">
-              Admission Portfolio
-            </h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-bold text-gray-900 tracking-tight font-display">
+                Admission Portfolio
+              </h2>
+              <button
+                onClick={() => fetchOverviewData(token)}
+                disabled={refreshing}
+                title="Refresh live metrics"
+                className="p-1 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-700 transition"
+              >
+                <RotateCcw size={13} className={refreshing ? 'animate-spin text-blue-600' : ''} />
+              </button>
+            </div>
             <span className="text-xs text-gray-500 font-medium hidden sm:inline">
-              15 AICTE Institutions
+              15 AICTE Institutions · {stats ? `${stats.total_seats.toLocaleString('en-IN')} Seats` : 'Syncing...'}
             </span>
           </div>
           <div className="lg:col-span-6 flex items-center justify-between">

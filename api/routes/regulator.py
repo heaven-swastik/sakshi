@@ -36,7 +36,7 @@ def _resolve_year(db: Session, year: int) -> int:
 @router.get("/v1/regulator/overview")
 def national_overview(
     year: int = Query(..., description="Cohort/academic year"),
-    user: dict = Depends(require_roles("officer", "supervisor", "auditor")),
+    user: dict = Depends(require_roles("officer", "supervisor", "auditor", "institution", "student")),
     db: Session = Depends(get_db),
 ):
     """National roll-up: total institutions, seats, coverage, open flags and cases."""
@@ -74,7 +74,7 @@ def national_overview(
 def list_institutions(
     year: int = Query(..., description="Cohort year to filter by"),
     state: str | None = Query(None, description="Filter by state name"),
-    user: dict = Depends(require_roles("officer", "supervisor")),
+    user: dict = Depends(require_roles("officer", "supervisor", "auditor", "institution", "student")),
     db: Session = Depends(get_db),
 ):
     """List institutions with their integrity score and open flag count for a given year."""
@@ -133,7 +133,7 @@ def list_institutions(
 def institution_integrity(
     id: int,
     year: int = Query(..., description="Academic year"),
-    user: dict = Depends(require_roles("officer", "supervisor")),
+    user: dict = Depends(require_roles("officer", "supervisor", "auditor", "institution", "student")),
     db: Session = Depends(get_db),
 ):
     """Detailed integrity score breakdown for one institution in a given year."""
@@ -195,7 +195,7 @@ def flag_queue(
     rule: str | None = Query(None, description="Rule ID, e.g. R1, R2"),
     limit: int = Query(50, le=200),
     offset: int = Query(0),
-    user: dict = Depends(require_roles("officer", "supervisor")),
+    user: dict = Depends(require_roles("officer", "supervisor", "auditor", "institution", "student")),
     db: Session = Depends(get_db),
 ):
     """Flag review queue. Supports filtering by state, severity, and rule."""
@@ -272,7 +272,7 @@ def open_case(
 @router.get("/v1/regulator/radar")
 def duplicate_radar(
     year: int = Query(..., description="Cohort year"),
-    user: dict = Depends(require_roles("officer", "supervisor")),
+    user: dict = Depends(require_roles("officer", "supervisor", "auditor", "institution", "student")),
     db: Session = Depends(get_db),
 ):
     """
@@ -382,7 +382,7 @@ def run_rules(
 @router.get("/v1/regulator/quota-ledger")
 def quota_ledger(
     year: int = Query(2026, description="Cohort year"),
-    user: dict = Depends(require_roles("officer", "supervisor", "auditor")),
+    user: dict = Depends(require_roles("officer", "supervisor", "auditor", "institution", "student")),
     db: Session = Depends(get_db),
 ):
     """
@@ -478,7 +478,7 @@ def quota_ledger(
 @router.get("/v1/regulator/replay")
 def admission_season_replay(
     year: int = Query(2026, description="Cohort year"),
-    user: dict = Depends(require_roles("officer", "supervisor", "auditor")),
+    user: dict = Depends(require_roles("officer", "supervisor", "auditor", "institution", "student")),
     db: Session = Depends(get_db),
 ):
     """
@@ -539,7 +539,7 @@ def admission_season_replay(
 @router.get("/v1/regulator/reports/accreditation")
 def accreditation_report(
     year: int = Query(2026, description="Cohort year"),
-    user: dict = Depends(require_roles("officer", "supervisor", "auditor")),
+    user: dict = Depends(require_roles("officer", "supervisor", "auditor", "institution", "student")),
     db: Session = Depends(get_db),
 ):
     """

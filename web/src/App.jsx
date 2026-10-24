@@ -28,7 +28,10 @@ import PublicVerify from './screens/PublicVerify';
 export const AuthContext = createContext({
   token: null,
   role: 'officer',
+  persona: 'officer',
+  userMeta: {},
   login: () => {},
+  switchPerspective: async () => {},
   logout: () => {},
 });
 
@@ -39,46 +42,80 @@ export function useAuth() {
 function AuthProvider({ children }) {
   const [token, setToken] = useState(() => sessionStorage.getItem('sakshi_token') || null);
   const [role, setRole] = useState(() => sessionStorage.getItem('sakshi_role') || 'officer');
+  const [persona, setPersona] = useState(() => sessionStorage.getItem('sakshi_persona') || 'officer');
+  const [userMeta, setUserMeta] = useState(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem('sakshi_usermeta') || '{}');
+    } catch {
+      return {};
+    }
+  });
 
-  // Ensure there is always a valid demo session on first arrival
+  const switchPerspective = async (newRole, actorId = null, instId = null) => {
+    const actor = actorId || (newRole === 'student' ? 'asha' : newRole === 'institution' ? 'mit-pune' : 'officer');
+    const institutionId = instId || (newRole === 'institution' ? 1 : null);
+
+    try {
+      // Fetch genuine, signed JWT from backend
+      const res = await api.demoLogin(newRole, institutionId);
+      if (res?.access_token) {
+        setToken(res.access_token);
+        setRole(newRole);
+        setPersona(actor);
+        const meta = { actor, institutionId };
+        setUserMeta(meta);
+        sessionStorage.setItem('sakshi_token', res.access_token);
+        sessionStorage.setItem('sakshi_role', newRole);
+        sessionStorage.setItem('sakshi_persona', actor);
+        sessionStorage.setItem('sakshi_usermeta', JSON.stringify(meta));
+        return res.access_token;
+      }
+    } catch (err) {
+      console.warn('Demo login failed, using fallback session:', err);
+    }
+
+    // Local fallback if server unreachable
+    const fallback = `demo-${newRole}-session`;
+    setToken(fallback);
+    setRole(newRole);
+    setPersona(actor);
+    sessionStorage.setItem('sakshi_token', fallback);
+    sessionStorage.setItem('sakshi_role', newRole);
+    sessionStorage.setItem('sakshi_persona', actor);
+    return fallback;
+  };
+
+  // Ensure there is always a valid demo session on first arrival or if token is stale
   useEffect(() => {
-    if (!token) {
-      api.demoLogin('officer')
-        .then((res) => {
-          if (res?.access_token) {
-            setToken(res.access_token);
-            setRole('officer');
-            sessionStorage.setItem('sakshi_token', res.access_token);
-            sessionStorage.setItem('sakshi_role', 'officer');
-          }
-        })
-        .catch(() => {
-          // Fallback demo token for offline or initial load
-          const fallback = 'demo-officer-session';
-          setToken(fallback);
-          setRole('officer');
-          sessionStorage.setItem('sakshi_token', fallback);
-          sessionStorage.setItem('sakshi_role', 'officer');
-        });
+    if (!token || token.startsWith('demo-')) {
+      switchPerspective('officer');
     }
   }, [token]);
 
-  const login = (newToken, newRole = 'officer') => {
+  const login = (newToken, newRole = 'officer', newPersona = 'officer', newMeta = {}) => {
     setToken(newToken);
     setRole(newRole);
+    setPersona(newPersona);
+    setUserMeta(newMeta);
     sessionStorage.setItem('sakshi_token', newToken);
     sessionStorage.setItem('sakshi_role', newRole);
+    sessionStorage.setItem('sakshi_persona', newPersona);
+    sessionStorage.setItem('sakshi_usermeta', JSON.stringify(newMeta));
   };
 
   const logout = () => {
     setToken(null);
     setRole('officer');
+    setPersona('officer');
+    setUserMeta({});
     sessionStorage.removeItem('sakshi_token');
     sessionStorage.removeItem('sakshi_role');
+    sessionStorage.removeItem('sakshi_persona');
+    sessionStorage.removeItem('sakshi_usermeta');
   };
 
   return (
-    <AuthContext.Provider value={{ token, role, login, logout }}>
+    <AuthContext.Provider value={{ token, role, persona, userMeta, login, switchPerspective, logout }}>
       {children}
     </AuthContext.Provider>
   );
