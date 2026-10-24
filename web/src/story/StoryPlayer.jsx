@@ -1,7 +1,7 @@
 /**
  * StoryPlayer.jsx — SAKSHI's cinematic demo mode ("the story").
  * Seven short chapters, each with 2–3 beats. It plays by itself at a calm pace,
- * and a judge can pause, step, jump, or leave at any time.
+ * and a user can pause, step, jump, or leave at any time.
  *
  * Keys: Space = pause/play · ← → = previous/next beat · Esc = leave
  */

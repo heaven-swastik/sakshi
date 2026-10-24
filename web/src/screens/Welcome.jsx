@@ -1,5 +1,5 @@
 /**
- * Welcome.jsx — the first thing a judge sees.
+ * Welcome.jsx — the first landing screen.
  * Goal: in 10 seconds they know the NAME (SAKSHI), the PROBLEM, the IDEA, and what to click.
  */
 import React from 'react';
