@@ -182,6 +182,10 @@ export const api = {
   runPrivacyProof: (token) =>
     get('/v1/system/privacy-proof', { token }),
 
+  /** Probe the database for a specific 12-digit student ID */
+  probePrivacy: (targetId, token) =>
+    get(`/v1/system/privacy-probe?target_id=${encodeURIComponent(targetId)}`, { token }),
+
   /** Verify the cryptographic audit chain */
   verifyAuditChain: (token) =>
     get('/v1/audit/verify', { token }),
