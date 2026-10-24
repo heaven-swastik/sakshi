@@ -77,13 +77,7 @@ The application is a working prototype, not a production-ready national registry
 | **Privacy proof** (`/proof`) | Available database privacy scan and audit-chain checks |
 | **Briefing and story** (`/briefing`, `/story`) | Animated explanation of the problem, approach, and demo scenarios |
 
-## Watch the demo
 
-- [Open the guided story in the app](http://localhost:5173/story) after starting the project.
-- [Open the briefing in the app](http://localhost:5173/briefing) after starting the project.
-- [Watch the full demo video](demo/video/sakshi-demo.mp4).
-- [Read the video script](docs/VIDEO_SCRIPT.md) and [subtitles](demo/video/sakshi-demo.srt).
-- [Watch the 60-second overview](demo/sakshi-60s.mp4).
 
 ## Run locally
 
@@ -149,11 +143,3 @@ make test
 - **Local demo storage:** SQLite
 - **Privacy and integrity mechanisms:** keyed HMAC tokens, signed credentials, and a hash-chained audit log
 
-## Repository guide
-
-- [`api/`](api/) — API, domain logic, and tests
-- [`web/`](web/) — React application
-- [`seed/`](seed/) — deterministic synthetic data generator
-- [`demo/screenshots/`](demo/screenshots/) — screenshots shown above
-- [`demo/video/`](demo/video/) — demo recording and subtitles
-- [`docs/`](docs/) — integration notes, design, audit, and presentation material
