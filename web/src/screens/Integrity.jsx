@@ -30,6 +30,11 @@ export default function Integrity() {
   const [institutions, setInstitutions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
+  const [detail, setDetail] = useState({});
+  useEffect(() => {
+    if (expandedId == null || detail[expandedId] || !token) return;
+    api.getIntegrity(expandedId, 2026, token).then((d) => setDetail((m) => ({ ...m, [expandedId]: d }))).catch(() => {});
+  }, [expandedId, token]);
 
   // Quotas State
   const [quotaData, setQuotaData] = useState(null);
@@ -52,7 +57,7 @@ export default function Integrity() {
     setLoading(true);
     try {
       const data = await api.getInstitutions(2026, '', token);
-      setInstitutions(data?.institutions ?? []);
+      setInstitutions((data?.institutions ?? []).map((i) => ({ ...i, id: i.institution_id ?? i.id, score: i.integrity_score ?? i.score })));
     } catch {
       // Fallback
       setInstitutions([]);
@@ -243,9 +248,8 @@ export default function Integrity() {
           {/* College Cards */}
           <div className="space-y-3">
             {institutions.map((inst) => {
-              const score = inst.score ?? 85;
+              const score = inst.score ?? inst.integrity_score ?? 0;
               const isExpanded = expandedId === inst.id;
-              const isOverrun = inst.name.includes('MIT Pune');
 
               return (
                 <div
@@ -303,24 +307,32 @@ export default function Integrity() {
                       <p className="font-bold text-gray-400 uppercase tracking-wider text-[10px]">
                         Transparent Deductions (Rules decide, no black box):
                       </p>
-                      {isOverrun ? (
-                        <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 flex items-start gap-2">
-                          <AlertTriangle size={15} className="flex-shrink-0 mt-0.5 text-red-600" />
-                          <div>
-                            <strong>Rule R3 (Intake Overrun): −25 pts</strong> — College reports 312 seats against approved 240 (130%). Lateral entry and quota exemptions verified.
+                      {!detail[inst.id] && <p className="text-gray-400">Loading the real score breakdown…</p>}
+                      {(detail[inst.id]?.programme_scores || []).map((ps) => {
+                        const W = ps.components?.weights_used || {};
+                        const NAMES = { overrun_penalty: 'Intake overrun (R3)', duplicate_rate: 'Duplicate seats (R1, R2)', burst_penalty: 'Upload burst (R4)', open_flags_penalty: 'Unresolved flags' };
+                        return (
+                          <div key={ps.program_id} className="p-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-700 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <strong>{ps.course || `Programme ${ps.program_id}`}</strong>
+                              <span className="font-bold">{ps.score}/100</span>
+                            </div>
+                            {ps.approved_intake != null && (
+                              <p className="text-[11px] text-gray-500">Reported {ps.reported_seats} seats against an approved intake of {ps.approved_intake}{ps.reported_seats > ps.approved_intake ? ` (${Math.round((ps.reported_seats / ps.approved_intake) * 100)}%)` : ''}. Verified at source: {ps.components?.coverage_pct}% (shown for transparency, not penalised).</p>
+                            )}
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                              {Object.keys(NAMES).map((k) => {
+                                const pts = Math.round((ps.components?.[k] || 0) * (W[k] || 0));
+                                return (
+                                  <div key={k} className="flex items-center justify-between text-[11px]">
+                                    <span>{NAMES[k]}</span><span className={pts ? 'font-bold text-red-700' : 'text-emerald-700'}>{pts ? `−${pts} pts` : '0 pts'}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      ) : (
-                        <div className="p-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-600 flex items-start gap-2">
-                          <CheckCircle size={15} className="text-emerald-600 flex-shrink-0 mt-0.5" />
-                          <div>
-                            <strong>Intake Adherence: 0 pts deducted</strong> — Enrolment within approved quota (100% capacity compliant).
-                          </div>
-                        </div>
-                      )}
-                      <div className="p-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-600">
-                        <strong>Lawful Opt-Out Coverage:</strong> 18% Verified, 72% Attested (APAAR opt-out via institution ID), 10% Pending. Opt-out seats count toward capacity and incur <strong>0 penalty</strong> under DPDP Act 2023.
-                      </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>

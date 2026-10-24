@@ -14,8 +14,10 @@ import {
 import { useI18n } from '../i18n';
 import { useAuth } from '../App';
 import { api } from '../api';
+import { SuccessOverlay } from '../components/SuccessBurst';
 
 export default function PrivacyProof() {
+  const [burst, setBurst] = useState(null);
   const { t } = useI18n();
   const { token } = useAuth();
 
@@ -58,6 +60,7 @@ export default function PrivacyProof() {
       setAuditData(auditRes);
       setDailyRoot(rootRes);
       setDisplayCount(0);
+      setBurst({ ok: proofRes.match_count === 0, n: proofRes.match_count, t: proofRes.tables_scanned });
     } catch (err) {
       setError(err.message || 'Scan failed to complete');
     } finally {
@@ -71,6 +74,10 @@ export default function PrivacyProof() {
 
   return (
     <div className="space-y-4 max-w-5xl mx-auto">
+      {burst && (
+        <SuccessOverlay tone={burst.ok ? 'jade' : 'crimson'} title={burst.ok ? 'Zero raw IDs found' : `${burst.n} matches to review`}
+          sub={`Scanned ${burst.t} tables in the live database just now.`} onClose={() => setBurst(null)} />
+      )}
       {/* Step 6 Explainer Banner */}
       <div className="bg-white border border-gray-200/90 rounded-2xl p-4 flex items-center justify-between shadow-sm">
         <div className="flex items-center gap-3">
@@ -144,7 +151,7 @@ export default function PrivacyProof() {
             </p>
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-bold text-purple-950">
-                {auditData?.valid ? '100% Valid' : 'Checking...'}
+                {auditData ? (auditData.valid ? 'Valid' : 'Broken') : 'Checking...'}
               </span>
             </div>
             <p className="text-[11px] text-purple-700/90 mt-1">

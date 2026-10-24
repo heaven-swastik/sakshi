@@ -1,7 +1,7 @@
 # SAKSHI — developer shortcuts
 # Run `make help` to see all commands.
 
-.PHONY: help dev-api dev-web dev seed test lint clean docker
+.PHONY: help dev-api dev-web dev seed test lint clean docker build-web video
 
 help:
 	@echo "SAKSHI developer commands:"
@@ -38,3 +38,9 @@ clean:
 	rm -f sakshi.db api/sakshi.db
 	rm -f api/credential_key.pem
 
+
+build-web:
+	cd web && npm install && npx vite build
+
+video:
+	python scripts/record_video.py A && python scripts/record_video.py B && python scripts/make_video.py

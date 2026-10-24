@@ -18,11 +18,12 @@ import {
 import { useI18n } from '../i18n';
 import { useAuth } from '../App';
 import HindiToggle from './HindiToggle';
-import DemoMode from './DemoMode';
+import Seal from './Seal';
+import { api } from '../api';
 
 const NAV_ITEMS = [
   {
-    to: '/',
+    to: '/overview',
     exact: true,
     icon: LayoutDashboard,
     label: 'Overview',
@@ -75,11 +76,11 @@ const NAV_ITEMS = [
 
 export default function AppShell({ children }) {
   const { t } = useI18n();
-  const { role, login } = useAuth();
+  const { role, login, token } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [showDemoModal, setShowDemoModal] = useState(false);
+  const [audit, setAudit] = useState(null);
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
   const [liveTime, setLiveTime] = useState(new Date().toLocaleTimeString('en-IN', { hour12: false }));
 
@@ -90,15 +91,22 @@ export default function AppShell({ children }) {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    if (!token) return;
+    api.verifyAuditChain(token).then(setAudit).catch(() => setAudit(null));
+  }, [token, location.pathname]);
+
   // Determine current active navigation item
   const currentNav = NAV_ITEMS.find(item =>
-    item.exact ? location.pathname === '/' : location.pathname.startsWith(item.to)
+    item.exact ? location.pathname === '/overview' : location.pathname.startsWith(item.to)
   ) || NAV_ITEMS[0];
 
   const handleRoleSwitch = (newRole) => {
     login(`demo-${newRole}-token`, newRole);
     setRoleDropdownOpen(false);
   };
+
+  if (location.pathname === '/' || location.pathname === '/story' || location.pathname.startsWith('/mg/')) return <>{children}</>;
 
   return (
     <div className="min-h-screen bg-[#F1F5F9] flex items-center justify-center p-2 sm:p-4 md:p-6 font-body text-gray-900 antialiased">
@@ -154,13 +162,13 @@ export default function AppShell({ children }) {
           {/* Bottom Actions: Demo Mode Trigger */}
           <div className="flex md:flex-col items-center gap-2">
             <button
-              onClick={() => setShowDemoModal(true)}
+              onClick={() => navigate('/story')}
               className="w-10 h-10 rounded-xl bg-[#2A2E39] hover:bg-purple-600 text-purple-300 hover:text-white flex items-center justify-center transition shadow-sm group relative"
-              title="Start 2-Minute Judge Guided Tour"
+              title="Watch the 2-minute SAKSHI story"
             >
               <Sparkles size={17} className="animate-pulse" />
               <span className="hidden md:group-hover:block absolute left-14 bg-gray-900 text-white text-xs font-semibold px-3 py-1.5 rounded-xl whitespace-nowrap shadow-xl z-50 pointer-events-none">
-                Start Judge Guided Tour
+                Watch the 2-minute story
               </span>
             </button>
           </div>
@@ -173,6 +181,11 @@ export default function AppShell({ children }) {
             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-gray-100 mb-6">
               {/* Left Title & Plain Subtitle */}
               <div>
+                <div className="flex items-center gap-2 mb-1.5" data-tour="wordmark">
+                  <Seal token="SAKSHI-WITNESS" size={20} />
+                  <span className="font-display font-extrabold text-[13px] tracking-[0.2em] text-gray-950">SAKSHI</span>
+                  <span className="text-[11px] text-gray-400 font-medium">· a witness that confirms, never discloses</span>
+                </div>
                 <div className="flex items-center gap-2.5">
                   <h1 className="text-2xl font-bold font-display text-gray-950 tracking-tight">
                     {currentNav.label}
@@ -192,14 +205,14 @@ export default function AppShell({ children }) {
               <div className="flex items-center gap-2.5 self-end sm:self-auto">
                 {/* Synthetic Data Trust Badge */}
                 <div className="hidden xl:flex items-center gap-1.5 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full text-[11px] font-semibold text-amber-900">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#F2B632]" />
                   <span>Synthetic Dataset (Seed 42) · Mock Registry Adapter</span>
                 </div>
 
-                {/* Live Gateway Pill */}
-                <div className="hidden lg:flex items-center gap-1.5 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-full text-[11px] font-semibold text-emerald-800">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>Gateway Active (12ms)</span>
+                {/* Live audit-chain pill (real: re-verified from the database on every page) */}
+                <div className="hidden lg:flex items-center gap-1.5 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-full text-[11px] font-semibold text-emerald-800" data-tour="audit-pill">
+                  <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${audit && !audit.valid ? 'bg-red-500' : 'bg-emerald-500'}`} />
+                  <span>{audit ? (audit.valid ? `Audit chain verified · ${audit.entries_checked} entries` : 'Audit chain BROKEN') : 'Checking audit chain…'}</span>
                 </div>
 
                 <HindiToggle />
@@ -271,13 +284,11 @@ export default function AppShell({ children }) {
               <span>AICTE Regulation Bureau (SIH 2026, PS SIH26263)</span>
               <span>·</span>
               <span className="text-emerald-700 font-semibold flex items-center gap-1">
-                <CheckCircle2 size={12} /> DPDP Act 2023 Compliant (Zero PII)
+                <CheckCircle2 size={12} /> Designed for the DPDP Act 2023 · no raw IDs stored
               </span>
             </div>
             <div className="flex items-center gap-4 text-[11px] font-mono text-gray-400">
-              <span>KMS: K_2026_ACTIVE</span>
-              <span>·</span>
-              <span>Merkle Root: 0x8f2c...e12d</span>
+              <span>{audit ? `Audit log: ${audit.entries_checked} entries, ${audit.valid ? 'chain intact' : 'chain broken'}` : ''}</span>
               <span>·</span>
               <span className="text-gray-700 font-medium">{liveTime} IST</span>
             </div>
@@ -285,10 +296,6 @@ export default function AppShell({ children }) {
         </div>
       </div>
 
-      {/* Guided 4-Story Demo Tour Modal */}
-      {showDemoModal && (
-        <DemoMode onClose={() => setShowDemoModal(false)} />
-      )}
     </div>
   );
 }

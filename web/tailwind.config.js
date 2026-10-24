@@ -20,8 +20,8 @@ export default {
         'amber-light':   '#FEF3C7',
       },
       fontFamily: {
-        display:    ['"Bricolage Grotesque"', 'sans-serif'],
-        body:       ['"Hanken Grotesk"', 'sans-serif'],
+        display:    ['"Bricolage Grotesque Variable"', '"Bricolage Grotesque"', 'sans-serif'],
+        body:       ['"Hanken Grotesk Variable"', '"Hanken Grotesk"', '"Noto Sans Devanagari"', 'sans-serif'],
         devanagari: ['"Noto Sans Devanagari"', 'sans-serif'],
       },
       borderRadius: {

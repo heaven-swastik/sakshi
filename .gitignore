@@ -23,10 +23,17 @@ node_modules/
 web/dist/
 web/.vite/
 
-# Archives
+# Archives & Presentations
 *.zip
 *.tar.gz
+*.pptx
 
+# Markdown files (Except README.md)
+*.md
+docs/*.md
+!README.md
+
+# Environment
 .env
 .env.local
 .env.*.local
@@ -50,10 +57,3 @@ logs/
 # Generated
 seed/personas.json
 seed/ground_truth.json
-
-# Local-only root files
-/.env.example
-/CHANGELOG.md
-/DEMO.md
-/design.md
-/SAKHI – SIH26263 Build Pack (AICTE APAAR Student Verification).md

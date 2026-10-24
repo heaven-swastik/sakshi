@@ -10,8 +10,10 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ShieldCheck, CheckCircle2, AlertTriangle, ArrowRight, Search, Building2, Calendar, Award } from 'lucide-react';
 import { api } from '../api';
+import { SuccessOverlay } from '../components/SuccessBurst';
 
 export default function PublicVerify() {
+  const [burst, setBurst] = useState(false);
   const { handle: paramHandle } = useParams();
   const [handle, setHandle] = useState(paramHandle || '6BRQOTU4L7UB');
   const [loading, setLoading] = useState(false);
@@ -37,6 +39,7 @@ export default function PublicVerify() {
     try {
       const res = await api.verifyCredential(target);
       setResult(res);
+      if (res.valid) setBurst(true);
     } catch (err) {
       setError(err.message || 'Credential not found or expired');
     } finally {
@@ -46,6 +49,10 @@ export default function PublicVerify() {
 
   return (
     <div className="max-w-xl mx-auto py-6 px-4 space-y-5">
+      {burst && (
+        <SuccessOverlay tone="jade" title="Verified" sub="Signature valid and not revoked. No name was looked up."
+          onClose={() => setBurst(false)} />
+      )}
       {/* Top Banner */}
       <div className="text-center space-y-1.5">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800">

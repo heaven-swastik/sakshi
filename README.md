@@ -1,3 +1,32 @@
+# SAKSHI — a witness that confirms, never discloses
+
+AICTE student-enrolment integrity platform (SIH 2026, PS SIH26263). It finds duplicate and ghost seats **without AICTE holding student identities**: each ID is checked once, turned into a private seal, and forgotten.
+
+## See it in 3 minutes
+
+1. Open the app. The first page explains what SAKSHI is and has **Watch the 2-minute story**, a narrated, animated demo mode with pause, step, speed and keyboard controls (Space, arrows, Esc).
+2. Click **Explore the live system**. Every screen has a one-line "what this does", and the sidebar is numbered 1 to 6.
+3. The finished demo video is `demo/video/sakshi-demo.mp4` (3:26). The voice-over script is `docs/VIDEO_SCRIPT.md` and the subtitles are `demo/video/sakshi-demo.srt`.
+
+## Run it
+
+```bash
+make seed                              # synthetic data, fixed seed
+cd api && pip install -r requirements.txt && uvicorn main:app --port 8000
+cd web && npm install && npm run dev   # http://localhost:5173
+make test                              # 11 tests
+```
+
+## Are the numbers real?
+
+Yes, and `docs/NUMBERS_AUDIT.md` lists every number that was hard-coded in the first version and what replaced it. The data is synthetic and the registry is a mock; both are labelled on every screen.
+
+## Re-record the video
+
+`python scripts/record_video.py A`, `python scripts/record_video.py B`, then `python scripts/make_video.py` (needs the API on :8000, `npx vite preview --port 5173`, Playwright and ffmpeg).
+
+---
+
 # SAKSHI
 ### Verify student enrolment without collecting student identity.
 

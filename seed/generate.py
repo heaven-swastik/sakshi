@@ -737,6 +737,32 @@ def run_seed():
                     print(f"      Warning: score computation failed for {inst.name}/{prog.course}: {e}")
         print(f"      {score_count} integrity scores computed")
 
+        # --- Give every seat a real admission date (counselling rounds Jul-Oct) so the Season Replay is computed, not invented ---
+        from datetime import datetime as _dt
+        ROUND_DATES = ["2026-07-05", "2026-07-20", "2026-08-10", "2026-08-25", "2026-09-10", "2026-09-28", "2026-10-15"]
+        STANDARD = [0.12, 0.30, 0.58, 0.74, 0.88, 0.97, 1.00]
+        BURSTY   = [0.08, 0.18, 0.30, 0.78, 0.88, 0.97, 1.00]   # one college reports most seats in a single day
+        for inst, _p in inst_prog_map.values():
+            rows = db.query(Enrolment).filter(Enrolment.institution_id == inst.id).order_by(Enrolment.id).all()
+            n = len(rows) or 1
+            cum = BURSTY if "SSN" in inst.name else STANDARD
+            for idx, row in enumerate(rows):
+                frac = (idx + 1) / n
+                day = next(d for d, c in zip(ROUND_DATES, cum) if frac <= c + 1e-9)
+                row.created_at = _dt.fromisoformat(day + "T10:00:00")
+        db.commit()
+
+        # --- Seed a real, verifiable audit chain (so the auditor view is alive on first open) ---
+        from audit_log import append_audit
+        for aicte, (inst, _progs) in inst_prog_map.items():
+            n = db.get(Batch, batch_ids[aicte]).rows_total or 0
+            append_audit(db, f"inst-{aicte}", "institution", "batch.ingested", "batch", batch_ids[aicte],
+                         {"institution": inst.name, "rows": n, "raw_ids_stored": 0})
+        append_audit(db, "system", "system", "rules.run", "cohort", COHORT_YEAR, {"flags_created": count})
+        append_audit(db, "system", "system", "scores.computed", "cohort", COHORT_YEAR, {"scores": score_count})
+        append_audit(db, "officer-demo-user", "officer", "overview.viewed", "cohort", COHORT_YEAR, {})
+        print(f"      Audit chain seeded: {db.execute(__import__('sqlalchemy').text('select count(*) from audit_log')).scalar()} entries")
+
         # --- Write ground truth file ---
         gt_path = _SEED_DIR / "ground_truth.json"
         gt_path.write_text(json.dumps(ground_truth, indent=2))

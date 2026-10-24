@@ -19,8 +19,10 @@ import Seal from '../components/Seal';
 import StatusBadge from '../components/StatusBadge';
 import StudentAvatar from '../components/StudentAvatar';
 import CollegeEmblem from '../components/CollegeEmblem';
+import { SuccessOverlay } from '../components/SuccessBurst';
 
 export default function CitizenWindow() {
+  const [burst, setBurst] = useState(false);
   const { t } = useI18n();
   const { token, role, login, logout } = useAuth();
 
@@ -150,6 +152,7 @@ export default function CitizenWindow() {
         ...prev
       ]);
       setDisputeSuccess(t('notMe') + ' report filed successfully. AICTE has received this alert.');
+      setBurst(true);
       setTimeout(() => {
         setDisputeModalOpen(false);
       }, 1600);
@@ -373,6 +376,10 @@ export default function CitizenWindow() {
 
   return (
     <div className="space-y-4">
+      {burst && (
+        <SuccessOverlay tone="jade" title="Dispute sent" sub="AICTE has it now. Nothing about you was shared."
+          onClose={() => setBurst(false)} />
+      )}
       {/* Top Banner & Session Controls */}
       <div className="bg-white border border-gray-200/90 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
         <div className="flex items-center gap-3">
@@ -575,7 +582,7 @@ export default function CitizenWindow() {
                 {t('consent')} & DPDP Act 2023
               </h4>
               <p className="text-[11px] text-gray-500 mb-3 leading-relaxed">
-                Under the July 2026 Supreme Court order, you hold the sovereign right to opt out of centralized APAAR tracking while keeping your degree 100% valid.
+                Under the July 2026 Supreme Court order, you can opt out of the APAAR ID. Your seat is still counted at your college, with an attested ID instead.
               </p>
               <button
                 type="button"
