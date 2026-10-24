@@ -1,11 +1,12 @@
 /**
- * AppShell.jsx — Executive Modern Tablet Chassis Layout with Dynamic Perspective Switching.
+ * AppShell.jsx — Executive Modern Tablet Chassis Layout with Fixed Frame & Pinned Navbar.
  *
- * Implements a clean, refined design:
- * - Left vertical obsidian sidebar with soft icon navigation.
- * - Clean, spacious header with title, dynamic role perspective selector, and status indicator.
- * - Active Role & Persona Banner: Dynamically highlights current viewpoint (Regulator vs College vs Student).
- * - Real JWT token synchronization so all screens and numbers update dynamically.
+ * Implements a true fixed-frame hardware chassis:
+ * - Outer dark bezel/frame stays stationary like a physical tablet.
+ * - Left icon sidebar remains constant and fixed.
+ * - Top navbar, title, and perspective switcher are pinned and never scroll out of view.
+ * - Middle viewport (<main>) is the only element that scrolls smoothly.
+ * - Bottom status footer is pinned and constant.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -128,12 +129,12 @@ export default function AppShell({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#F1F5F9] flex items-center justify-center p-2 sm:p-4 md:p-6 font-body text-gray-900 antialiased">
-      {/* ── Outer Device Chassis ─────────────────────────────────── */}
-      <div className="w-full max-w-[1380px] bg-[#181A20] rounded-[32px] shadow-2xl flex flex-col md:flex-row overflow-hidden border border-black/30 min-h-[820px]">
+    <div className="h-screen w-screen bg-[#F1F5F9] flex items-center justify-center p-1.5 sm:p-2.5 md:p-3.5 font-body text-gray-900 antialiased overflow-hidden select-none">
+      {/* ── Outer Device Chassis (Constant Stationary Frame) ───────────────────────── */}
+      <div className="w-full max-w-[1440px] h-full max-h-[98vh] bg-[#181A20] rounded-[24px] sm:rounded-[30px] shadow-2xl flex flex-col md:flex-row overflow-hidden border border-black/40">
         
-        {/* ── LEFT DARK ICON SIDEBAR ────────────────────────────────────────────── */}
-        <aside className="w-full md:w-20 bg-[#181A20] flex md:flex-col items-center justify-between p-4 md:py-6 border-b md:border-b-0 md:border-r border-[#262A32] flex-shrink-0 z-20">
+        {/* ── LEFT DARK ICON SIDEBAR (Constant Fixed Sidebar) ───────────────────── */}
+        <aside className="w-full md:w-20 bg-[#181A20] flex md:flex-col items-center justify-between p-3 md:py-5 border-b md:border-b-0 md:border-r border-[#262A32] flex-shrink-0 z-20">
           {/* Top Logo Badge */}
           <div className="flex md:flex-col items-center gap-2">
             <button
@@ -146,14 +147,13 @@ export default function AppShell({ children }) {
           </div>
 
           {/* Navigation Icon List */}
-          <nav className="flex md:flex-col items-center gap-2.5 my-auto">
+          <nav className="flex md:flex-col items-center gap-2 my-auto">
             {NAV_ITEMS.map((item) => {
               const Icon = item.icon;
               const isActive = item.exact
                 ? location.pathname === '/overview'
                 : location.pathname.startsWith(item.to);
 
-              // Check if item is primary for the current role
               const isRolePrimary = 
                 (role === 'student' && item.to === '/citizen') ||
                 (role === 'institution' && item.to === '/upload') ||
@@ -174,12 +174,12 @@ export default function AppShell({ children }) {
                 >
                   <Icon size={19} strokeWidth={isActive ? 2.4 : 1.8} />
 
-                  {/* Role Primary Dot */}
+                  {/* Primary role indicator dot */}
                   {isRolePrimary && !isActive && (
                     <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-emerald-400" />
                   )}
 
-                  {/* Desktop Hover Tooltip */}
+                  {/* Desktop Tooltip */}
                   <span className="hidden md:group-hover:block absolute left-14 bg-gray-900 text-white text-xs font-semibold px-3 py-1.5 rounded-xl whitespace-nowrap shadow-xl z-50 pointer-events-none">
                     <span className="text-gray-400 block text-[10px] uppercase font-mono">
                       {item.step === 'Home' ? 'Overview' : `Step ${item.step}`}
@@ -206,45 +206,46 @@ export default function AppShell({ children }) {
           </div>
         </aside>
 
-        {/* ── MAIN WHITE CANVAS CONTAINER ───────────────────────────────────────── */}
-        <div className="flex-1 bg-white rounded-[24px] m-2 md:m-2.5 p-5 sm:p-7 md:p-8 overflow-y-auto flex flex-col justify-between shadow-inner">
-          <div>
-            {/* ── TOP HEADER BAR ─────────────────────────────────────────────────── */}
-            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100 mb-3">
+        {/* ── MAIN WHITE CANVAS (Fixed Viewport, Scrollable Body Only) ─────────────── */}
+        <div className="flex-1 h-full bg-white rounded-[20px] sm:rounded-[24px] m-1.5 md:m-2 flex flex-col overflow-hidden shadow-inner">
+          
+          {/* ── PINNED TOP ZONE (Header + Perspective Switcher — NEVER SCROLLS) ─────── */}
+          <div className="flex-shrink-0 bg-white px-5 sm:px-7 pt-4 sm:pt-5 pb-3 border-b border-gray-100 z-10">
+            <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3">
               {/* Left Title & Plain Subtitle */}
               <div>
-                <div className="flex items-center gap-2 mb-1.5" data-tour="wordmark">
-                  <Seal token="SAKSHI-WITNESS" size={20} />
-                  <span className="font-display font-extrabold text-[13px] tracking-[0.2em] text-gray-950">SAKSHI</span>
-                  <span className="text-[11px] text-gray-400 font-medium">· a witness that confirms, never discloses</span>
+                <div className="flex items-center gap-2 mb-1" data-tour="wordmark">
+                  <Seal token="SAKSHI-WITNESS" size={18} />
+                  <span className="font-display font-extrabold text-[12px] tracking-[0.2em] text-gray-950">SAKSHI</span>
+                  <span className="text-[11px] text-gray-400 font-medium hidden sm:inline">· a witness that confirms, never discloses</span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <h1 className="text-2xl font-bold font-display text-gray-950 tracking-tight">
+                  <h1 className="text-xl sm:text-2xl font-bold font-display text-gray-950 tracking-tight leading-tight">
                     {currentNav.label}
                   </h1>
                   {currentNav.step !== 'Home' && (
-                    <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
                       Step {currentNav.step} of 6
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-gray-500 font-medium mt-0.5">
+                <p className="text-xs text-gray-500 font-medium truncate max-w-xl">
                   {currentNav.desc}
                 </p>
               </div>
 
-              {/* Right Controls: Gateway Status, Trust Badge, Hindi Toggle, Role Selector */}
-              <div className="flex items-center gap-2.5 self-end sm:self-auto">
+              {/* Right Controls: Gateway Status, Hindi Toggle, Role Selector */}
+              <div className="flex items-center gap-2 self-end sm:self-auto flex-wrap">
                 {/* Synthetic Data Trust Badge */}
                 <div className="hidden xl:flex items-center gap-1.5 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full text-[11px] font-semibold text-amber-900">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#F2B632]" />
-                  <span>Synthetic Dataset (Seed 42) · Mock Registry Adapter</span>
+                  <span>Synthetic Dataset (Seed 42)</span>
                 </div>
 
                 {/* Live audit-chain pill */}
                 <div className="hidden lg:flex items-center gap-1.5 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-full text-[11px] font-semibold text-emerald-800" data-tour="audit-pill">
                   <span className={`w-1.5 h-1.5 rounded-full animate-pulse ${audit && !audit.valid ? 'bg-red-500' : 'bg-emerald-500'}`} />
-                  <span>{audit ? (audit.valid ? `Audit chain verified · ${audit.entries_checked} entries` : 'Audit chain BROKEN') : 'Checking audit chain…'}</span>
+                  <span>{audit ? (audit.valid ? `Audit: ${audit.entries_checked} entries` : 'Chain Broken') : 'Checking…'}</span>
                 </div>
 
                 <HindiToggle />
@@ -316,47 +317,59 @@ export default function AppShell({ children }) {
                         {role === 'institution' && <CheckCircle2 size={13} />}
                       </button>
 
-                      {/* Perspective 3: Student Citizen */}
+                      {/* Perspective 3: Student Citizen Portal */}
                       <div className="mt-1 pt-1 border-t border-gray-100">
-                        <p className="px-3 py-1 text-[9px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-50/60 rounded-md mb-1">
-                          Student Citizen View (Choose Story Persona):
-                        </p>
                         <button
-                          onClick={() => handleRoleSwitch('student', 'asha')}
-                          className={`w-full text-left px-3 py-1.5 rounded-lg transition flex items-center justify-between ${
-                            role === 'student' && persona === 'asha' ? 'bg-emerald-700 text-white font-bold' : 'hover:bg-emerald-50 text-gray-800'
+                          onClick={() => handleRoleSwitch('student', persona || 'asha')}
+                          className={`w-full text-left px-3 py-2 rounded-xl transition flex items-center justify-between mt-1 ${
+                            role === 'student' ? 'bg-emerald-600 text-white font-bold' : 'hover:bg-emerald-50 text-gray-800'
                           }`}
                         >
-                          <div className="flex items-center gap-1.5">
-                            <GraduationCap size={13} />
-                            <span>Asha Sharma (Opt-Out)</span>
+                          <div className="flex items-center gap-2">
+                            <GraduationCap size={14} className={role === 'student' ? 'text-white' : 'text-emerald-600'} />
+                            <div>
+                              <p className="font-semibold text-xs leading-tight">Student Citizen Portal</p>
+                              <p className={`text-[10px] ${role === 'student' ? 'text-emerald-100' : 'text-gray-500'}`}>Citizen rights, disputes & consent</p>
+                            </div>
                           </div>
-                          {role === 'student' && persona === 'asha' && <CheckCircle2 size={12} />}
+                          {role === 'student' && <CheckCircle2 size={13} />}
                         </button>
-                        <button
-                          onClick={() => handleRoleSwitch('student', 'ravi')}
-                          className={`w-full text-left px-3 py-1.5 rounded-lg transition flex items-center justify-between ${
-                            role === 'student' && persona === 'ravi' ? 'bg-emerald-700 text-white font-bold' : 'hover:bg-emerald-50 text-gray-800'
-                          }`}
-                        >
-                          <div className="flex items-center gap-1.5">
-                            <GraduationCap size={13} />
-                            <span>Ravi Kumar (Dual Seat)</span>
+
+                        {/* Persona Quick Switches */}
+                        <div className="mt-1.5 p-1.5 bg-gray-50 rounded-xl space-y-1">
+                          <p className="px-1 text-[9px] font-bold uppercase tracking-wider text-gray-400">
+                            Story Personas:
+                          </p>
+                          <div className="grid grid-cols-3 gap-1">
+                            <button
+                              onClick={() => handleRoleSwitch('student', 'asha')}
+                              className={`py-1 px-1.5 rounded-lg text-center text-[10px] font-bold transition truncate ${
+                                role === 'student' && persona === 'asha' ? 'bg-emerald-700 text-white shadow-2xs' : 'bg-white hover:bg-emerald-50 text-gray-700 border border-gray-200/60'
+                              }`}
+                              title="Asha Sharma: Lawfully opted out of APAAR (MIT Pune)"
+                            >
+                              Asha (Opt)
+                            </button>
+                            <button
+                              onClick={() => handleRoleSwitch('student', 'ravi')}
+                              className={`py-1 px-1.5 rounded-lg text-center text-[10px] font-bold transition truncate ${
+                                role === 'student' && persona === 'ravi' ? 'bg-emerald-700 text-white shadow-2xs' : 'bg-white hover:bg-emerald-50 text-gray-700 border border-gray-200/60'
+                              }`}
+                              title="Ravi Kumar: Dual seat collision at MIT Pune & RV College"
+                            >
+                              Ravi (Dual)
+                            </button>
+                            <button
+                              onClick={() => handleRoleSwitch('student', 'meera')}
+                              className={`py-1 px-1.5 rounded-lg text-center text-[10px] font-bold transition truncate ${
+                                role === 'student' && persona === 'meera' ? 'bg-emerald-700 text-white shadow-2xs' : 'bg-white hover:bg-emerald-50 text-gray-700 border border-gray-200/60'
+                              }`}
+                              title="Meera Patel: Ghost seat claim dispute (SSN College)"
+                            >
+                              Meera (Ghost)
+                            </button>
                           </div>
-                          {role === 'student' && persona === 'ravi' && <CheckCircle2 size={12} />}
-                        </button>
-                        <button
-                          onClick={() => handleRoleSwitch('student', 'meera')}
-                          className={`w-full text-left px-3 py-1.5 rounded-lg transition flex items-center justify-between ${
-                            role === 'student' && persona === 'meera' ? 'bg-emerald-700 text-white font-bold' : 'hover:bg-emerald-50 text-gray-800'
-                          }`}
-                        >
-                          <div className="flex items-center gap-1.5">
-                            <GraduationCap size={13} />
-                            <span>Meera Patel (Ghost Seat)</span>
-                          </div>
-                          {role === 'student' && persona === 'meera' && <CheckCircle2 size={12} />}
-                        </button>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -364,42 +377,42 @@ export default function AppShell({ children }) {
               </div>
             </header>
 
-            {/* ── DYNAMIC ACTIVE PERSPECTIVE BANNER ───────────────────────────────── */}
-            <div className={`mb-5 p-3 rounded-2xl border transition shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
+            {/* Dynamic Active Perspective Indicator Banner */}
+            <div className={`p-2.5 rounded-xl border transition shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 ${
               role === 'student' 
                 ? 'bg-emerald-50/70 border-emerald-200 text-emerald-950'
                 : role === 'institution'
                 ? 'bg-blue-50/70 border-blue-200 text-blue-950'
                 : 'bg-slate-50 border-slate-200 text-slate-900'
             }`}>
-              <div className="flex items-center gap-2.5">
-                <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${
+              <div className="flex items-center gap-2">
+                <div className={`w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 ${
                   role === 'student' ? 'bg-emerald-600 text-white' : role === 'institution' ? 'bg-blue-600 text-white' : 'bg-gray-900 text-white'
                 }`}>
-                  {role === 'student' ? <GraduationCap size={16} /> : role === 'institution' ? <School size={16} /> : <Building2 size={16} />}
+                  {role === 'student' ? <GraduationCap size={14} /> : role === 'institution' ? <School size={14} /> : <Building2 size={14} />}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold font-display">
                       {role === 'student' 
-                        ? `ACTIVE PERSPECTIVE: Student Citizen (${persona === 'ravi' ? 'Ravi Kumar' : persona === 'meera' ? 'Meera Patel' : 'Asha Sharma'})`
+                        ? `ACTIVE: Student Citizen (${persona === 'ravi' ? 'Ravi Kumar' : persona === 'meera' ? 'Meera Patel' : 'Asha Sharma'})`
                         : role === 'institution'
-                        ? 'ACTIVE PERSPECTIVE: College Registrar (MIT Pune · AICTE MH001)'
-                        : 'ACTIVE PERSPECTIVE: AICTE Central Regulatory Bureau (New Delhi)'}
+                        ? 'ACTIVE: College Registrar (MIT Pune · AICTE MH001)'
+                        : 'ACTIVE: AICTE Central Regulation Bureau (New Delhi)'}
                     </span>
-                    <span className={`text-[10px] font-mono px-2 py-0.2 rounded-full font-bold ${
+                    <span className={`text-[9px] font-mono px-1.5 py-0.2 rounded-full font-bold ${
                       role === 'student' ? 'bg-emerald-200 text-emerald-900' : role === 'institution' ? 'bg-blue-200 text-blue-900' : 'bg-gray-200 text-gray-800'
                     }`}>
-                      Live JWT Synchronized
+                      Live JWT
                     </span>
                   </div>
-                  <p className="text-[11px] opacity-80 mt-0.5">
+                  <p className="text-[11px] opacity-80 truncate max-w-xl">
                     {role === 'student'
                       ? (persona === 'asha' 
-                          ? 'Enrolled in B.Tech CSE at MIT Pune · Opted out of APAAR (Supreme Court July 2026 Compliant) · Zero fraud penalty.'
+                          ? 'MIT Pune B.Tech CSE · Lawfully opted out of APAAR (Supreme Court July 2026 Compliant) · 0 fraud penalty.'
                           : persona === 'ravi'
-                          ? 'Holding simultaneous admissions at MIT Pune (MH001) & RV College Bengaluru (KA001) · Rule R1 Collision Flagged.'
-                          : 'SSN College Chennai claimed an enrolment she never took · "This is not me" dispute ready to sign.')
+                          ? 'Simultaneous admissions at MIT Pune (MH001) & RV College (KA001) · Rule R1 Collision Flagged.'
+                          : 'SSN College claimed an enrolment she never took · "This is not me" dispute ready to sign.')
                       : role === 'institution'
                       ? 'Approved Intake: 240 seats · Reported Admissions: 312 · Upload batch CSVs, preview blind sealing, and download EoA reports.'
                       : 'National Scope: 15 institutions · 3,333 student seats · Real-time duplicate collision radar and explainable rules R1–R6.'}
@@ -413,7 +426,7 @@ export default function AppShell({ children }) {
                   <span className="text-[10px] font-semibold text-emerald-800">Persona:</span>
                   <button
                     onClick={() => handleRoleSwitch('student', 'asha')}
-                    className={`px-2 py-1 rounded-lg text-[10px] font-bold transition ${
+                    className={`px-2 py-0.5 rounded text-[10px] font-bold transition ${
                       persona === 'asha' ? 'bg-emerald-700 text-white shadow-2xs' : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-900'
                     }`}
                   >
@@ -421,7 +434,7 @@ export default function AppShell({ children }) {
                   </button>
                   <button
                     onClick={() => handleRoleSwitch('student', 'ravi')}
-                    className={`px-2 py-1 rounded-lg text-[10px] font-bold transition ${
+                    className={`px-2 py-0.5 rounded text-[10px] font-bold transition ${
                       persona === 'ravi' ? 'bg-emerald-700 text-white shadow-2xs' : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-900'
                     }`}
                   >
@@ -429,7 +442,7 @@ export default function AppShell({ children }) {
                   </button>
                   <button
                     onClick={() => handleRoleSwitch('student', 'meera')}
-                    className={`px-2 py-1 rounded-lg text-[10px] font-bold transition ${
+                    className={`px-2 py-0.5 rounded text-[10px] font-bold transition ${
                       persona === 'meera' ? 'bg-emerald-700 text-white shadow-2xs' : 'bg-emerald-100 hover:bg-emerald-200 text-emerald-900'
                     }`}
                   >
@@ -441,7 +454,7 @@ export default function AppShell({ children }) {
               {role === 'institution' && (
                 <button
                   onClick={() => navigate('/upload')}
-                  className="px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-2xs transition flex-shrink-0 flex items-center gap-1"
+                  className="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-semibold shadow-2xs transition flex-shrink-0 flex items-center gap-1"
                 >
                   <UploadCloud size={12} />
                   <span>Upload College CSV</span>
@@ -451,22 +464,22 @@ export default function AppShell({ children }) {
               {role === 'officer' && (
                 <button
                   onClick={() => navigate('/overview')}
-                  className="px-3 py-1 rounded-lg bg-gray-900 hover:bg-black text-white text-xs font-semibold shadow-2xs transition flex-shrink-0 flex items-center gap-1"
+                  className="px-2.5 py-1 rounded bg-gray-900 hover:bg-black text-white text-[11px] font-semibold shadow-2xs transition flex-shrink-0 flex items-center gap-1"
                 >
                   <Activity size={12} />
                   <span>National Command</span>
                 </button>
               )}
             </div>
-
-            {/* ── SCREEN CONTENT ──────────────────────────────────────────────── */}
-            <main>
-              {children}
-            </main>
           </div>
 
-          {/* ── FOOTER BAR ──────────────────────────────────────────────────────── */}
-          <footer className="mt-8 pt-4 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-2">
+          {/* ── SCROLLABLE MIDDLE VIEWPORT (ONLY THIS AREA SCROLLS) ───────────────── */}
+          <main className="flex-1 overflow-y-auto px-5 sm:px-7 py-4 scroll-smooth">
+            {children}
+          </main>
+
+          {/* ── PINNED BOTTOM FOOTER BAR (NEVER SCROLLS) ─────────────────────────── */}
+          <footer className="flex-shrink-0 bg-white px-5 sm:px-7 py-2.5 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500 gap-2 z-10">
             <div className="flex items-center gap-3">
               <strong className="text-gray-900 font-semibold">SAKSHI</strong>
               <span>·</span>

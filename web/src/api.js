@@ -54,11 +54,11 @@ export const api = {
   // ── Auth ──────────────────────────────────────────────────────────────────
 
   /** Quick demo login: returns { access_token, role, token_type } */
-  demoLogin: (role, institutionId = null) =>
+  demoLogin: (role, institutionId = null, actorId = null) =>
     post('/v1/auth/demo-login', {
       body: {
         role,
-        actor_id: `${role}-demo-user`,
+        actor_id: actorId || `${role}-demo-user`,
         institution_id: institutionId
       }
     }),

@@ -56,8 +56,8 @@ function AuthProvider({ children }) {
     const institutionId = instId || (newRole === 'institution' ? 1 : null);
 
     try {
-      // Fetch genuine, signed JWT from backend
-      const res = await api.demoLogin(newRole, institutionId);
+      // Fetch genuine, signed JWT from backend with specific persona actor_id
+      const res = await api.demoLogin(newRole, institutionId, actor);
       if (res?.access_token) {
         setToken(res.access_token);
         setRole(newRole);
@@ -75,7 +75,7 @@ function AuthProvider({ children }) {
     }
 
     // Local fallback if server unreachable
-    const fallback = `demo-${newRole}-session`;
+    const fallback = `demo-${newRole}-${actor}-session`;
     setToken(fallback);
     setRole(newRole);
     setPersona(actor);
@@ -85,12 +85,12 @@ function AuthProvider({ children }) {
     return fallback;
   };
 
-  // Ensure there is always a valid demo session on first arrival or if token is stale
+  // Ensure there is always a valid demo session on initial arrival
   useEffect(() => {
-    if (!token || token.startsWith('demo-')) {
+    if (!token) {
       switchPerspective('officer');
     }
-  }, [token]);
+  }, []);
 
   const login = (newToken, newRole = 'officer', newPersona = 'officer', newMeta = {}) => {
     setToken(newToken);

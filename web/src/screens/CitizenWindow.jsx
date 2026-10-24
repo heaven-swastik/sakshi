@@ -24,7 +24,7 @@ import { SuccessOverlay } from '../components/SuccessBurst';
 export default function CitizenWindow() {
   const [burst, setBurst] = useState(false);
   const { t } = useI18n();
-  const { token, role, login, logout } = useAuth();
+  const { token, role, persona, switchPerspective, login, logout } = useAuth();
 
   // Authentication State
   const [phone, setPhone] = useState('');
@@ -383,12 +383,12 @@ export default function CitizenWindow() {
       {/* Top Banner & Session Controls */}
       <div className="bg-white border border-gray-200/90 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
         <div className="flex items-center gap-3">
-          <StudentAvatar persona={tokenHandle.includes('7RB5') ? 'meera' : tokenHandle.includes('AXEC') ? 'ravi' : 'asha'} size={44} className="flex-shrink-0" />
+          <StudentAvatar persona={persona || (tokenHandle.includes('7RB5') ? 'meera' : tokenHandle.includes('AXEC') ? 'ravi' : 'asha')} size={44} className="flex-shrink-0" />
           <Seal token={tokenHandle} size={42} className="flex-shrink-0" />
           <div>
             <div className="flex items-center gap-2">
               <h2 className="font-semibold text-gray-900 text-sm">
-                Student Cryptographic Window
+                Student Cryptographic Window — {persona === 'ravi' ? 'Ravi Kumar' : persona === 'meera' ? 'Meera Patel' : 'Asha Sharma'}
               </h2>
               <span className="text-[11px] bg-[#DCFCE7] text-emerald-800 font-semibold px-2 py-0.5 rounded-full flex items-center gap-1">
                 <UserCheck size={11} /> Zero PII Stored
@@ -400,7 +400,34 @@ export default function CitizenWindow() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 self-end sm:self-auto">
+        <div className="flex items-center gap-2 self-end sm:self-auto flex-wrap">
+          <div className="flex items-center bg-gray-100 p-1 rounded-xl text-xs gap-1">
+            <span className="text-[10px] text-gray-500 font-semibold px-1">Persona:</span>
+            <button
+              onClick={() => switchPerspective('student', 'asha')}
+              className={`px-2 py-1 rounded-lg text-xs font-semibold transition ${
+                persona === 'asha' ? 'bg-emerald-600 text-white shadow-xs' : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Asha
+            </button>
+            <button
+              onClick={() => switchPerspective('student', 'ravi')}
+              className={`px-2 py-1 rounded-lg text-xs font-semibold transition ${
+                persona === 'ravi' ? 'bg-emerald-600 text-white shadow-xs' : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Ravi
+            </button>
+            <button
+              onClick={() => switchPerspective('student', 'meera')}
+              className={`px-2 py-1 rounded-lg text-xs font-semibold transition ${
+                persona === 'meera' ? 'bg-emerald-600 text-white shadow-xs' : 'text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Meera
+            </button>
+          </div>
           <button
             onClick={() => loadRecords()}
             disabled={loadingRecords}
