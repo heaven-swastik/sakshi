@@ -5,7 +5,7 @@
  * - Top Left: Hero Card (Portfolio Enrolment Volume & verification chart).
  * - Top Right: 3 Pastel Stat Cards (Duplicate Cases, Lawful Opt-outs, Capacity Overruns).
  * - Bottom Left: Flagged Admission Incidents with clean icon rows.
- * - Bottom Right: High-contrast Dark Judge Tour Card.
+ * - Bottom Right: High-contrast Dark Demo Tour Card.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -399,11 +399,11 @@ export default function Home() {
           <div className="space-y-3 relative z-10">
             <div className="inline-flex items-center gap-1.5 bg-white/10 px-2.5 py-1 rounded-full text-[11px] font-semibold text-[#BFDBFE]">
               <Sparkles size={12} className="text-[#BFDBFE]" />
-              <span>SIH Evaluator Quick-Start</span>
+              <span>Interactive Quick-Start</span>
             </div>
 
             <h3 className="font-display font-extrabold text-xl sm:text-2xl leading-tight text-white tracking-tight">
-              Judge 2-Minute Guided Tour
+              2-Minute Demo Tour
             </h3>
 
             <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">

@@ -1,7 +1,7 @@
 import React from 'react';
 import Seal from './Seal';
 
-/** SAKSHI logo: a real generated seal + the wordmark. Always visible so judges never wonder what this is. */
+/** SAKSHI logo: a real generated seal + the wordmark. Always visible across all screens. */
 export default function Wordmark({ size = 'md', tagline = false, className = '' }) {
   const big = size === 'lg';
   return (
