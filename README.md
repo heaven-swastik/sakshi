@@ -6,7 +6,8 @@ AICTE student-enrolment integrity platform (SIH 2026, PS SIH26263). It finds dup
 
 1. Open the app. The first page explains what SAKSHI is and has **Watch the 2-minute story**, a narrated, animated demo mode with pause, step, speed and keyboard controls (Space, arrows, Esc).
 2. Click **Explore the live system**. Every screen has a one-line "what this does", and the sidebar is numbered 1 to 6.
-3. The finished demo video is `demo/video/sakshi-demo.mp4` (3:26). The voice-over script is `docs/VIDEO_SCRIPT.md` and the subtitles are `demo/video/sakshi-demo.srt`.
+3. The briefing (the problem, the workflow diagram, the core innovation) is at `/briefing`.
+4. The finished demo video is `demo/video/sakshi-demo.mp4` (3:26). The voice-over script is `docs/VIDEO_SCRIPT.md` and the subtitles are `demo/video/sakshi-demo.srt`.
 
 ## Run it
 
@@ -23,7 +24,7 @@ Yes, and `docs/NUMBERS_AUDIT.md` lists every number that was hard-coded in the f
 
 ## Re-record the video
 
-`python scripts/record_video.py A`, `python scripts/record_video.py B`, then `python scripts/make_video.py` (needs the API on :8000, `npx vite preview --port 5173`, Playwright and ffmpeg).
+The recorder runs the page clock in slow motion and captures every frame, so the video is smooth even on a slow machine (about 25 minutes of real time). With the API on :8000 and `npx vite preview --port 5173` running: `python scripts/record_video.py A` (title + briefing), `B` (welcome + story), `C` (live tour), `D` (closing card), then `python scripts/make_video.py A` (and B, C, D) and `python scripts/make_video.py join`. Needs Playwright and ffmpeg.
 
 ---
 
@@ -237,4 +238,3 @@ This is a **hackathon prototype** using **100% synthetic data**. No real student
 ---
 
 *Built for SIH26263 · AICTE · October 2026*
-

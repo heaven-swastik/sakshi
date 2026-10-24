@@ -106,7 +106,7 @@ export default function AppShell({ children }) {
     setRoleDropdownOpen(false);
   };
 
-  if (location.pathname === '/' || location.pathname === '/story' || location.pathname.startsWith('/mg/')) return <>{children}</>;
+  if (location.pathname === '/' || location.pathname === '/story' || location.pathname === '/briefing' || location.pathname.startsWith('/mg/')) return <>{children}</>;
 
   return (
     <div className="min-h-screen bg-[#F1F5F9] flex items-center justify-center p-2 sm:p-4 md:p-6 font-body text-gray-900 antialiased">

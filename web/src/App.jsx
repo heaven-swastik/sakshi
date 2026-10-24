@@ -95,6 +95,7 @@ export default function App() {
             <Routes>
               <Route path="/" element={<Welcome />} />
               <Route path="/story" element={<StoryPlayer />} />
+              <Route path="/briefing" element={<StoryPlayer />} />
               <Route path="/mg/:kind" element={<MotionCards />} />
               <Route path="/overview" element={<Home />} />
               <Route path="/upload" element={<Upload />} />

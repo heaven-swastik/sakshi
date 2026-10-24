@@ -6,7 +6,8 @@
  * Keys: Space = pause/play · ← → = previous/next beat · Esc = leave
  */
 import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { BRIEFING } from './briefing';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Pause, Play, SkipBack, SkipForward, X, ArrowRight, RotateCcw, Volume2, VolumeX } from 'lucide-react';
 import Wordmark from '../components/Wordmark';
@@ -55,6 +56,8 @@ export const CHAPTERS = [
 
 export default function StoryPlayer() {
   const nav = useNavigate();
+  const isBrief = useLocation().pathname === '/briefing';
+  const DECK = isBrief ? BRIEFING : CHAPTERS;
   const [ci, setCi] = useState(0);
   const [bi, setBi] = useState(0);
   const [playing, setPlaying] = useState(true);
@@ -73,9 +76,9 @@ export default function StoryPlayer() {
     fit(); const ro = new ResizeObserver(fit); ro.observe(el); return () => ro.disconnect();
   }, []);
 
-  const chapter = CHAPTERS[ci];
+  const chapter = DECK[ci];
   const beat = chapter.beats[bi];
-  const isLast = ci === CHAPTERS.length - 1 && bi === chapter.beats.length - 1;
+  const isLast = ci === DECK.length - 1 && bi === chapter.beats.length - 1;
 
   // real numbers for the final scene (falls back to the seeded values if the API is asleep)
   useEffect(() => {
@@ -90,11 +93,11 @@ export default function StoryPlayer() {
 
   const next = useCallback(() => {
     if (bi < chapter.beats.length - 1) setBi(bi + 1);
-    else if (ci < CHAPTERS.length - 1) { setCi(ci + 1); setBi(0); }
+    else if (ci < DECK.length - 1) { setCi(ci + 1); setBi(0); }
   }, [bi, ci, chapter]);
   const prev = useCallback(() => {
     if (bi > 0) setBi(bi - 1);
-    else if (ci > 0) { setCi(ci - 1); setBi(CHAPTERS[ci - 1].beats.length - 1); }
+    else if (ci > 0) { setCi(ci - 1); setBi(DECK[ci - 1].beats.length - 1); }
   }, [bi, ci]);
 
   // auto-advance
@@ -128,7 +131,7 @@ export default function StoryPlayer() {
       <div className="px-6 md:px-10 pt-6 flex items-center gap-8">
         <button onClick={() => nav('/')} aria-label="Back to start"><Wordmark /></button>
         <div className="flex-1 flex items-center gap-2" role="tablist" aria-label="Story chapters">
-          {CHAPTERS.map((c, i) => {
+          {DECK.map((c, i) => {
             const state = i < ci ? 'done' : i === ci ? 'now' : 'todo';
             const frac = state === 'done' ? 1 : state === 'now' ? (bi + 1) / c.beats.length : 0;
             return (
@@ -178,7 +181,7 @@ export default function StoryPlayer() {
           {isLast ? (
             <div className="flex items-center gap-3">
               <button onClick={restart} className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-fog bg-white text-[15px] font-medium hover:border-ink"><RotateCcw size={16} /> Replay</button>
-              <button onClick={() => nav('/overview')} data-tour="story-explore" className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-ink text-white text-[15px] font-medium hover:bg-black">Explore the live system <ArrowRight size={16} /></button>
+              <button onClick={() => nav(isBrief ? '/story' : '/overview')} data-tour="story-explore" className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-ink text-white text-[15px] font-medium hover:bg-black">{isBrief ? 'Watch the story' : 'Explore the live system'} <ArrowRight size={16} /></button>
             </div>
           ) : (
             <div className="flex items-center gap-2 bg-white border border-fog rounded-full p-1.5 shadow-sm">
