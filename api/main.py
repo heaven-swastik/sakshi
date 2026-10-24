@@ -46,6 +46,23 @@ async def lifespan(app: FastAPI):
     get_signing_key()
     logger.info("Signing key ready")
 
+    # Auto-seed if database is freshly initialized and empty
+    try:
+        from models import Institution
+        with SessionLocal() as db_session:
+            if db_session.query(Institution).count() == 0:
+                logger.info("Database is empty — auto-seeding demo dataset...")
+                import sys
+                from pathlib import Path
+                seed_dir = Path(__file__).resolve().parent.parent / "seed"
+                if seed_dir.exists():
+                    sys.path.insert(0, str(seed_dir))
+                    import generate
+                    generate.run_seed()
+                    logger.info("Auto-seeding successfully completed!")
+    except Exception as e:
+        logger.warning(f"Auto-seed check: {e}")
+
     yield
 
     logger.info("SAKSHI shutting down")

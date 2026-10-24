@@ -18,11 +18,19 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
 _DB_PATH = _PROJECT_ROOT / "sakshi.db"
 
+_ENV_DB_URL = os.getenv("DATABASE_URL")
+if _ENV_DB_URL:
+    db_url = _ENV_DB_URL
+else:
+    db_url = f"sqlite:///{_DB_PATH}"
+
+connect_args = {"check_same_thread": False} if db_url.startswith("sqlite") else {}
+
 # check_same_thread=False is needed because FastAPI runs handlers
 # in a thread pool and SQLite's default is to restrict to one thread.
 engine = create_engine(
-    f"sqlite:///{_DB_PATH}",
-    connect_args={"check_same_thread": False},
+    db_url,
+    connect_args=connect_args,
     echo=False,  # flip to True to debug SQL queries during dev
 )
 
