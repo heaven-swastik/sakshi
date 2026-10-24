@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Rounded square background (cream/golden — matches the logo button) -->
+  <rect width="64" height="64" rx="16" fill="#FFF9EA"/>
+  <!-- Shadow ring for depth -->
+  <rect width="64" height="64" rx="16" fill="none" stroke="#F2B63240" stroke-width="2"/>
+  <!-- Devanagari "सा" text centred -->
+  <text
+    x="32"
+    y="43"
+    font-family="'Noto Sans Devanagari', 'Noto Devanagari', sans-serif"
+    font-size="30"
+    font-weight="900"
+    fill="#181A20"
+    text-anchor="middle"
+    dominant-baseline="auto"
+    letter-spacing="-0.5"
+  >सा</text>
+</svg>
