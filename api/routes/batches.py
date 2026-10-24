@@ -121,12 +121,49 @@ def batch_report(
         .all()
     )
 
+    # ---- per-row results (real: seals come from the stored enrolments, duplicates from a live R1 lookup) ----
+    from collections import defaultdict
+    from models import Enrolment, Institution
+    SOFT = {"OPTED_OUT", "UNKNOWN_SEAT_CATEGORY"}
+    by_row = defaultdict(list)
+    for f in findings:
+        by_row[f.row_no].append(f)
+    enrols = db.query(Enrolment).filter(Enrolment.batch_id == batch_id).order_by(Enrolment.id).all()
+    it = iter(enrols)
+    inst_names = {i.id: i.name for i in db.query(Institution).all()}
+    rows = []
+    for data_row in range(1, (batch.rows_total or 0) + 1):
+        fl = by_row.get(data_row + 1, [])          # ingestion numbers rows from 2 (row 1 is the header)
+        hard = [f for f in fl if f.code not in SOFT]
+        if hard:
+            rows.append({"row": data_row, "status": "rejected", "token": None,
+                         "reason": hard[0].message.split(": ", 1)[-1]})
+            continue
+        e = next(it, None)
+        if e is None:
+            continue
+        other = (db.query(Enrolment)
+                 .filter(Enrolment.student_token == e.student_token, Enrolment.cohort_year == e.cohort_year,
+                         Enrolment.institution_id != e.institution_id, Enrolment.mode == e.mode,
+                         Enrolment.id != e.id).first())
+        if other:
+            status = "flagged"
+            reason = f"Same seal already holds a full-time seat at {inst_names.get(other.institution_id, 'another college')} (rule R1)"
+        elif e.assurance_tier == "attested" or any(f.code == "OPTED_OUT" for f in fl):
+            status = "attested"
+            reason = "Opted out of APAAR. College-attested ID. Counted, not flagged."
+        else:
+            status = "accepted"
+            reason = f"{e.seat_category or 'GEN'} seat · {e.assurance_tier} at source"
+        rows.append({"row": data_row, "status": status, "token": e.student_token, "reason": reason})
+
     return {
         "batch_id": batch.id,
         "institution_id": batch.institution_id,
         "cohort_year": batch.cohort_year,
         "status": batch.status,
         "created_at": batch.created_at.isoformat(),
+        "rows": rows,
         "summary": {
             "rows_total": batch.rows_total,
             "rows_accepted": batch.rows_accepted,

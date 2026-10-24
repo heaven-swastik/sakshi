@@ -32,8 +32,8 @@ html {
 }
 
 body {
-  font-family: 'Hanken Grotesk', sans-serif;
-  background-color: #EAF0F6;
+  font-family: 'Hanken Grotesk Variable', 'Hanken Grotesk', sans-serif;
+  background-color: var(--paper);
   color: var(--ink);
   font-size: 15px;
   line-height: 1.6;
@@ -43,7 +43,7 @@ body {
 
 /* ─── Typography ────────────────────────────────────────────────── */
 h1, h2, h3, h4 {
-  font-family: 'Bricolage Grotesque', sans-serif;
+  font-family: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', sans-serif;
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -0.02em;
@@ -194,3 +194,7 @@ h1, h2, h3, h4 {
   padding: 8px 12px;
 }
 .btn-ghost:hover { color: var(--ink); background: var(--fog); }
+
+/* ─── Slow seal watermark spin (welcome page) ───────────────────── */
+@keyframes sakshiSpin { to { transform: rotate(360deg); } }
+.sakshi-spin { animation: sakshiSpin 160s linear infinite; }

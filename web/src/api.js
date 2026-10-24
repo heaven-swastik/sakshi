@@ -74,9 +74,10 @@ export const api = {
   // ── Batches ───────────────────────────────────────────────────────────────
 
   /** Upload a CSV file. Returns batch metadata and accepted count */
-  uploadBatch: (file, token) => {
+  uploadBatch: (file, token, institutionId = 1) => {
     const fd = new FormData();
     fd.append('file', file);
+    fd.append('institution_id', String(institutionId));
     return post('/v1/batches', { body: fd, token, isFormData: true });
   },
 
@@ -100,6 +101,10 @@ export const api = {
   /** Integrity score breakdown for one institution */
   getIntegrity: (instId, year = 2026, token) =>
     get(`/v1/institutions/${instId}/integrity?year=${year}`, { token }),
+
+  /** "Ask the owner": real, audit-chained inquiry to both colleges */
+  dispatchInquiry: (data, token) =>
+    post('/v1/radar/inquiry', { body: data, token }),
 
   /** Flags with optional filters */
   getFlags: (params = {}, token) => {

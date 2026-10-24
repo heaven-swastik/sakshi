@@ -5,7 +5,7 @@
  * Right panel (2/3): row results table with staggered SealingRow animations.
  */
 
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Upload as UploadIcon, FileText, ChevronDown, ChevronUp, Download, CheckCircle, XCircle, AlertTriangle } from 'lucide-react';
 import { useI18n } from '../i18n';
@@ -13,6 +13,7 @@ import { useAuth } from '../App';
 import { api } from '../api';
 import SealingRow from '../components/SealingRow';
 import HindiToggle from '../components/HindiToggle';
+import { SuccessOverlay } from '../components/SuccessBurst';
 
 // ─── Demo CSV data (with diverse categories per Requirement 2) ────────────────
 const DEMO_CSV = `id_type,id_value,program_code,cohort_year,mode,seat_category
@@ -26,20 +27,6 @@ APAAR,987654321007,B.Tech ECE,2026,regular,EWS
 APAAR,987654321008,B.Tech CSE,2026,regular,GEN
 APAAR,987654321009,MBA,2026,regular,GEN
 APAAR,987654321010,MBA,2026,regular,OBC`;
-
-// Deterministic demo results (so demo works without backend)
-const DEMO_RESULTS = [
-  { row: 1, status: 'accepted', reason: 'General quota seat confirmed', token: 'STU-A48FE9B27C12' },
-  { row: 2, status: 'accepted', reason: 'Supernumerary (TFW) quota verified', token: 'STU-B19CD47E82FA' },
-  { row: 3, status: 'accepted', reason: 'NRI category seat allocation verified', token: 'STU-C783EF9104DA' },
-  { row: 4, status: 'accepted', reason: 'OCI category quota approved', token: 'STU-D526A37F91BC' },
-  { row: 5, status: 'accepted', reason: 'Foreign National (FN) seat confirmed', token: 'STU-E814B29CD3FE' },
-  { row: 6, status: 'attested', reason: 'Opted out of APAAR — institutional attestation applied', token: 'STU-F372C81AE49B' },
-  { row: 7, status: 'accepted', reason: 'Economically Weaker Section (EWS) quota', token: 'STU-7A39F18B4CD2' },
-  { row: 8, status: 'flagged',  reason: 'Duplicate seal detected — R1 cross-institution', token: 'STU-AXECI4H4VCDL' },
-  { row: 9, status: 'accepted', reason: 'Regular seat verified via APAAR', token: 'STU-8C21E4B923FA' },
-  { row:10, status: 'accepted', reason: 'OBC quota seat verified', token: 'STU-9D34F12AB84C' },
-];
 
 // ─── Stat summary tile ───────────────────────────────────────────────────────
 
@@ -68,8 +55,15 @@ function WhatHappensStep({ num, text }) {
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function Upload() {
+  const [burst, setBurst] = useState(false);
   const { t }     = useI18n();
   const { token } = useAuth();
+  const [instId, setInstId] = useState(1);
+  const [instList, setInstList] = useState([]);
+  useEffect(() => {
+    if (!token) return;
+    api.getInstitutions(2026, undefined, token).then((r) => setInstList(r.institutions || [])).catch(() => {});
+  }, [token]);
 
   const fileInputRef = useRef(null);
   const [dragging, setDragging]       = useState(false);
@@ -113,7 +107,7 @@ export default function Upload() {
     setError(null);
 
     try {
-      const { batch_id } = await api.uploadBatch(file, token);
+      const { batch_id } = await api.uploadBatch(file, token, instId);
       // Poll for results
       let report = null;
       for (let i = 0; i < 20; i++) {
@@ -121,11 +115,11 @@ export default function Upload() {
         report = await api.getBatchReport(batch_id, token);
         if (report.status === 'done') break;
       }
-      setResults(report?.rows ?? DEMO_RESULTS);
-    } catch {
-      // Fall back to demo results so the UI still works without a backend
-      await new Promise(r => setTimeout(r, 1200)); // simulate processing
-      setResults(DEMO_RESULTS);
+      if (!report?.rows?.length) throw new Error('The server finished without returning any rows.');
+      setResults(report.rows);
+      setBurst(true);
+    } catch (e) {
+      setError(`Upload failed: ${e.message || 'could not reach the SAKSHI API'}. Check that the API is running.`);
     } finally {
       setUploading(false);
     }
@@ -154,6 +148,11 @@ export default function Upload() {
 
   return (
     <div className="space-y-5">
+      {burst && (
+        <SuccessOverlay tone="crimson" icon="seal" token="SAKSHI-UPLOAD-DONE" title="Sealed and forgotten"
+          sub="Every ID was checked once, turned into a seal, and discarded. Nothing raw was stored."
+          onClose={() => setBurst(false)} />
+      )}
       {/* Step 1 Explainer Banner */}
       <div className="bg-[#F0F6FF] border border-[#DBEAFE] rounded-2xl p-4 flex items-start gap-3 shadow-2xs">
         <div className="w-8 h-8 rounded-xl bg-gray-950 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5 shadow-2xs">
@@ -225,6 +224,16 @@ export default function Upload() {
               {error}
             </div>
           )}
+
+          {/* Which college is uploading (an AICTE officer may upload on a college's behalf) */}
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-gray-500">
+            Uploading as
+            <select value={instId} onChange={(e) => setInstId(Number(e.target.value))} data-tour="inst-select"
+              className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-900 normal-case tracking-normal">
+              {instList.map((i) => <option key={i.institution_id} value={i.institution_id}>{i.name} · {i.state}</option>)}
+              {instList.length === 0 && <option value={1}>College #1</option>}
+            </select>
+          </label>
 
           {/* Action buttons */}
           <div className="flex gap-2">

@@ -1,0 +1,171 @@
+1
+00:00:00,500 --> 00:00:07,200
+Namaste. This is SAKSHI.
+
+2
+00:00:07,700 --> 00:00:12,582
+Colleges tell AICTE how many students they admitted.
+
+3
+00:00:12,682 --> 00:00:18,186
+SAKSHI helps check that number, without collecting anyone's identity.
+
+4
+00:00:18,286 --> 00:00:21,300
+Let us start the story.
+
+5
+00:00:21,800 --> 00:00:27,620
+Colleges report seats. But how does AICTE check the number?
+
+6
+00:00:27,720 --> 00:00:33,540
+Collecting every identity is risky; families can now say no.
+
+7
+00:00:33,640 --> 00:00:36,500
+So we built a witness.
+
+8
+00:00:37,000 --> 00:00:39,692
+A college uploads its list.
+
+9
+00:00:39,792 --> 00:00:45,833
+Each ID is checked once, and turned into a private seal.
+
+10
+00:00:45,933 --> 00:00:50,300
+AICTE keeps the seal. The ID is forgotten.
+
+11
+00:00:50,800 --> 00:00:56,055
+Asha has no APAAR ID. That is her right.
+
+12
+00:00:56,155 --> 00:01:02,600
+Her seat is still counted, with no flag and no penalty.
+
+13
+00:01:03,100 --> 00:01:06,522
+Ravi took seats in two colleges.
+
+14
+00:01:06,622 --> 00:01:12,391
+AICTE sees the same seal twice, but never his name.
+
+15
+00:01:12,491 --> 00:01:16,500
+So it just asks the two colleges.
+
+16
+00:01:17,000 --> 00:01:21,616
+Meera sees a college she never joined.
+
+17
+00:01:21,716 --> 00:01:25,658
+She taps, "This is not me".
+
+18
+00:01:25,758 --> 00:01:29,700
+AICTE gets the dispute at once.
+
+19
+00:01:30,200 --> 00:01:33,757
+An employer scans Ravi's QR code.
+
+20
+00:01:33,857 --> 00:01:39,243
+The signature checks out, with no database of names.
+
+21
+00:01:39,343 --> 00:01:42,900
+Ravi shares only what he chooses.
+
+22
+00:01:43,400 --> 00:01:46,006
+Do not trust us. Check.
+
+23
+00:01:46,106 --> 00:01:51,418
+One button scans the whole database for raw student IDs.
+
+24
+00:01:51,518 --> 00:01:52,500
+Zero found.
+
+25
+00:01:53,200 --> 00:01:57,500
+Now, the live system.
+
+26
+00:01:58,300 --> 00:02:01,222
+This is the live system.
+
+27
+00:02:01,322 --> 00:02:12,100
+Every number comes straight from the database: seats counted, seats verified, and a live scan for raw IDs.
+
+28
+00:02:12,900 --> 00:02:17,275
+Step one. A college uploads its admissions list.
+
+29
+00:02:17,375 --> 00:02:23,988
+Watch each ID become a seal, and then the IDs are gone.
+
+30
+00:02:24,088 --> 00:02:30,700
+Every row shows its seal, and whether it is verified or attested.
+
+31
+00:02:31,500 --> 00:02:34,381
+Step two. The duplicate radar.
+
+32
+00:02:34,481 --> 00:02:38,554
+This is Ravi's seal, in two colleges.
+
+33
+00:02:38,654 --> 00:02:42,727
+AICTE sends an inquiry to both colleges.
+
+34
+00:02:42,827 --> 00:02:46,900
+It is written to a tamper-evident log.
+
+35
+00:02:47,800 --> 00:02:55,115
+Step three. Each college gets an integrity score, with the reason in points.
+
+36
+00:02:55,215 --> 00:02:56,826
+No black box.
+
+37
+00:02:56,926 --> 00:03:03,100
+And the season replay shows how seats filled, day by day.
+
+38
+00:03:03,900 --> 00:03:06,178
+Finally, the privacy proof.
+
+39
+00:03:06,278 --> 00:03:09,150
+One click scans every table.
+
+40
+00:03:09,250 --> 00:03:14,500
+Zero raw student IDs found. That is the proof.
+
+41
+00:03:15,600 --> 00:03:18,700
+SAKSHI. Verify without collecting.
+
+42
+00:03:18,800 --> 00:03:24,300
+A witness that confirms, and never discloses.
+
+43
+00:03:24,400 --> 00:03:25,900
+Thank you.

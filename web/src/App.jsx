@@ -12,6 +12,9 @@ import AppShell from './components/AppShell';
 
 // Screens
 import Home from './screens/Home';
+import Welcome from './screens/Welcome';
+import StoryPlayer from './story/StoryPlayer';
+import MotionCards from './screens/MotionCards';
 import Upload from './screens/Upload';
 import Radar from './screens/Radar';
 import Integrity from './screens/Integrity';
@@ -90,7 +93,10 @@ export default function App() {
         <BrowserRouter>
           <AppShell>
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Welcome />} />
+              <Route path="/story" element={<StoryPlayer />} />
+              <Route path="/mg/:kind" element={<MotionCards />} />
+              <Route path="/overview" element={<Home />} />
               <Route path="/upload" element={<Upload />} />
               <Route path="/radar" element={<Radar />} />
               <Route path="/integrity" element={<Integrity />} />

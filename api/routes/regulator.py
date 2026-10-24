@@ -151,16 +151,22 @@ def institution_integrity(
         .all()
     )
 
+    def _facts(program_id: int) -> dict:
+        prog = db.get(Program, program_id)
+        ap = (db.query(IntakeApproval)
+              .filter(IntakeApproval.program_id == program_id, IntakeApproval.academic_year == eff_year).first())
+        reported = (db.query(func.count(Enrolment.id))
+                    .filter(Enrolment.program_id == program_id, Enrolment.cohort_year == eff_year,
+                            Enrolment.status != "revoked").scalar())
+        return {"course": prog.course if prog else None,
+                "approved_intake": ap.approved_intake if ap else None, "reported_seats": reported}
+
     if not scores:
-        # Compute on demand if not yet stored
-        programs = (
-            db.query(Program)
-            .filter(Program.institution_id == id)
-            .all()
-        )
+        programs = db.query(Program).filter(Program.institution_id == id).all()
         scores_data = []
         for prog in programs:
             s = compute_integrity_score(id, prog.id, eff_year, db)
+            s.update(_facts(prog.id))
             scores_data.append(s)
         return {"institution_id": id, "name": inst.name, "year": eff_year, "programme_scores": scores_data}
 
@@ -175,6 +181,7 @@ def institution_integrity(
                 "components": json.loads(s.components_json),
                 "explanation": s.explanation,
                 "computed_at": s.computed_at.isoformat(),
+                **_facts(s.program_id),
             }
             for s in scores
         ],
@@ -475,27 +482,58 @@ def admission_season_replay(
     db: Session = Depends(get_db),
 ):
     """
-    Admission Season Replay: Temporal time scrubber for counselling & admission monitoring.
-    Replays admission timeline day by day (July to October), showing seat velocity,
-    the exact moment approved intake is breached, and sudden burst upload spikes.
+    Admission Season Replay, computed from the real enrolment records (admission date = created_at).
+    For every date with admissions it reports the cumulative seats, and it detects two things from the data itself:
+      - burst:  one college adds >= 3x the median college's seats that day (and at least 50 seats)
+      - breach: a programme passes 100% of its approved intake
     """
-    # Generate structured daily progression for the demo
-    timeline_days = [
-        {"date": "2026-07-05", "round": "Round 1 Counselling Opens", "seats_filled": 380, "burst": False, "breach": False},
-        {"date": "2026-07-20", "round": "Round 1 Seat Allotment", "seats_filled": 940, "burst": False, "breach": False},
-        {"date": "2026-08-10", "round": "Round 2 State Quota", "seats_filled": 1820, "burst": False, "breach": False},
-        {"date": "2026-08-25", "round": "Management & NRI Reporting", "seats_filled": 2450, "burst": True, "note": "Unusual burst: SSN Chennai uploads 3x peer volume"},
-        {"date": "2026-09-10", "round": "Mop-up Round Allotment", "seats_filled": 2980, "burst": False, "breach": False},
-        {"date": "2026-09-28", "round": "Late Admission Window", "seats_filled": 3290, "burst": False, "breach": True, "note": "Intake overrun: MIT Pune B.Tech CSE exceeds 100% capacity"},
-        {"date": "2026-10-15", "round": "AICTE Portal Cutoff Date", "seats_filled": 3333, "burst": False, "breach": True, "note": "Final snapshot locked for audit verification"},
-    ]
+    from collections import defaultdict
+    from statistics import median
+    from models import Program, IntakeApproval
 
-    return {
-        "year": year,
-        "total_enrolled": 3333,
-        "approved_capacity": 3000,
-        "timeline": timeline_days,
-    }
+    eff_year = _resolve_year(db, year)
+    rows = db.query(Enrolment.created_at, Enrolment.institution_id, Enrolment.program_id).filter(
+        Enrolment.cohort_year == eff_year).all()
+    inst_name = {i.id: i.name for i in db.query(Institution).all()}
+    prog = {p.id: p for p in db.query(Program).all()}
+    approved = {a.program_id: a.approved_intake for a in db.query(IntakeApproval).filter(
+        IntakeApproval.academic_year == eff_year).all()}
+    capacity = sum(approved.values())
+
+    ROUND = {"07-05": "Round 1 counselling opens", "07-20": "Round 1 seat allotment", "08-10": "Round 2 state quota",
+             "08-25": "Management and NRI reporting", "09-10": "Mop-up round", "09-28": "Late admission window",
+             "10-15": "Portal cutoff date"}
+
+    by_day = defaultdict(list)
+    for created, inst_id, prog_id in rows:
+        by_day[created.date().isoformat()].append((inst_id, prog_id))
+
+    timeline, cum, prog_cum, breached = [], 0, defaultdict(int), set()
+    for day in sorted(by_day):
+        items = by_day[day]
+        cum += len(items)
+        per_inst = defaultdict(int)
+        notes = []
+        for inst_id, prog_id in items:
+            per_inst[inst_id] += 1
+            prog_cum[prog_id] += 1
+            if prog_id in approved and prog_cum[prog_id] > approved[prog_id] and prog_id not in breached:
+                breached.add(prog_id)
+                pr = prog[prog_id]
+                notes.append(f"Intake overrun: {inst_name[pr.institution_id]} {pr.course} passed its approved intake of {approved[prog_id]}")
+        burst = False
+        if len(per_inst) >= 3:
+            med = median(per_inst.values())
+            top_inst, top_n = max(per_inst.items(), key=lambda kv: kv[1])
+            if top_n >= 50 and med > 0 and top_n >= 3 * med:
+                burst = True
+                notes.insert(0, f"Unusual burst: {inst_name[top_inst]} added {top_n} seats in one day, {top_n / med:.1f}x the median college")
+        timeline.append({
+            "date": day, "round": ROUND.get(day[5:], "Admissions update"), "seats_filled": cum, "added": len(items),
+            "burst": burst, "breach": bool(breached), "note": "; ".join(notes) if notes else None,
+        })
+
+    return {"year": eff_year, "total_enrolled": cum, "approved_capacity": capacity, "timeline": timeline}
 
 
 @router.get("/v1/regulator/reports/accreditation")
@@ -565,3 +603,31 @@ def accreditation_report(
         "small_cell_threshold": 5,
         "rows": report_rows,
     }
+
+
+from pydantic import BaseModel
+
+
+class InquiryIn(BaseModel):
+    student_token: str
+    institutions: list[str]
+
+
+@router.post("/v1/radar/inquiry")
+def dispatch_inquiry(
+    body: InquiryIn,
+    user: dict = Depends(require_roles("officer", "supervisor")),
+    db: Session = Depends(get_db),
+):
+    """
+    "Ask the owner": AICTE asks the colleges that hold the data to confirm a seat, instead of opening
+    anyone's identity. The inquiry is written to the tamper-evident audit chain and the entry's own
+    hash is returned, so the notice id and hash shown in the UI are real.
+    """
+    entry = append_audit(
+        db=db, actor_id=user["sub"], actor_role=user["role"], action="inquiry.dispatched",
+        object_type="student_seal", object_id=body.student_token,
+        payload={"institutions": body.institutions, "raw_identity_shared": False},
+    )
+    return {"notice_id": f"NOT-{entry.ts.year}-{entry.id:04d}", "audit_entry_id": entry.id,
+            "entry_hash": entry.entry_hash, "dispatched_at": entry.ts.isoformat(), "recipients": body.institutions}

@@ -20,6 +20,7 @@ import { api } from '../api';
 import Seal from '../components/Seal';
 import HindiToggle from '../components/HindiToggle';
 import CollegeEmblem from '../components/CollegeEmblem';
+import { SuccessOverlay } from '../components/SuccessBurst';
 
 // ─── Demo enrolments ──────────────────────────────────────────────────────────
 
@@ -160,6 +161,7 @@ function VerifyResult({ result }) {
 // ─── Main Credential Component ────────────────────────────────────────────────
 
 export default function Credential() {
+  const [burst, setBurst] = useState(false);
   const { t } = useI18n();
   const { token } = useAuth();
   const { handle: urlHandle } = useParams();
@@ -190,17 +192,9 @@ export default function Credential() {
     try {
       const res = await api.issueCredential(selectedEnrolId, token);
       setCredential(res);
-    } catch {
-      // Demo fallback
-      setCredential({
-        id: `cred-${Date.now()}`,
-        handle: `SAKSHI-${selectedEnrolId.toUpperCase()}-2026`,
-        token: activeEnrolment.token,
-        programme: 'B.Tech Computer Science & Engineering',
-        institution: 'Maharashtra Institute of Technology (MIT), Pune',
-        cohort: 2026,
-        status: 'active',
-      });
+      setBurst(true);
+    } catch (e) {
+      window.alert(`Could not issue the credential: ${e.message || 'API not reachable'}`);
     } finally {
       setIssuing(false);
     }
@@ -239,6 +233,10 @@ export default function Credential() {
 
   return (
     <div className="space-y-5">
+      {burst && (
+        <SuccessOverlay tone="crimson" icon="seal" token="SAKSHI-CREDENTIAL" title="Credential issued"
+          sub="Signed by AICTE. It can be verified by anyone with the QR." onClose={() => setBurst(false)} />
+      )}
       {/* Step 4 Explainer Banner */}
       <div className="bg-[#F0F6FF] border border-[#DBEAFE] rounded-2xl p-4 flex items-start gap-3 shadow-2xs">
         <div className="w-8 h-8 rounded-xl bg-gray-950 text-white flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5 shadow-2xs">

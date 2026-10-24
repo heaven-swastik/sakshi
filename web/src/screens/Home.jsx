@@ -19,7 +19,6 @@ import { useI18n } from '../i18n';
 import { useAuth } from '../App';
 import { api } from '../api';
 import Seal from '../components/Seal';
-import DemoMode from '../components/DemoMode';
 import CollegeEmblem from '../components/CollegeEmblem';
 
 export default function Home() {
@@ -29,76 +28,65 @@ export default function Home() {
 
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showDemoModal, setShowDemoModal] = useState(false);
+  const [flags, setFlags] = useState([]);
+  const [insts, setInsts] = useState([]);
+  const [proof, setProof] = useState(null);
+  const [replay, setReplay] = useState(null);
   const [chartPeriod, setChartPeriod] = useState('Season');
 
   useEffect(() => {
-    api.getOverview(2026, token)
-      .then((data) => {
-        setStats(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        // Fallback demo stats
-        setStats({
-          total_institutions: 15,
-          total_seats: 3333,
-          verified_seats: 2570,
-          coverage_pct: 77.1,
-          open_flags: 123,
-          open_cases: 6,
-        });
-        setLoading(false);
-      });
+    if (!token) return;
+    api.getOverview(2026, token).then((d) => { setStats(d); setLoading(false); }).catch(() => setLoading(false));
+    api.getFlags({ limit: 200 }, token).then((r) => setFlags(r.flags || [])).catch(() => {});
+    api.getInstitutions(2026, undefined, token).then((r) => setInsts(r.institutions || [])).catch(() => {});
+    api.runPrivacyProof(token).then(setProof).catch(() => {});
+    api.getReplay(2026, token).then(setReplay).catch(() => {});
   }, [token]);
 
-  // Live Incident Feed for the table
-  const INCIDENTS = [
-    {
-      id: 1,
-      code: 'R1',
-      college: 'MIT Pune & RV College Bengaluru',
-      subtext: 'B.Tech CSE · Regular Full-Time',
-      rule: 'R1 — Dual Enrolment',
-      explanation: 'Identical student seal active in 2 institutions simultaneously.',
-      severity: 'High',
-      tag: 'Duplicate Seat',
-      route: '/radar',
-    },
-    {
-      id: 2,
-      code: 'R3',
-      college: 'MIT Pune (Cohort 2026)',
-      subtext: 'B.Tech CSE · Approved 240 / Actual 312',
-      rule: 'R3 — Intake Overrun',
-      explanation: 'College admitted 312 students against 240 approved intake (130%).',
-      severity: 'Critical',
-      tag: 'Over Capacity',
-      route: '/integrity',
-    },
-    {
-      id: 3,
-      code: 'R4',
-      college: 'SSN College of Engineering, Chennai',
-      subtext: 'B.Tech IT · Burst Batch Upload',
-      rule: 'R4 — Upload Burst',
-      explanation: 'Batch reporting velocity is 3.1x higher than regional peer average.',
-      severity: 'Medium',
-      tag: 'Volume Spike',
-      route: '/integrity',
-    },
-    {
-      id: 4,
-      code: 'DISP',
-      college: 'SSN Chennai (Meera Pillai Claim)',
-      subtext: 'B.Tech CSE · Student Dispute',
-      rule: 'Citizen Dispute',
-      explanation: 'Student pressed "This is not me" against unauthorized registration.',
-      severity: 'High',
-      tag: 'Ghost Seat',
-      route: '/citizen',
-    },
-  ];
+  // ── everything below is derived from the live API, nothing is hard-coded ──
+  const names = Object.fromEntries(insts.map((i) => [i.institution_id, i.name]));
+  const stateCount = new Set(insts.map((i) => i.state).filter(Boolean)).size;
+  const r1Count = flags.filter((f) => f.rule_id === 'R1').length;
+  const RULE_INFO = {
+    R1: ['R1 — Dual Enrolment', 'Duplicate Seat', '/radar'],
+    R2: ['R2 — Double Entry', 'Same College Twice', '/radar'],
+    R3: ['R3 — Intake Overrun', 'Over Capacity', '/integrity'],
+    R4: ['R4 — Upload Burst', 'Volume Spike', '/integrity'],
+    R5: ['R5 — Low Verified Share', 'Coverage Gap', '/integrity'],
+    R6: ['R6 — Identical Records', 'Copy-paste Pattern', '/integrity'],
+  };
+  const SEV_RANK = { critical: 4, high: 3, medium: 2, low: 1 };
+  const cap = (x = '') => x.charAt(0).toUpperCase() + x.slice(1);
+  const firstSentence = (x = '') => { const m = x.match(/^.*?[.!?](\s|$)/); return (m ? m[0] : x).trim(); };
+  const best = {};
+  flags.forEach((f) => { const c = best[f.rule_id]; if (!c || (SEV_RANK[f.severity] || 0) > (SEV_RANK[c.severity] || 0)) best[f.rule_id] = f; });
+  const INCIDENTS = Object.values(best)
+    .sort((a, b) => (SEV_RANK[b.severity] || 0) - (SEV_RANK[a.severity] || 0))
+    .slice(0, 4)
+    .map((f) => {
+      const info = RULE_INFO[f.rule_id] || [f.rule_id, 'Flag', '/integrity'];
+      const ev = f.evidence || {};
+      return {
+        id: f.id, code: f.rule_id,
+        college: (f.institution_ids || []).map((id) => names[id]).filter(Boolean).join(' & ') || 'Multiple colleges',
+        subtext: [ev.programme, ev.cohort_year ? `Cohort ${ev.cohort_year}` : null].filter(Boolean).join(' · ') || `Cohort 2026`,
+        rule: info[0], explanation: firstSentence(f.explanation), severity: cap(f.severity), tag: info[1], route: info[2],
+      };
+    });
+
+  // real intake curve from the Season Replay (cumulative seats by admission date)
+  const days = replay?.timeline || [];
+  const lastDate = days.length ? new Date(days[days.length - 1].date) : null;
+  const windowDays = { '1W': 7, '1M': 30 }[chartPeriod];
+  let pts = days;
+  if (windowDays && lastDate) pts = days.filter((d) => (lastDate - new Date(d.date)) / 864e5 <= windowDays);
+  if (pts.length < 2) pts = days.slice(-2);
+  const maxSeats = Math.max(1, ...pts.map((d) => d.seats_filled));
+  const minSeats = Math.min(...pts.map((d) => d.seats_filled), maxSeats);
+  const xy = pts.map((d, i) => [pts.length > 1 ? (i / (pts.length - 1)) * 380 : 380, 70 - ((d.seats_filled - minSeats) / Math.max(1, maxSeats - minSeats)) * 60]);
+  const linePath = xy.length ? 'M ' + xy.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' L ') : '';
+  const areaPath = xy.length ? `${linePath} L ${xy[xy.length - 1][0]},80 L ${xy[0][0]},80 Z` : '';
+  const lastPt = xy[xy.length - 1];
 
   return (
     <div className="space-y-6">
@@ -140,21 +128,21 @@ export default function Home() {
                 </span>
                 <div className="flex items-baseline gap-2 mt-1">
                   <span className="text-3xl sm:text-4xl font-extrabold text-gray-950 font-display tracking-tight">
-                    {loading ? '…' : (stats?.total_seats || 3333).toLocaleString()}
+                    {loading ? '…' : (stats?.total_seats ?? 0).toLocaleString('en-IN')}
                   </span>
                   <span className="text-xs font-semibold text-gray-500">
                     Seats Indexed
                   </span>
                 </div>
                 <p className="text-xs text-gray-500 mt-0.5">
-                  Across 15 approved institutions · Verified via blind HMAC seals
+                  Across {stats?.total_institutions ?? '…'} approved institutions · Verified via blind HMAC seals
                 </p>
               </div>
 
               {/* Verified Pill Badge (Dark obsidian pill like reference image) */}
               <div className="bg-[#181A20] text-white px-3 py-1.5 rounded-full text-xs font-bold shadow-xs flex items-center gap-1.5 flex-shrink-0">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>2,570 Verified (77.1%)</span>
+                <span>{stats ? `${stats.verified_seats.toLocaleString('en-IN')} Verified (${stats.coverage_pct}%)` : '…'}</span>
               </div>
             </div>
 
@@ -167,18 +155,15 @@ export default function Home() {
                     <stop offset="100%" stopColor="#3B82F6" stopOpacity="0.0" />
                   </linearGradient>
                 </defs>
+                <path d={areaPath} fill="url(#blueCurveGrad)" />
                 <path
-                  d="M 0,65 Q 60,55 120,45 T 200,38 T 280,26 T 340,12 L 400,8 L 400,80 L 0,80 Z"
-                  fill="url(#blueCurveGrad)"
-                />
-                <path
-                  d="M 0,65 Q 60,55 120,45 T 200,38 T 280,26 T 340,12 L 400,8"
+                  d={linePath}
                   fill="none"
                   stroke="#2563EB"
                   strokeWidth="2.5"
                   strokeLinecap="round"
                 />
-                <circle cx="340" cy="12" r="4.5" fill="#2563EB" stroke="#FFFFFF" strokeWidth="2" />
+                {lastPt && <circle cx={lastPt[0]} cy={lastPt[1]} r="4.5" fill="#2563EB" stroke="#FFFFFF" strokeWidth="2" />}
               </svg>
             </div>
 
@@ -229,7 +214,7 @@ export default function Home() {
                 </div>
                 <div className="mt-2.5">
                   <span className="text-2xl font-extrabold text-gray-950 font-display">
-                    6 Cases
+                    {flags.length ? r1Count : '…'} Cases
                   </span>
                   <p className="text-[11px] text-[#6B21A8] font-medium mt-0.5">
                     Dual college seats
@@ -242,7 +227,7 @@ export default function Home() {
                   Rule R1
                 </span>
                 <span className="text-[11px] font-bold text-[#7E22CE]">
-                  100% Prec.
+                  Open flags
                 </span>
               </div>
             </div>
@@ -263,20 +248,20 @@ export default function Home() {
                 </div>
                 <div className="mt-2.5">
                   <span className="text-2xl font-extrabold text-gray-950 font-display">
-                    15 Insts.
+                    {stats?.total_institutions ?? '…'} Insts.
                   </span>
                   <p className="text-[11px] text-[#15803D] font-medium mt-0.5">
-                    5 States monitored
+                    {stateCount || '…'} States monitored
                   </p>
                 </div>
               </div>
 
               <div className="mt-4 flex items-center justify-between">
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-[#15803D] shadow-2xs">
-                  AICTE OK
+                  Verified at source
                 </span>
                 <span className="text-[11px] font-bold text-[#15803D]">
-                  +77.1%
+                  {stats ? `${stats.coverage_pct}%` : '…'}
                 </span>
               </div>
             </div>
@@ -297,20 +282,20 @@ export default function Home() {
                 </div>
                 <div className="mt-2.5">
                   <span className="text-2xl font-extrabold text-gray-950 font-display">
-                    0 PII
+                    {proof ? proof.match_count : '…'} Raw IDs
                   </span>
                   <p className="text-[11px] text-[#B45309] font-medium mt-0.5">
-                    Zero raw IDs stored
+                    Found in {proof?.tables_scanned ?? '…'} tables, just now
                   </p>
                 </div>
               </div>
 
               <div className="mt-4 flex items-center justify-between">
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white text-[#B45309] shadow-2xs">
-                  DPDP 2023
+                  Live scan
                 </span>
                 <span className="text-[11px] font-bold text-[#B45309]">
-                  100% Legal
+                  {proof ? (proof.match_count === 0 ? 'Clean' : 'Review') : '…'}
                 </span>
               </div>
             </div>
@@ -337,7 +322,7 @@ export default function Home() {
 
               <div className="flex items-center gap-2 text-xs">
                 <span className="px-2.5 py-1 rounded-full bg-gray-50 border border-gray-200 text-gray-600 font-medium">
-                  Active (4)
+                  Active ({INCIDENTS.length})
                 </span>
               </div>
             </div>
@@ -394,7 +379,7 @@ export default function Home() {
               onClick={() => navigate('/radar')}
               className="text-gray-900 font-bold hover:text-blue-600 flex items-center gap-1 transition"
             >
-              <span>View All 123 Flags</span>
+              <span>View All {stats?.open_flags ?? flags.length} Flags</span>
               <ArrowRight size={13} />
             </button>
           </div>
@@ -427,10 +412,10 @@ export default function Home() {
 
             <div className="pt-2">
               <button
-                onClick={() => setShowDemoModal(true)}
+                onClick={() => navigate('/story')}
                 className="bg-[#BFDBFE] hover:bg-white text-gray-950 font-bold text-xs py-2.5 px-5 rounded-full transition shadow-sm flex items-center gap-2"
               >
-                <span>Start Interactive Tour ➔</span>
+                <span>Watch the 2-minute story ➔</span>
               </button>
             </div>
           </div>
@@ -461,10 +446,6 @@ export default function Home() {
 
       </div>
 
-      {/* Guided Tour Modal */}
-      {showDemoModal && (
-        <DemoMode onClose={() => setShowDemoModal(false)} />
-      )}
     </div>
   );
 }

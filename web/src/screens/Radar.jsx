@@ -15,6 +15,7 @@ import { useI18n } from '../i18n';
 import { useAuth } from '../App';
 import { api } from '../api';
 import Seal from '../components/Seal';
+import SuccessBurst from '../components/SuccessBurst';
 import HindiToggle from '../components/HindiToggle';
 import CollegeEmblem from '../components/CollegeEmblem';
 
@@ -65,7 +66,17 @@ const DEMO_DUPLICATES = [
 // ─── Dual-Control Notice Modal ────────────────────────────────────────────────
 
 function DualControlNoticeModal({ dup, onClose }) {
-  const [dispatched, setDispatched] = useState(false);
+  const { token } = useAuth();
+  const [notice, setNotice] = useState(null);
+  const [sending, setSending] = useState(false);
+  const dispatched = !!notice;
+  const dispatch = async () => {
+    setSending(true);
+    try {
+      const res = await api.dispatchInquiry({ student_token: dup.token, institutions: dup.appearances.map((a) => a.institution) }, token);
+      setNotice(res);
+    } catch { setNotice(null); } finally { setSending(false); }
+  };
   const [autoTimer, setAutoTimer]   = useState(true);
 
   const instA = dup.appearances[0] || { institution: 'Institution A', state: 'State A' };
@@ -147,23 +158,24 @@ function DualControlNoticeModal({ dup, onClose }) {
           <div className="bg-[#FFF8F0] border border-[#FDE5CC] p-3.5 rounded-2xl text-xs text-slate space-y-1.5">
             <p className="font-semibold text-ink flex items-center gap-1.5">
               <Lock size={13} className="text-crimson" />
-              DPDP Act 2023 Compliant Coordination:
+              Privacy-first coordination:
             </p>
             <p className="leading-relaxed">
-              Neither AICTE nor the two colleges exchange the student's name or Aadhaar. Both registrars receive an Ed25519-signed inquiry querying: <em>"Confirm physical reporting status for Seal #{dup.token.slice(0, 8)}"</em>.
+              Neither AICTE nor the two colleges exchange the student's name or Aadhaar. Both registrars receive an inquiry asking: <em>"Confirm physical reporting status for Seal #{dup.token.slice(0, 8)}"</em>.
             </p>
           </div>
 
           {/* Post-dispatch confirmation */}
           {dispatched ? (
             <div className="bg-jade-light/40 border border-jade/30 rounded-2xl p-4 animate-fade-in space-y-2">
+              <SuccessBurst tone="jade" size={64} title="Inquiry sent" className="-mb-2" />
               <div className="flex items-center gap-2 text-jade font-bold text-xs sm:text-sm">
                 <CheckCircle2 size={16} />
-                Dual Notice Dispatched & Appended to Audit Chain
+                Inquiry sent and written to the audit chain
               </div>
               <p className="text-xs text-slate leading-relaxed">
-                Notice <strong>#NOT-2026-8912</strong> delivered to {instA.institution} & {instB.institution} registrar portals.
-                Transaction anchored to Merkle Root with Block Hash <code className="font-mono text-ink text-[11px]">0x7b4e...d82a</code>.
+                Notice <strong>#{notice.notice_id}</strong> recorded for {instA.institution} & {instB.institution} registrar portals.
+                Written to the audit chain as entry {notice.audit_entry_id}, hash <code className="font-mono text-ink text-[11px]">{notice.entry_hash.slice(0, 10)}…{notice.entry_hash.slice(-6)}</code>.
               </p>
               <div className="pt-2 flex justify-end">
                 <button onClick={onClose} className="btn btn-primary text-xs py-2 px-4">
@@ -193,11 +205,11 @@ function DualControlNoticeModal({ dup, onClose }) {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setDispatched(true)}
+                  onClick={dispatch} disabled={sending}
                   className="btn btn-primary text-xs py-2 px-5 flex items-center gap-2 bg-crimson hover:bg-crimson-dark"
                 >
                   <Send size={13} />
-                  Dispatch Signed Notice (Both Registrars)
+                  {sending ? 'Sending…' : 'Send Inquiry to Both Colleges'}
                 </button>
               </div>
             </div>
