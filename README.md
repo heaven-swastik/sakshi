@@ -53,7 +53,7 @@
 | Material | Link | Description |
 |---|---|---|
 | 🌐 **Live Web Application** | [**sakshi-opal-five.vercel.app**](https://sakshi-opal-five.vercel.app) | Production prototype with 3-role perspective switcher and real-time radar |
-| 🎬 **YouTube Demonstration Video** | [**Watch on YouTube (3m 26s)**](https://youtu.be/2qNPlmyVsIc) | Regulatory walkthrough covering the double-seat crisis, blind seals, and live UI |
+| 🎬 **YouTube Demonstration Video** | [**Watch on YouTube**](https://youtu.be/2qNPlmyVsIc) | Regulatory walkthrough covering the double-seat crisis, blind seals, and live UI |
 | 📊 **Official SIH Idea Presentation** | [**SAKSHI_SIH2026_Idea_PPT_Final.pptx**](https://iemcollege-my.sharepoint.com/:p:/g/personal/swastik_manna_u2024_iem_edu_in/IQCx1YTj2p-6QpqMl-4a4BHrAazR97ZP4UnBnhKdYLeteC4?e=3eJgH7) | 6-slide executive deck matching PS SIH26263 and repository implementation |
 | 💻 **GitHub Repository** | [**github.com/heaven-swastik/sakshi**](https://github.com/heaven-swastik/sakshi) | Complete source code (FastAPI backend + React frontend + tests) |
 | 📑 **Architectural Diagrams (Mermaid)** | [**docs/ Directory**](docs/) | DFD Level 0/1, Sequence, ER schema, and STRIDE threat model |
