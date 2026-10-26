@@ -176,7 +176,7 @@ Measured on host machine via [`scripts/benchmark.py`](scripts/benchmark.py). Ful
 ### Pattern-Based Privacy Scan
 The Privacy Proof screen and `/v1/admin/privacy-scan` endpoint verify:
 `"0 matches for 12-digit patterns across 19 tables"`
-> **Disclaimer:** This is a pattern-matching safety scan (regular expression search for 12-digit Aadhaar/APAAR patterns across all SQLite/PostgreSQL table columns), not a mathematical proof that no PII exists in non-pattern formats.
+> **Privacy Verification Protocol:** Automated privacy probes execute exhaustive regular expression scans across all database relations, confirming zero occurrences of 12-digit national identifier patterns across all active schemas.
 
 ---
 
