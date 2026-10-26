@@ -1,145 +1,227 @@
-# SAKSHI
+<div align="center">
 
-### Verify student enrolment without collecting student identity.
+# SAKSHI (साक्षी)
+### *A witness that confirms, never discloses.*
 
-**SAKSHI** (Sanskrit for *witness*) is a prototype for AICTE student-enrolment integrity checks. It helps find duplicate enrolments, suspicious seats, and intake overruns while keeping student identity out of the regulator's central records.
+**Privacy-Preserving Student Enrolment Verification & Institutional Seat Integrity Platform**  
+**Smart India Hackathon 2026 · Problem Statement SIH26263 · Ministry of Education / AICTE**  
+**Theme: Smart Automation · Category: Software · Team Sudo Winners (Team ID: 145609)**
 
-> A witness that confirms, never discloses.
+<br/>
 
-**Smart India Hackathon 2026 · AICTE · Problem Statement SIH26263**
+[![Live Production App](https://img.shields.io/badge/Live%20Demo-sakshi--opal--five.vercel.app-0284c7?style=for-the-badge&logo=vercel)](https://sakshi-opal-five.vercel.app)
+[![API Documentation](https://img.shields.io/badge/FastAPI-Swagger%20UI-10b981?style=for-the-badge&logo=fastapi)](https://sakshi-opal-five.vercel.app)
+[![Pytest Suite](https://img.shields.io/badge/Pytest-20%20Passed-emerald?style=for-the-badge&logo=pytest)](file:///api/tests)
+[![Privacy Covenant](https://img.shields.io/badge/Zero%20Raw%20PII-19%20Tables%20Scrubbed-purple?style=for-the-badge&logo=shield)](file:///docs/FEATURES.md)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
-> **Prototype notice:** This repository uses synthetic demo data and a mock registry adapter. It is not connected to a live APAAR registry or production AICTE systems.
+</div>
 
-## See the product
+---
 
-The screenshots below are from the web application. The dashboard and screens show synthetic data.
+> **Prototype Notice:** This repository is an engineering demonstration prototype operating on synthetic ground-truth data (15 institutions, 3,333 seats) and a mock APAAR registry adapter. It demonstrates mathematical and architectural feasibility without accessing live government databases.
 
-### Key product screens
+---
 
-<table>
-  <tr>
-    <td width="50%">
-      <strong>Overview</strong><br>
-      <img src="demo/screenshots/01-executive-portfolio.png" alt="SAKSHI overview dashboard">
-    </td>
-    <td width="50%">
-      <strong>Admissions upload</strong><br>
-      <img src="demo/screenshots/02-upload-sealing.png" alt="CSV admissions upload and privacy-preserving sealing">
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <strong>Duplicate radar</strong><br>
-      <img src="demo/screenshots/03-duplicate-radar.png" alt="Duplicate enrolment radar showing matching seals across colleges">
-    </td>
-    <td width="50%">
-      <strong>Student window</strong><br>
-      <img src="demo/screenshots/04-citizen-dispute.png" alt="Student window with enrolment visibility and a dispute option">
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <strong>Credential verification</strong><br>
-      <img src="demo/screenshots/05-credential-verification.png" alt="Public verification of a signed enrolment credential">
-    </td>
-    <td width="50%">
-      <strong>Privacy proof</strong><br>
-      <img src="demo/screenshots/06-privacy-proof.png" alt="Privacy scan and audit-chain verification screen">
-    </td>
-  </tr>
-</table>
+## Quick Navigation
 
-## The problem
+- [Implemented vs Planned Capabilities](#implemented-vs-planned)
+- [Features & Innovation](#features--innovation)
+- [System Architecture & Visual Diagrams](#system-architecture--visual-diagrams)
+- [Performance & Benchmarks](#performance--benchmarks)
+- [Security, Privacy & Secrets](#security-privacy--secrets)
+- [Offline Credential Verification](#offline-credential-verification)
+- [Judge's 3-Click Evaluation Walkthrough](#judges-3-click-evaluation-walkthrough)
+- [Local Setup & Testing](#local-setup--testing)
+- [Team Sudo Winners](#team-sudo-winners)
 
-Colleges report student admission totals, but totals alone do not let a regulator confidently identify duplicate seats or verify whether reported enrolments are consistent. Collecting every student's identity in one central system creates a separate privacy risk.
+---
 
-## The idea
+## Implemented vs Planned
 
-1. **Check at the source.** An institution submits an admissions batch. In this prototype, identity values are checked through a mock registry adapter and processed by the API.
-2. **Keep a blind seal.** The identity is transformed into a keyed token; the system uses the token for matching instead of storing a raw ID in its enrolment record.
-3. **Review, don't automatically punish.** Rules flag cases such as duplicate seals or intake anomalies with reasons for an authorised person to review. Institutions can be asked to resolve a potential match.
-4. **Give students visibility.** The student-facing window supports reviewing enrolments and raising a dispute.
-5. **Verify credentials separately.** A signed credential can be checked without a central lookup of a student's name.
-6. **Inspect privacy and audit evidence.** The privacy proof and audit screens expose checks available in the demo system.
+| Capability | Status | Implementation Details in Repo |
+|---|---|---|
+| **Blind Seals (HMAC-SHA256)** | **[Implemented]** | Keyed one-way pseudonymization; identical student gets same token across colleges without unmasking ID. |
+| **Deterministic Rule Engine (R1–R7)** | **[Implemented]** | Seven pure-Python versioned rules catching cross-college duplicates, branch overruns, bursts, and quota anomalies. |
+| **Duplicate Radar** | **[Implemented]** | Real-time cross-institutional collision matching; automatically excludes withdrawn-consent seats. |
+| **Tamper-Evident Audit Chain** | **[Implemented]** | Append-only SHA-256 hash-chained ledger; daily Merkle roots signed with Ed25519. |
+| **Verifiable Enrolment Credentials** | **[Implemented]** | W3C-VC-style signed credentials (Ed25519) with tamper-proof QR code, public verification API, and offline verification CLI. |
+| **Citizen Portal & Signed Disputes** | **[Implemented]** | Student-facing window with cryptographically signed "This is not me" disputes and consent withdrawal. |
+| **Tripartite Dual-Control Reveal** | **[Implemented]** | Honest 3-way reveal (`/v1/regulator/reveal/request`, `/v1/college/reveal/approve`, `/v1/student/reveal/consent`); unsealed only upon tripartite approval; no raw IDs stored. |
+| **Pattern-Based Privacy Probe** | **[Implemented]** | Automated scan verifying `"0 matches for 12-digit patterns across 19 tables"`. |
+| **Live APAAR / DigiLocker Adapter** | **[Planned]** | Direct API adapter replacing synthetic mock adapter in Phase 2 pilot upon MoE clearance. |
+| **Hardware Security Module (HSM / KMS)** | **[Planned]** | Hardware-isolated envelope encryption for HMAC secrets and Ed25519 signing keys. |
+| **PostgreSQL Partitioned Cluster** | **[Planned]** | Migration from local SQLite WAL to horizontally partitioned PostgreSQL for 10M+ national scale. |
 
-The application is a working prototype, not a production-ready national registry. Its data, integrations, and performance should be evaluated in that context.
+---
 
-## What you can explore
+## Features & Innovation
 
-| Screen | What a viewer can see |
-| --- | --- |
-| **Overview** (`/overview`) | Institution and enrolment summary, integrity indicators, and recent incidents |
-| **Admissions upload** (`/upload`) | Demo CSV ingestion, row-level results, and seals |
-| **Duplicate radar** (`/radar`) | Potential duplicate enrolments represented by matching seals |
-| **Integrity** (`/integrity`) | Rule-based institution-level integrity information and reasons |
-| **Credentials** (`/credential`, `/verify`) | Issue or verify a signed demo credential |
-| **Student window** (`/citizen`) | Student enrolment view and dispute workflow |
-| **Privacy proof** (`/proof`) | Available database privacy scan and audit-chain checks |
-| **Briefing and story** (`/briefing`, `/story`) | Animated explanation of the problem, approach, and demo scenarios |
+### 1. One-line pitch
+SAKSHI (साक्षी, "the witness") lets AICTE verify that enrolments are genuine and catch double or ghost seats **without ever collecting or storing a student's identity.**
 
+### 2. The problem (India, AICTE)
+| # | Problem | Today |
+|---|---|---|
+| 1 | Double seats | One student holds seats in several colleges across counselling rounds |
+| 2 | Ghost seats | Seats filled on paper by students who never joined |
+| 3 | Over the limit | More students admitted than the approved intake |
+| 4 | Information gap | Colleges report only totals; nobody can see who is behind the number |
+| 5 | Legal trap | A central database of student IDs risks DPDP Act 2023 penalties (up to ₹250 Cr) and conflicts with the APAAR opt-out order (verify the exact citation before printing it) |
 
+### 3. Solution flow
+`College CSV → Gateway (check ID once, in memory) → Blind seal (keyed HMAC-SHA256) → Seal ledger (no names, no IDs) → Rule engine R1–R7 → Radar / Dashboard / Student window / QR credential → Audit chain`
 
-## Run locally
+### 4. Key innovations (the novelty)
+1. **Blind seals [Implemented]** — a keyed one-way token (HMAC-SHA256). The same student gets the same seal in every college, so duplicates are found, but the seal cannot be turned back into the ID. Secret comes from env (KMS/HSM in production).
+2. **Verify without collecting [Implemented]** — the raw ID is checked against the registry and used only to make the seal; raw IDs are never persisted or logged. A live probe searches all tables for a given ID and reports matches (pattern check, see §6).
+3. **Opt-out safe [Implemented]** — students without an APAAR ID are counted as "attested by college", never flagged as fraud. Enrolments with withdrawn consent (`assurance_tier == "pending"`) are counted in institutional intake totals but strictly excluded from cross-college token matching (Rule R1) and the duplicate radar.
+4. **Ask the owner, not a database [Implemented]** — for a duplicate, AICTE sends a notice to both colleges (`/v1/radar/inquiry`) instead of unmasking anyone; the inquiry is written to the audit chain.
+5. **Student in the loop [Implemented]** — the Citizen Window lists a student's own seats; "This is not me" files a cryptographically signed dispute (`/v1/student/me/disputes`); consent can be withdrawn.
+6. **Explainable rules, no black box [Implemented]** — seven deterministic rules (R1–R7), each flag carries a plain-English reason; a person decides, the system never auto-closes.
+7. **Published scoring formula [Implemented]** — integrity score = 100 minus weighted penalties (overrun is the heaviest); each component is shown separately.
+8. **Tamper-evident audit chain [Implemented]** — each entry hashes the previous one; `/v1/audit/verify` checks the chain; a daily signed root anchor is exposed at `/v1/audit/daily-root`.
+9. **Signed QR credential [Implemented]** — W3C-VC-style signed credential (Ed25519) with tamper-proof QR code, public verification endpoint (`/v1/credentials/verify`), public key export (`/v1/credentials/public-key`), cryptographic revocation checking, and an offline verification CLI script (`verify_offline.py`).
+10. **Dual-control identity reveal [Implemented]** — Tripartite reveal workflow (`/v1/regulator/reveal/request`, `/v1/college/reveal/approve`, `/v1/student/reveal/consent`) where an identity is unsealed only when regulator, college, and student all cryptographically approve. Each step appends to the immutable audit chain. No raw ID is stored by AICTE; the college re-derives the token locally and confirms with `match: true`.
 
-### Requirements
+### 5. Features by user
+**AICTE regulator** — national overview (seats, institutions, flags) · duplicate radar · institution integrity scores · quota ledger (NRI / OCI / FN / supernumerary) · season replay · accreditation report · case opening from a flag · inquiry to both colleges · privacy proof console · tripartite reveal coordination.  
+**College registrar** — CSV upload with live batch report (verified / attested / rejected, reason per row) · download batch report · enrolment updates · reveal request approval.  
+**Student** — own records · dispute · consent withdrawal · QR credential · reveal consent approval.  
+**Employer / public** — scan QR → verified / revoked page with no name lookup · offline signature verification via `verify_offline.py`.  
+**Everyone** — role switcher (AICTE / College / Student), English + Hindi UI, guided 2-minute story, status footer with audit count.
 
-- Python 3.11 or newer
-- Node.js 18 or newer
+### 6. Rule engine
+| Rule | What it catches | Detection Logic & Impact |
+|---|---|---|
+| **R1** | Cross-institution duplicate | Same student seal active across $\ge 2$ different colleges in the same cohort |
+| **R2** | Intra-institution duplicate | Same student seal enrolled twice across different programmes in the same college |
+| **R3** | Approved intake overrun | Enrolment volume exceeds AICTE-sanctioned branch intake ceiling |
+| **R4** | Burst upload anomaly | Batch upload velocity significantly exceeds peer median / MAD threshold |
+| **R5** | Low verified coverage | Proportion of registry-verified admissions falls below required institutional threshold |
+| **R6** | Identical-record clusters | Suspicious clusters of synthetic admissions sharing identical metadata |
+| **R7** | Quota / mode mismatch | Unapproved NRI/FN/supernumerary quota allocations or invalid study modes |
 
-### 1. Install the API dependencies and prepare demo data
+### 8. India fit and roadmap
+| Stage | What | Status |
+|---|---|---|
+| Today | Working prototype, synthetic data, mock APAAR registry, tripartite reveal workflow | [Prototype] |
+| Next | Replace mock adapter with live APAAR registry; KMS/HSM for the seal key; PostgreSQL | [Planned] |
+| Pilot | ~3 months, ~50 colleges, two AICTE regional offices | [Planned] |
+| Scale | State admission portals (CET / counselling), then all approved institutions | [Planned] |
+Works with any ERP because input is a plain CSV; no change to college systems.
 
-From the repository root:
+### 9. Honest limits (say these before a judge asks)
+Prototype on synthetic data · mock registry · batch upload, not streaming · Python cannot guarantee RAM wipe, so the claim is "raw IDs are never persisted or logged" · privacy scan is a pattern check (12-digit regex across tables), not a mathematical proof that no PII exists · tripartite reveal requires all 3 parties.
 
+---
+
+## System Architecture & Visual Diagrams
+
+All architectural and security models are documented with interactive Mermaid specifications in [`docs/`](file:///docs/):
+
+- [**Data Flow Diagrams (DFD Level 0 & Level 1)**](file:///docs/dfd.md): System context, data stores, and memory-only tokenization boundary.
+- [**System Sequence Diagram**](file:///docs/sequence_diagram.md): Step-by-step lifecycle from CSV upload $\rightarrow$ blind sealing $\rightarrow$ duplicate radar $\rightarrow$ bilateral inquiry $\rightarrow$ tripartite identity reveal.
+- [**Entity-Relationship (ER) Diagram**](file:///docs/er_diagram.md): Complete relational schema from `api/models.py` demonstrating zero PII columns.
+- [**STRIDE Threat Model & Mitigations**](file:///docs/stride_threat_model.md): Threat vectors across trust boundaries (Spoofing, Tampering, Repudiation, Information Disclosure, DoS, Elevation of Privilege).
+- [**Full Features Reference**](file:///docs/FEATURES.md): Single source of truth for prototype claims, rules, and innovation.
+
+---
+
+## Performance & Benchmarks
+
+Measured on host machine via [`scripts/benchmark.py`](file:///scripts/benchmark.py). Full specifications and methodology in [**`docs/BENCHMARKS.md`**](file:///docs/BENCHMARKS.md).
+
+| Metric | Measured Value | Algorithmic Guarantee |
+|---|---|---|
+| **HMAC-SHA256 Blind Sealing** | **121,979 operations / sec** | Mean latency **8.04 µs** (p95: 12.0 µs) |
+| **Ingestion Pipeline Throughput** | **25,072 records / sec** | 10,000 rows parsed, sealed, verified & DB-inserted in **0.398s** |
+| **Duplicate Radar Query Latency** | **7.18 ms** | Fast cross-college matching across 3,343 seats (p95: 8.83 ms) |
+| **Single Record Citizen Lookup** | **$O(1)$** | Indexed B-Tree search on `student_token` without table scans |
+
+> **Honest Memory Boundary:** Python is an interpreted, garbage-collected language and cannot guarantee C-level memory zeroing (`memset`). SAKSHI's architectural covenant is that **raw IDs are never persisted to disk, never stored in database tables, and never included in log outputs or HTTP responses.**
+
+---
+
+## Security, Privacy & Secrets
+
+### Production Secret Enforcement
+- In production (`SAKSHI_ENV=prod`), the server **strictly refuses to start** and throws a `RuntimeError` if `SAKSHI_TOKEN_SECRET` is left as the default development secret.
+- In local development (`SAKSHI_ENV=dev` or unset), a developer fallback secret is permitted for rapid prototyping.
+
+### Pattern-Based Privacy Scan
+The Privacy Proof screen and `/v1/admin/privacy-scan` endpoint verify:
+`"0 matches for 12-digit patterns across 19 tables"`
+> **Disclaimer:** This is a pattern-matching safety scan (regular expression search for 12-digit Aadhaar/APAAR patterns across all SQLite/PostgreSQL table columns), not a mathematical proof that no PII exists in non-pattern formats.
+
+---
+
+## Offline Credential Verification
+
+SAKSHI issues **W3C-VC-style signed credentials (Ed25519)** containing a pseudonymized student token and program details. Credentials can be verified:
+1. **Online via API:** `GET /v1/credentials/verify?handle={handle}`
+2. **Public Key Export:** `GET /v1/credentials/public-key` returns the system's SubjectPublicKeyInfo PEM.
+3. **Offline via CLI:** The included [`verify_offline.py`](file:///verify_offline.py) script verifies compact JWS credentials using **only the public key** with zero network or database dependencies:
+   ```bash
+   python verify_offline.py <jws_string> --public-key <pem_or_base64_key>
+   # Or run built-in self-test:
+   python verify_offline.py --test
+   ```
+
+---
+
+## Judge's 3-Click Evaluation Walkthrough
+
+Follow this 3-click demo path in the live web app:
+
+1. **Step 1: Executive Portfolio (`/overview`)**
+   - Review national aggregate indicators: 15 institutions, 3,333 seats, and real-time integrity status.
+2. **Step 2: Duplicate Radar (`/radar`)**
+   - Inspect cross-college collisions where students hold multiple seats simultaneously. Click "Send Inquiry Notice" to trigger the bilateral resolution workflow.
+3. **Step 3: Privacy Proof Console (`/proof`)**
+   - Run the live pattern probe scanning all 19 database tables. Verify cryptographic hash integrity across the audit ledger.
+
+---
+
+## Local Setup & Testing
+
+### 1. Backend Setup
 ```bash
 cd api
 python -m pip install -r requirements.txt
 cd ..
 make seed
-```
-
-The seed command creates the database schema and deterministic synthetic demo data. It is intended for a fresh local demo database.
-
-### 2. Start the API
-
-In one terminal:
-
-```bash
 cd api
 uvicorn main:app --reload --port 8000
 ```
+Interactive Swagger docs: `http://localhost:8000/docs`
 
-The API is available at `http://localhost:8000`; interactive API documentation is at `http://localhost:8000/docs`.
-
-### 3. Start the web app
-
-In a second terminal:
-
+### 2. Frontend Setup
 ```bash
 cd web
 npm install
 npm run dev
 ```
+Open `http://localhost:5173`.
 
-Open `http://localhost:5173`. Start at the welcome page, choose **Watch the 2-minute story**, or choose **Explore the live system**.
-
-### Optional: Docker Compose
-
+### 3. Run Automated Tests & Benchmarks
 ```bash
-docker compose up --build
+# Run pytest suite (20 tests covering privacy, rules R1-R7, secrets, reveals, disputes)
+pytest api/tests -v
+
+# Run performance benchmarks
+python scripts/benchmark.py
+
+# Offline credential self-test
+python verify_offline.py --test
 ```
 
-## Run tests
+---
 
-From the repository root:
+## Team Sudo Winners (SIH 2026 · Team ID: 145609)
 
-```bash
-make test
-```
-
-## Technology
-
-- **Web:** React, Vite, Tailwind CSS, Framer Motion, Three.js
-- **API:** Python, FastAPI, Pydantic, SQLAlchemy
-- **Local demo storage:** SQLite
-- **Privacy and integrity mechanisms:** keyed HMAC tokens, signed credentials, and a hash-chained audit log
-
+| Member | Role | Core Focus Areas | GitHub Profile |
+|---|---|---|---|
+| **Swastik** | **Team Leader & Core Architect** | Zero-knowledge blind token design, tripartite reveal protocol, STRIDE threat model, FastAPI core, and cloud deployment | [@heaven-swastik](https://github.com/heaven-swastik) |
+| **Pallabi Roy (Yumi)** | **Frontend Lead & Product Design** | Citizen Window UI, 7-rule integrity interface, privacy proof console, story walkthrough, and bilingual localisation | [@Yumi0706](https://github.com/Yumi0706) |
+| **Debojeet Banerjee (Debo)** | **Backend & Verification Lead** | Deterministic rule engine (R1–R7), Ed25519 verifiable credentials, offline CLI verification, and performance benchmarks | [@debojeet-codes](https://github.com/debojeet-codes) |
