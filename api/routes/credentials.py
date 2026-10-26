@@ -36,6 +36,24 @@ class RevokeRequest(BaseModel):
     reason: str
 
 
+@router.get("/v1/credentials/public-key")
+def get_public_key():
+    """
+    Export the system's Ed25519 public key.
+    Enables offline verification of signed credentials and QR payloads
+    without connecting to any central server or database.
+    """
+    from credentials import _get_public_key_b64, get_public_key_pem
+    return {
+        "alg": "Ed25519",
+        "kid": "sakshi-v1",
+        "format": "W3C-VC-style signed credential (Ed25519)",
+        "public_key_b64": _get_public_key_b64(),
+        "public_key_pem": get_public_key_pem(),
+        "usage": "Use verify_offline.py or RFC 8032 Ed25519 verifier to validate JWS payload offline.",
+    }
+
+
 @router.post("/v1/credentials/issue")
 def issue(
     req: IssueRequest,

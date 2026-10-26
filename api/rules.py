@@ -80,6 +80,7 @@ def run_r1(db: Session, cohort_year: int, params: dict | None = None) -> list[Fl
             Enrolment.cohort_year == cohort_year,
             Enrolment.mode == "regular",
             Enrolment.status != "revoked",
+            Enrolment.assurance_tier != "pending",  # Exclude withdrawn consent from cross-college matching
         )
         .group_by(Enrolment.student_token, Enrolment.cohort_year)
         .having(func.count(func.distinct(Enrolment.institution_id)) >= 2)

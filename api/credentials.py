@@ -82,6 +82,15 @@ def _get_public_key_b64() -> str:
     return base64.b64encode(raw).decode("ascii")
 
 
+def get_public_key_pem() -> str:
+    """Export the public key in standard SubjectPublicKeyInfo PEM format."""
+    pub: Ed25519PublicKey = get_signing_key().public_key()
+    return pub.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo,
+    ).decode("ascii")
+
+
 def _generate_handle() -> str:
     """Short random handle for the credential (URL-safe, 12 chars)."""
     alphabet = string.ascii_uppercase + string.digits
