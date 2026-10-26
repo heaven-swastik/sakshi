@@ -1,5 +1,5 @@
 """
-test_reveal.py — Proves the minimal, honest tripartite dual-control reveal workflow:
+test_reveal.py — Verifies the tripartite dual-control reveal consensus workflow:
 - POST /v1/regulator/reveal/request
 - POST /v1/college/reveal/approve
 - POST /v1/student/reveal/consent

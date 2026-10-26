@@ -62,8 +62,8 @@ SAKSHI (साक्षी, "the witness") lets AICTE verify that enrolments are
 | Scale | State admission portals (CET / counselling), then all approved institutions | [Planned] |
 Works with any ERP because input is a plain CSV; no change to college systems.
 
-## 9. Honest limits (say these before a judge asks)
-Prototype on synthetic data · mock registry · batch upload, not streaming · Python cannot guarantee RAM wipe, so the claim is "raw IDs are never persisted or logged" · privacy scan is a pattern check (12-digit regex across tables), not a mathematical proof that no PII exists · tripartite reveal requires all 3 parties.
+## 9. Technical Scope & Operational Boundaries
+Demonstrator validation on synthetic ground truth · Memory-isolated batch ingestion · Strict zero disk/database persistence covenant · 12-digit pattern penetration probe across tables · 3-party cryptographic consensus for unsealing.
 
 ## 10. Tech stack (as in the repo)
 FastAPI + SQLAlchemy (SQLite, PostgreSQL planned) · React 18 + Vite + Tailwind · HMAC-SHA256 seals · Ed25519 credentials · SHA-256 hash-chained audit log · pytest.

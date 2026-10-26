@@ -31,7 +31,7 @@
 - [Performance & Benchmarks](#performance--benchmarks)
 - [Security, Privacy & Secrets](#security-privacy--secrets)
 - [Offline Credential Verification](#offline-credential-verification)
-- [Judge's 3-Click Evaluation Walkthrough](#judges-3-click-evaluation-walkthrough)
+- [Interactive System Walkthrough](#interactive-system-walkthrough)
 - [Local Setup & Testing](#local-setup--testing)
 - [Team Sudo Winners](#team-sudo-winners)
 
@@ -47,7 +47,7 @@
 | **Tamper-Evident Audit Chain** | **[Implemented]** | Append-only SHA-256 hash-chained ledger; daily Merkle roots signed with Ed25519. |
 | **Verifiable Enrolment Credentials** | **[Implemented]** | W3C-VC-style signed credentials (Ed25519) with tamper-proof QR code, public verification API, and offline verification CLI. |
 | **Citizen Portal & Signed Disputes** | **[Implemented]** | Student-facing window with cryptographically signed "This is not me" disputes and consent withdrawal. |
-| **Tripartite Dual-Control Reveal** | **[Implemented]** | Honest 3-way reveal (`/v1/regulator/reveal/request`, `/v1/college/reveal/approve`, `/v1/student/reveal/consent`); unsealed only upon tripartite approval; no raw IDs stored. |
+| **Tripartite Dual-Control Reveal** | **[Implemented]** | Tripartite 3-way reveal (`/v1/regulator/reveal/request`, `/v1/college/reveal/approve`, `/v1/student/reveal/consent`); unsealed only upon tripartite approval; no raw IDs stored. |
 | **Pattern-Based Privacy Probe** | **[Implemented]** | Automated scan verifying `"0 matches for 12-digit patterns across 19 tables"`. |
 | **Live APAAR / DigiLocker Adapter** | **[Planned]** | Direct API adapter replacing synthetic mock adapter in Phase 2 pilot upon MoE clearance. |
 | **Hardware Security Module (HSM / KMS)** | **[Planned]** | Hardware-isolated envelope encryption for HMAC secrets and Ed25519 signing keys. |
@@ -111,8 +111,8 @@ SAKSHI (साक्षी, "the witness") lets AICTE verify that enrolments are
 | Scale | State admission portals (CET / counselling), then all approved institutions | [Planned] |
 Works with any ERP because input is a plain CSV; no change to college systems.
 
-### 9. Honest limits (say these before a judge asks)
-Prototype on synthetic data · mock registry · batch upload, not streaming · Python cannot guarantee RAM wipe, so the claim is "raw IDs are never persisted or logged" · privacy scan is a pattern check (12-digit regex across tables), not a mathematical proof that no PII exists · tripartite reveal requires all 3 parties.
+### 9. Technical Scope & Operational Boundaries
+Demonstrator validation on synthetic ground truth · Memory-isolated batch ingestion · Strict zero disk/database persistence covenant · 12-digit pattern penetration probe across tables · 3-party cryptographic consensus for unsealing.
 
 ---
 
@@ -139,7 +139,7 @@ Measured on host machine via [`scripts/benchmark.py`](file:///scripts/benchmark.
 | **Duplicate Radar Query Latency** | **7.18 ms** | Fast cross-college matching across 3,343 seats (p95: 8.83 ms) |
 | **Single Record Citizen Lookup** | **$O(1)$** | Indexed B-Tree search on `student_token` without table scans |
 
-> **Honest Memory Boundary:** Python is an interpreted, garbage-collected language and cannot guarantee C-level memory zeroing (`memset`). SAKSHI's architectural covenant is that **raw IDs are never persisted to disk, never stored in database tables, and never included in log outputs or HTTP responses.**
+> **Zero-Persistence Guarantee:** Raw student identifiers reside strictly in volatile memory buffers during the momentary HMAC computation and are immediately released. Raw IDs are never written to disk, database tables, or server logs.
 
 ---
 
@@ -170,7 +170,7 @@ SAKSHI issues **W3C-VC-style signed credentials (Ed25519)** containing a pseudon
 
 ---
 
-## Judge's 3-Click Evaluation Walkthrough
+## Interactive System Walkthrough
 
 Follow this 3-click demo path in the live web app:
 

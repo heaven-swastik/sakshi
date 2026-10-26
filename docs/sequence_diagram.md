@@ -52,7 +52,7 @@ sequenceDiagram
     deactivate Gateway
 
     %% Step 4: Tripartite Dual-Control Identity Reveal
-    Note over Regulator, Student: Phase 4: Honest Tripartite Reveal Protocol
+    Note over Regulator, Student: Phase 4: Tripartite Consensus Reveal Protocol
     Regulator->>Gateway: POST /v1/regulator/reveal/request (case_id, token, justification)
     activate Gateway
     Gateway->>DB: CREATE RevealRequest(status="PENDING_APPROVALS")
