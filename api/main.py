@@ -37,6 +37,15 @@ async def lifespan(app: FastAPI):
     Create all DB tables on startup (safe — SQLAlchemy skips tables that
     already exist). For a production system you'd use Alembic migrations.
     """
+    import os
+    env = os.environ.get("SAKSHI_ENV", "dev").strip().lower()
+    token_secret = os.environ.get("SAKSHI_TOKEN_SECRET", "sakshi-dev-secret-change-in-prod").strip()
+    if env in ("prod", "production") and token_secret == "sakshi-dev-secret-change-in-prod":
+        raise RuntimeError(
+            "FATAL: SAKSHI_ENV=prod but SAKSHI_TOKEN_SECRET is using the insecure default value! "
+            "Set a strong secret from KMS/HSM before running in production."
+        )
+
     logger.info("SAKSHI starting — creating database tables if needed")
     Base.metadata.create_all(bind=engine)
 

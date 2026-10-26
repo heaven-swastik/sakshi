@@ -140,7 +140,7 @@ class Enrolment(Base):
     institution_id: Mapped[int] = mapped_column(ForeignKey("institutions.id"), nullable=False)
     program_id: Mapped[int] = mapped_column(ForeignKey("programs.id"), nullable=False)
     cohort_year: Mapped[int] = mapped_column(Integer, nullable=False)
-    student_token: Mapped[str] = mapped_column(String(32), nullable=False)
+    student_token: Mapped[str] = mapped_column(String(32), index=True, nullable=False)
     id_type: Mapped[str] = mapped_column(String(16), nullable=False)       # APAAR / INST / OTHER
     assurance_tier: Mapped[str] = mapped_column(String(16), nullable=False)  # verified / attested / pending
     mode: Mapped[str] = mapped_column(String(32), nullable=False)           # regular / distance / part_time
@@ -173,7 +173,7 @@ class Consent(Base):
     __tablename__ = "consents"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    student_token: Mapped[str] = mapped_column(String(32), nullable=False)
+    student_token: Mapped[str] = mapped_column(String(32), index=True, nullable=False)
     purpose: Mapped[str] = mapped_column(String(64), nullable=False)   # "enrolment_verification"
     status: Mapped[str] = mapped_column(String(16), default="active")  # active / withdrawn
     recorded_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
@@ -211,7 +211,7 @@ class Flag(Base):
     severity: Mapped[str] = mapped_column(String(8), nullable=False)    # high / medium / low
     state: Mapped[str] = mapped_column(String(16), default="open")      # open / under_review / resolved / dismissed
     institution_ids_json: Mapped[str] = mapped_column(Text, nullable=False)  # "[1, 2]"
-    student_token_ref: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    student_token_ref: Mapped[str | None] = mapped_column(String(32), index=True, nullable=True)
     evidence_json: Mapped[str] = mapped_column(Text, nullable=False)    # supporting stats
     explanation: Mapped[str] = mapped_column(Text, nullable=False)      # plain-English reason
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
@@ -286,10 +286,11 @@ class StudentDispute(Base):
     __tablename__ = "student_disputes"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    student_token: Mapped[str] = mapped_column(String(32), nullable=False)
+    student_token: Mapped[str] = mapped_column(String(32), index=True, nullable=False)
     institution_id: Mapped[int] = mapped_column(ForeignKey("institutions.id"), nullable=False)
     dispute_type: Mapped[str] = mapped_column(String(32), nullable=False)  # "ghost_enrolment", "wrong_programme"
     status: Mapped[str] = mapped_column(String(16), default="open")
+    signature: Mapped[str | None] = mapped_column(String(128), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
     resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
@@ -340,7 +341,7 @@ class Credential(Base):
     __tablename__ = "credentials"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    student_token: Mapped[str] = mapped_column(String(32), nullable=False)
+    student_token: Mapped[str] = mapped_column(String(32), index=True, nullable=False)
     program_id: Mapped[int] = mapped_column(ForeignKey("programs.id"), nullable=False)
     cohort_year: Mapped[int] = mapped_column(Integer, nullable=False)
     credential_handle: Mapped[str] = mapped_column(String(16), unique=True, nullable=False)

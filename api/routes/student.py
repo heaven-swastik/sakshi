@@ -8,6 +8,9 @@ phone-based OTP flow (mock for demo).
 The student's JWT sub is their token — never their name or APAAR ID.
 """
 
+import os
+import hmac
+import hashlib
 from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -126,12 +129,19 @@ def raise_dispute(
     if not inst:
         raise HTTPException(404, f"Institution {req.institution_id} not found")
 
+    now = datetime.now(timezone.utc)
+    # Sign dispute: HMAC-SHA256 over token + timestamp + institution_id + dispute_type
+    secret = os.environ.get("SAKSHI_TOKEN_SECRET", "sakshi-dev-secret-change-in-prod")
+    sig_payload = f"dispute:{student_token}:{now.isoformat()}:{req.institution_id}:{req.dispute_type}".encode()
+    signature = hmac.new(secret.encode(), sig_payload, hashlib.sha256).hexdigest()
+
     dispute = StudentDispute(
         student_token=student_token,
         institution_id=req.institution_id,
         dispute_type=req.dispute_type,
         status="open",
-        created_at=datetime.now(timezone.utc),
+        signature=signature,
+        created_at=now,
     )
     db.add(dispute)
     db.commit()
@@ -144,7 +154,7 @@ def raise_dispute(
         action="dispute_raised",
         object_type="institution",
         object_id=str(req.institution_id),
-        payload={"dispute_id": dispute.id, "dispute_type": req.dispute_type},
+        payload={"dispute_id": dispute.id, "dispute_type": req.dispute_type, "signature": signature},
     )
 
     return {
@@ -152,7 +162,8 @@ def raise_dispute(
         "institution": inst.name,
         "dispute_type": req.dispute_type,
         "status": "open",
-        "message": "Your dispute has been recorded. The regulator will review it.",
+        "signature": signature,
+        "message": "Your dispute has been cryptographically signed and recorded. The regulator will review it.",
     }
 
 
@@ -203,6 +214,20 @@ def withdraw_consent(
     )
     for e in enrolments:
         e.assurance_tier = "pending"
+
+    # Close any open R1 flags for this token since consent has been withdrawn
+    open_r1 = (
+        db.query(Flag)
+        .filter(
+            Flag.student_token_ref == student_token,
+            Flag.rule_id == "R1",
+            Flag.state.in_(["open", "under_review"]),
+        )
+        .all()
+    )
+    for flag in open_r1:
+        flag.state = "resolved"
+        flag.explanation += " [Resolved: Student exercised DPDP consent withdrawal — excluded from cross-institution matching]"
 
     db.commit()
 

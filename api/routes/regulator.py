@@ -6,15 +6,17 @@ is represented only by tokens — never names or raw IDs.
 """
 
 import json
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from auth import require_roles
 from db import get_db
 from models import (
-    Case, Enrolment, Flag, Institution, IntegrityScore, Program,
+    Case, Enrolment, Flag, Institution, IntegrityScore, Program, RevealRequest,
 )
 from rules import run_all_rules, persist_flags
 from scoring import compute_integrity_score
@@ -293,6 +295,9 @@ def duplicate_radar(
             .filter(Enrolment.student_token == f.student_token_ref)
             .all()
         )
+        # Exclude enrolments where the student has withdrawn consent (assurance_tier == "pending")
+        if any(e.assurance_tier == "pending" for e in enrolments):
+            continue
         appearances = []
         for e in enrolments:
             inst = db.get(Institution, e.institution_id)
@@ -631,3 +636,296 @@ def dispatch_inquiry(
     )
     return {"notice_id": f"NOT-{entry.ts.year}-{entry.id:04d}", "audit_entry_id": entry.id,
             "entry_hash": entry.entry_hash, "dispatched_at": entry.ts.isoformat(), "recipients": body.institutions}
+
+
+# ---------------------------------------------------------------------------
+# Dual-Control Identity Reveal (Tripartite Consensus)
+# ---------------------------------------------------------------------------
+
+class RevealInitiateRequest(BaseModel):
+    case_id: int
+    reason_code: str = "dual_enrolment_investigation"
+
+
+class CollegeRevealApproveRequest(BaseModel):
+    reveal_request_id: int
+    id_value: str          # Raw ID presented locally by college to test token match
+    id_type: str = "APAAR"
+    cohort_year: int = 2026
+
+
+class StudentRevealConsentRequest(BaseModel):
+    reveal_request_id: int
+    consent: bool = True
+
+
+@router.post("/v1/regulator/reveal/request")
+def request_reveal(
+    req: RevealInitiateRequest,
+    user: dict = Depends(require_roles("officer", "supervisor")),
+    db: Session = Depends(get_db),
+):
+    """
+    Step 1 of dual-control reveal: Regulator initiates formal reveal request for a case.
+    Requires subsequent approvals from both the institution and the student before unsealing.
+    """
+    case = db.get(Case, req.case_id)
+    if not case:
+        raise HTTPException(404, f"Case {req.case_id} not found")
+
+    existing = db.query(RevealRequest).filter(RevealRequest.case_id == case.id).first()
+    if existing:
+        responses = json.loads(existing.institution_responses_json or "{}")
+        return {
+            "reveal_request_id": existing.id,
+            "case_id": case.id,
+            "status": existing.status,
+            "reason_code": existing.reason_code,
+            "approvals": {
+                "regulator": responses.get("regulator", {}).get("approved", False),
+                "college": responses.get("college", {}).get("approved", False),
+                "student": responses.get("student", {}).get("approved", False),
+            },
+            "unsealed": existing.status == "unsealed",
+            "message": "Reveal request already exists for this case",
+        }
+
+    responses = {
+        "regulator": {"approved": True, "actor": user["sub"], "at": datetime.now(timezone.utc).isoformat()}
+    }
+    reveal = RevealRequest(
+        case_id=case.id,
+        requested_by=user["sub"],
+        reason_code=req.reason_code,
+        status="pending_approvals",
+        institution_responses_json=json.dumps(responses),
+    )
+    db.add(reveal)
+    db.commit()
+    db.refresh(reveal)
+
+    append_audit(
+        db=db,
+        actor_id=user["sub"],
+        actor_role=user["role"],
+        action="reveal_requested",
+        object_type="reveal_request",
+        object_id=str(reveal.id),
+        payload={"case_id": case.id, "reason_code": req.reason_code},
+    )
+
+    return {
+        "reveal_request_id": reveal.id,
+        "case_id": case.id,
+        "status": reveal.status,
+        "reason_code": reveal.reason_code,
+        "approvals": {"regulator": True, "college": False, "student": False},
+        "unsealed": False,
+        "message": "Reveal request initiated by regulator. Awaiting college confirmation and student consent.",
+    }
+
+
+@router.post("/v1/college/reveal/approve")
+def college_reveal_approve(
+    req: CollegeRevealApproveRequest,
+    user: dict = Depends(require_roles("institution", "officer")),
+    db: Session = Depends(get_db),
+):
+    """
+    Step 2 of dual-control reveal: College re-derives the token from its local student ID
+    and confirms the cryptographic match. Zero raw ID is stored or transmitted to AICTE.
+    """
+    from tokenizer import tokenize
+
+    reveal = db.get(RevealRequest, req.reveal_request_id)
+    if not reveal:
+        raise HTTPException(404, f"Reveal request {req.reveal_request_id} not found")
+
+    case = db.get(Case, reveal.case_id)
+    if not case or not case.flag:
+        raise HTTPException(400, "Associated case or flag not found")
+
+    flag = case.flag
+    target_token = flag.student_token_ref
+    if not target_token:
+        raise HTTPException(400, "No student token reference associated with this flag")
+
+    derived_token = tokenize(req.id_value, req.id_type, req.cohort_year)
+    if derived_token != target_token:
+        append_audit(
+            db=db,
+            actor_id=user["sub"],
+            actor_role=user["role"],
+            action="college_reveal_rejected",
+            object_type="reveal_request",
+            object_id=str(reveal.id),
+            payload={"match": False},
+        )
+        raise HTTPException(400, "Token mismatch: the provided ID does not match the flagged seal")
+
+    responses = json.loads(reveal.institution_responses_json or "{}")
+    responses["college"] = {
+        "approved": True,
+        "match": True,
+        "actor": user["sub"],
+        "at": datetime.now(timezone.utc).isoformat(),
+    }
+    reveal.institution_responses_json = json.dumps(responses)
+
+    student_approved = responses.get("student", {}).get("approved", False)
+    regulator_approved = responses.get("regulator", {}).get("approved", False)
+    if student_approved and regulator_approved:
+        reveal.status = "unsealed"
+        reveal.approved_by = "regulator+college+student"
+
+    db.commit()
+
+    append_audit(
+        db=db,
+        actor_id=user["sub"],
+        actor_role=user["role"],
+        action="college_reveal_approved",
+        object_type="reveal_request",
+        object_id=str(reveal.id),
+        payload={"match": True, "status": reveal.status},
+    )
+
+    return {
+        "reveal_request_id": reveal.id,
+        "match": True,
+        "college_approved": True,
+        "status": reveal.status,
+        "unsealed": reveal.status == "unsealed",
+        "message": "College confirmed cryptographic token match. Zero raw ID stored.",
+    }
+
+
+@router.post("/v1/student/reveal/consent")
+def student_reveal_consent(
+    req: StudentRevealConsentRequest,
+    user: dict = Depends(require_roles("student")),
+    db: Session = Depends(get_db),
+):
+    """
+    Step 3 of dual-control reveal: Student reviews the unseal request and either
+    grants or refuses consent under DPDP Act 2023 provisions.
+    """
+    reveal = db.get(RevealRequest, req.reveal_request_id)
+    if not reveal:
+        raise HTTPException(404, f"Reveal request {req.reveal_request_id} not found")
+
+    case = db.get(Case, reveal.case_id)
+    if not case or not case.flag:
+        raise HTTPException(400, "Associated case or flag not found")
+
+    flag = case.flag
+    if user["sub"] != flag.student_token_ref:
+        raise HTTPException(403, "Access denied: you are not the student associated with this case")
+
+    responses = json.loads(reveal.institution_responses_json or "{}")
+    responses["student"] = {
+        "approved": bool(req.consent),
+        "actor": user["sub"],
+        "at": datetime.now(timezone.utc).isoformat(),
+    }
+    reveal.institution_responses_json = json.dumps(responses)
+
+    if req.consent:
+        college_approved = responses.get("college", {}).get("approved", False)
+        regulator_approved = responses.get("regulator", {}).get("approved", False)
+        if college_approved and regulator_approved:
+            reveal.status = "unsealed"
+            reveal.approved_by = "regulator+college+student"
+        append_audit(
+            db=db,
+            actor_id=user["sub"],
+            actor_role="student",
+            action="student_reveal_consented",
+            object_type="reveal_request",
+            object_id=str(reveal.id),
+            payload={"consent": True, "status": reveal.status},
+        )
+    else:
+        reveal.status = "student_refused"
+        append_audit(
+            db=db,
+            actor_id=user["sub"],
+            actor_role="student",
+            action="student_reveal_refused",
+            object_type="reveal_request",
+            object_id=str(reveal.id),
+            payload={"consent": False},
+        )
+
+    db.commit()
+
+    return {
+        "reveal_request_id": reveal.id,
+        "student_consented": req.consent,
+        "status": reveal.status,
+        "unsealed": reveal.status == "unsealed",
+        "message": (
+            "Identity unsealed under tripartite dual-control agreement."
+            if reveal.status == "unsealed"
+            else "Student consent recorded. Awaiting college confirmation."
+        ),
+    }
+
+
+@router.get("/v1/regulator/reveal/{reveal_request_id}")
+def get_reveal_status(
+    reveal_request_id: int,
+    user: dict = Depends(require_roles("officer", "supervisor", "institution", "student")),
+    db: Session = Depends(get_db),
+):
+    """Check status of a tripartite dual-control reveal request."""
+    reveal = db.get(RevealRequest, reveal_request_id)
+    if not reveal:
+        raise HTTPException(404, f"Reveal request {reveal_request_id} not found")
+    responses = json.loads(reveal.institution_responses_json or "{}")
+    return {
+        "reveal_request_id": reveal.id,
+        "case_id": reveal.case_id,
+        "requested_by": reveal.requested_by,
+        "reason_code": reveal.reason_code,
+        "status": reveal.status,
+        "unsealed": reveal.status == "unsealed",
+        "approved_by": reveal.approved_by,
+        "approvals": {
+            "regulator": responses.get("regulator", {}).get("approved", False),
+            "college": responses.get("college", {}).get("approved", False),
+            "student": responses.get("student", {}).get("approved", False),
+        },
+        "created_at": reveal.created_at.isoformat() if reveal.created_at else None,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Rule Registry Listing (R1–R7)
+# ---------------------------------------------------------------------------
+
+@router.get("/v1/rules")
+def list_rules(
+    user: dict = Depends(require_roles("officer", "supervisor", "auditor", "institution", "student")),
+):
+    """Return all active detection rules directly from the rule registry."""
+    from rules import ALL_RULES
+    RULE_DESCRIPTIONS = {
+        "R1": {"name": "Dual Regular Enrolment", "severity": "high", "description": "Same seal active at 2+ institutions in regular mode for same cohort."},
+        "R2": {"name": "Duplicate Entry in Same College", "severity": "medium", "description": "Same seal entered multiple times within one institution."},
+        "R3": {"name": "Approved Intake Overrun", "severity": "high", "description": "Reported regular admissions exceed approved AICTE intake ceiling."},
+        "R4": {"name": "Volume Burst Spike", "severity": "medium", "description": "Institution upload exceeds 3x normal batch volume threshold."},
+        "R5": {"name": "Low Verified Share", "severity": "medium", "description": "Less than 20% of admitted seats verified through authoritative registry."},
+        "R6": {"name": "Identical Record Cluster", "severity": "low", "description": "Cluster of admissions sharing identical demographic/quota attributes."},
+        "R7": {"name": "Quota Category Mismatch", "severity": "medium", "description": "Reserved category admissions exceed sanctioned reservation quotas."},
+    }
+    rules_list = []
+    for r_id in ALL_RULES.keys():
+        info = RULE_DESCRIPTIONS.get(r_id, {"name": f"Rule {r_id}", "severity": "medium", "description": "Deterministic rule"})
+        rules_list.append({"rule_id": r_id, **info})
+
+    return {
+        "count": len(ALL_RULES),
+        "rule_range": f"R1–R{len(ALL_RULES)}",
+        "rules": rules_list,
+    }

@@ -28,10 +28,16 @@ web/.vite/
 *.tar.gz
 *.pptx
 
-# Markdown files (Except README.md)
+# Markdown files (Except README.md and documentation specs)
 *.md
 docs/*.md
 !README.md
+!docs/FEATURES.md
+!docs/BENCHMARKS.md
+!docs/dfd.md
+!docs/sequence_diagram.md
+!docs/er_diagram.md
+!docs/stride_threat_model.md
 
 # Environment
 .env
@@ -49,6 +55,14 @@ Thumbs.db
 .idea/
 *.suo
 *.user
+
+# Video & temporary dump artifacts
+*.mp4
+dump_sakshi_ppt.txt
+ppt_extracted_imgs/
+slides_rendered/
+temp_scene_thumbs/
+temp_video_frames/
 
 # Logs
 *.log

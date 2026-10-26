@@ -141,10 +141,11 @@ def privacy_proof(
         "duration_ms": duration_ms,
         "table_detail": table_results,
         "checked_at": datetime.now(timezone.utc).isoformat(),
+        "scan_summary": f"{total_matches} matches for 12-digit patterns across {len(table_names)} tables",
         "message": (
-            f"Zero raw 12-digit ID patterns found across {total_rows:,} records in {len(table_names)} tables. Privacy covenant holds."
+            f"0 matches for 12-digit patterns across {len(table_names)} tables ({total_rows:,} records scanned). Automated regex pattern check, not a formal mathematical proof of zero PII."
             if passed
-            else f"WARNING: {total_matches} potential raw ID matches found. Review the table_detail field."
+            else f"WARNING: {total_matches} matches for 12-digit patterns found across {len(table_names)} tables. Review table_detail."
         ),
     }
 
