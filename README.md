@@ -10,10 +10,20 @@
 <br/>
 
 [![Live Production App](https://img.shields.io/badge/Live%20Demo-sakshi--opal--five.vercel.app-0284c7?style=for-the-badge&logo=vercel)](https://sakshi-opal-five.vercel.app)
-[![API Documentation](https://img.shields.io/badge/FastAPI-Swagger%20UI-10b981?style=for-the-badge&logo=fastapi)](https://sakshi-opal-five.vercel.app)
+[![YouTube Walkthrough](https://img.shields.io/badge/YouTube-Video%20Demo%20(3m%2026s)-red?style=for-the-badge&logo=youtube)](https://youtu.be/2qNPlmyVsIc)
+[![Idea Presentation](https://img.shields.io/badge/Presentation-Idea%20Deck%20(PPTX)-ea580c?style=for-the-badge&logo=microsoftpowerpoint)](https://iemcollege-my.sharepoint.com/:p:/g/personal/swastik_manna_u2024_iem_edu_in/IQCx1YTj2p-6QpqMl-4a4BHrAazR97ZP4UnBnhKdYLeteC4?e=3eJgH7)
 [![Pytest Suite](https://img.shields.io/badge/Pytest-20%20Passed-emerald?style=for-the-badge&logo=pytest)](api/tests)
 [![Privacy Covenant](https://img.shields.io/badge/Zero%20Raw%20PII-19%20Tables%20Scrubbed-purple?style=for-the-badge&logo=shield)](docs/FEATURES.md)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+
+<br/>
+
+<p align="center">
+  <a href="https://sakshi-opal-five.vercel.app"><strong>🌐 Live Web Prototype</strong></a> &nbsp;•&nbsp;
+  <a href="https://youtu.be/2qNPlmyVsIc"><strong>🎬 Video Walkthrough (YouTube)</strong></a> &nbsp;•&nbsp;
+  <a href="https://iemcollege-my.sharepoint.com/:p:/g/personal/swastik_manna_u2024_iem_edu_in/IQCx1YTj2p-6QpqMl-4a4BHrAazR97ZP4UnBnhKdYLeteC4?e=3eJgH7"><strong>📊 Official PPTX Presentation</strong></a> &nbsp;•&nbsp;
+  <a href="#quick-navigation"><strong>📑 Architecture Specs</strong></a>
+</p>
 
 </div>
 
@@ -25,6 +35,7 @@
 
 ## Quick Navigation
 
+- [Official Links & Submission Materials](#official-links--submission-materials)
 - [Implemented vs Planned Capabilities](#implemented-vs-planned)
 - [Features & Innovation](#features--innovation)
 - [System Architecture & Visual Diagrams](#system-architecture--visual-diagrams)
@@ -34,6 +45,18 @@
 - [Interactive System Walkthrough](#interactive-system-walkthrough)
 - [Local Setup & Testing](#local-setup--testing)
 - [Team Sudo Winners](#team-sudo-winners)
+
+---
+
+## Official Links & Submission Materials
+
+| Material | Link | Description |
+|---|---|---|
+| 🌐 **Live Web Application** | [**sakshi-opal-five.vercel.app**](https://sakshi-opal-five.vercel.app) | Production prototype with 3-role perspective switcher and real-time radar |
+| 🎬 **YouTube Demonstration Video** | [**Watch on YouTube (3m 26s)**](https://youtu.be/2qNPlmyVsIc) | Regulatory walkthrough covering the double-seat crisis, blind seals, and live UI |
+| 📊 **Official SIH Idea Presentation** | [**SAKSHI_SIH2026_Idea_PPT_Final.pptx**](https://iemcollege-my.sharepoint.com/:p:/g/personal/swastik_manna_u2024_iem_edu_in/IQCx1YTj2p-6QpqMl-4a4BHrAazR97ZP4UnBnhKdYLeteC4?e=3eJgH7) | 6-slide executive deck matching PS SIH26263 and repository implementation |
+| 💻 **GitHub Repository** | [**github.com/heaven-swastik/sakshi**](https://github.com/heaven-swastik/sakshi) | Complete source code (FastAPI backend + React frontend + tests) |
+| 📑 **Architectural Diagrams (Mermaid)** | [**docs/ Directory**](docs/) | DFD Level 0/1, Sequence, ER schema, and STRIDE threat model |
 
 ---
 
