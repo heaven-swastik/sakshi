@@ -11,8 +11,8 @@
 
 [![Live Production App](https://img.shields.io/badge/Live%20Demo-sakshi--opal--five.vercel.app-0284c7?style=for-the-badge&logo=vercel)](https://sakshi-opal-five.vercel.app)
 [![API Documentation](https://img.shields.io/badge/FastAPI-Swagger%20UI-10b981?style=for-the-badge&logo=fastapi)](https://sakshi-opal-five.vercel.app)
-[![Pytest Suite](https://img.shields.io/badge/Pytest-20%20Passed-emerald?style=for-the-badge&logo=pytest)](file:///api/tests)
-[![Privacy Covenant](https://img.shields.io/badge/Zero%20Raw%20PII-19%20Tables%20Scrubbed-purple?style=for-the-badge&logo=shield)](file:///docs/FEATURES.md)
+[![Pytest Suite](https://img.shields.io/badge/Pytest-20%20Passed-emerald?style=for-the-badge&logo=pytest)](api/tests)
+[![Privacy Covenant](https://img.shields.io/badge/Zero%20Raw%20PII-19%20Tables%20Scrubbed-purple?style=for-the-badge&logo=shield)](docs/FEATURES.md)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
 </div>
@@ -118,19 +118,20 @@ Demonstrator validation on synthetic ground truth · Memory-isolated batch inges
 
 ## System Architecture & Visual Diagrams
 
-All architectural and security models are documented with interactive Mermaid specifications in [`docs/`](file:///docs/):
+> 📖 **Check our [`docs/`](docs/) directory to have a detailed idea of the architecture, data flows, and security guarantees.** Every model is documented with interactive Mermaid specifications:
 
-- [**Data Flow Diagrams (DFD Level 0 & Level 1)**](file:///docs/dfd.md): System context, data stores, and memory-only tokenization boundary.
-- [**System Sequence Diagram**](file:///docs/sequence_diagram.md): Step-by-step lifecycle from CSV upload $\rightarrow$ blind sealing $\rightarrow$ duplicate radar $\rightarrow$ bilateral inquiry $\rightarrow$ tripartite identity reveal.
-- [**Entity-Relationship (ER) Diagram**](file:///docs/er_diagram.md): Complete relational schema from `api/models.py` demonstrating zero PII columns.
-- [**STRIDE Threat Model & Mitigations**](file:///docs/stride_threat_model.md): Threat vectors across trust boundaries (Spoofing, Tampering, Repudiation, Information Disclosure, DoS, Elevation of Privilege).
-- [**Full Features Reference**](file:///docs/FEATURES.md): Single source of truth for prototype claims, rules, and innovation.
+- [**Data Flow Diagrams (DFD Level 0 & Level 1)**](docs/dfd.md) — System context, external entities, data stores, and the zero-knowledge in-memory tokenization gateway.
+- [**System Sequence Diagram**](docs/sequence_diagram.md) — Step-by-step lifecycle from CSV upload $\rightarrow$ blind sealing $\rightarrow$ duplicate radar $\rightarrow$ bilateral inquiry $\rightarrow$ tripartite identity reveal.
+- [**Entity-Relationship (ER) Schema**](docs/er_diagram.md) — Complete database schema from `api/models.py` proving zero PII columns across all 19 relational tables.
+- [**STRIDE Threat Model & Mitigations**](docs/stride_threat_model.md) — Comprehensive analysis of spoofing, tampering, repudiation, information disclosure, DoS, and privilege elevation threats.
+- [**Full Features & Innovation Reference**](docs/FEATURES.md) — Single source of truth for problem statement alignment, rule engine logic, and rollout roadmap.
+- [**Performance & Latency Benchmarks**](docs/BENCHMARKS.md) — Microsecond tokenization latency, 25k records/sec ingestion throughput, and indexed radar queries.
 
 ---
 
 ## Performance & Benchmarks
 
-Measured on host machine via [`scripts/benchmark.py`](file:///scripts/benchmark.py). Full specifications and methodology in [**`docs/BENCHMARKS.md`**](file:///docs/BENCHMARKS.md).
+Measured on host machine via [`scripts/benchmark.py`](scripts/benchmark.py). Full specifications and methodology in [**`docs/BENCHMARKS.md`**](docs/BENCHMARKS.md).
 
 | Metric | Measured Value | Algorithmic Guarantee |
 |---|---|---|
@@ -161,7 +162,7 @@ The Privacy Proof screen and `/v1/admin/privacy-scan` endpoint verify:
 SAKSHI issues **W3C-VC-style signed credentials (Ed25519)** containing a pseudonymized student token and program details. Credentials can be verified:
 1. **Online via API:** `GET /v1/credentials/verify?handle={handle}`
 2. **Public Key Export:** `GET /v1/credentials/public-key` returns the system's SubjectPublicKeyInfo PEM.
-3. **Offline via CLI:** The included [`verify_offline.py`](file:///verify_offline.py) script verifies compact JWS credentials using **only the public key** with zero network or database dependencies:
+3. **Offline via CLI:** The included [`verify_offline.py`](verify_offline.py) script verifies compact JWS credentials using **only the public key** with zero network or database dependencies:
    ```bash
    python verify_offline.py <jws_string> --public-key <pem_or_base64_key>
    # Or run built-in self-test:
