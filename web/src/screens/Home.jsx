@@ -87,6 +87,7 @@ export default function Home() {
     R4: ['R4 — Upload Burst', 'Volume Spike', '/integrity'],
     R5: ['R5 — Low Verified Share', 'Coverage Gap', '/integrity'],
     R6: ['R6 — Identical Records', 'Copy-paste Pattern', '/integrity'],
+    R7: ['R7 — Quota Mismatch', 'Category Inconsistency', '/integrity'],
   };
   const SEV_RANK = { critical: 4, high: 3, medium: 2, low: 1 };
   const cap = (x = '') => x.charAt(0).toUpperCase() + x.slice(1);

@@ -112,11 +112,11 @@ export default function PrivacyProof() {
             <h2 className="font-semibold text-gray-900 text-sm flex items-center gap-2">
               Step 6: Real-Time Privacy Proof & Audit Chain Verification
               <span className="text-[10px] bg-emerald-50 text-emerald-700 font-mono px-2 py-0.5 rounded-full border border-emerald-200">
-                100% Zero-Exposure
+                0 matches for 12-digit patterns across 19 tables
               </span>
             </h2>
             <p className="text-xs text-gray-500">
-              Scans all 19 database tables with regex <code className="font-mono text-[11px] bg-gray-100 px-1 py-0.5 rounded">\b\d&#123;12&#125;\b</code> to mathematically verify zero raw student PII is stored.
+              Scans all 19 database tables with regex <code className="font-mono text-[11px] bg-gray-100 px-1 py-0.5 rounded">\b\d&#123;12&#125;\b</code> to verify zero 12-digit ID patterns are stored (automated pattern check).
             </p>
           </div>
         </div>

@@ -164,7 +164,7 @@ export default function Integrity() {
         </div>
         <div>
           <h2 className="font-display font-bold text-gray-900 text-sm sm:text-base">
-            Step 3: Seat Integrity Scores & Quota Distribution (Rules R2–R6)
+            Step 3: Seat Integrity Scores & Quota Distribution (Rules R2–R7)
           </h2>
           <p className="text-xs text-gray-600 mt-0.5 leading-relaxed">
             <strong>What happens here:</strong> Transparent 0–100 health scores computed per college without black-box ML. Rule R3 catches intake overruns; Rule R2 catches same-college double entries; Rule R4 catches velocity burst uploads; and the Quota Ledger tracks NRI, OCI, and Foreign National seats (AICTE Requirement 2).

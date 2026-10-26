@@ -149,10 +149,10 @@ export function SceneBriefArch({ beat }) {
       </Box>
 
       <Box x={835} y={40} w={285} h={170} on={beat >= 2} className="p-5">
-        <div className="font-display text-[20px]">Six rules</div>
+        <div className="font-display text-[20px]">Seven rules (R1–R7)</div>
         <div className="text-[13px] text-slate">deterministic, every flag explained</div>
         <div className="mt-3 flex flex-wrap gap-1.5">
-          {['R1 double seat', 'R2 same college', 'R3 over intake', 'R4 upload burst', 'R5 low verified', 'R6 identical rows'].map((r, i) => (
+          {['R1 double seat', 'R2 same college', 'R3 over intake', 'R4 upload burst', 'R5 low verified', 'R6 identical rows', 'R7 quota mismatch'].map((r, i) => (
             <motion.span key={r} initial={false} animate={{ opacity: beat >= 2 ? 1 : 0, scale: beat >= 2 ? 1 : 0.6 }} transition={{ delay: 0.4 + i * 0.2, type: 'spring', stiffness: 300, damping: 18 }}>
               <Tag>{r}</Tag></motion.span>
           ))}
@@ -241,7 +241,7 @@ export const BRIEFING = [
   { id: 'workflow', label: 'The workflow', Scene: SceneBriefArch, beats: [
     { ms: 9500, line: 'A college uploads its list.', sub: 'Each ID is checked once, turned into a seal, and forgotten.' },
     { ms: 9500, line: 'AICTE stores only seals.', sub: 'No names. No IDs. Just seals and seat details.' },
-    { ms: 9500, line: 'Six rules look for problems.', sub: 'Every flag comes with a reason in plain words.' },
+    { ms: 9500, line: 'Seven rules look for problems.', sub: 'Every flag comes with a reason in plain words.' },
     { ms: 10000, line: 'People decide. Everything is logged.', sub: 'Officers, students and employers each get a simple view.' },
   ] },
   { id: 'innovation', label: 'The innovation', Scene: SceneBriefInnov, beats: [

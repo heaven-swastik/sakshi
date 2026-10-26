@@ -415,7 +415,7 @@ export default function AppShell({ children }) {
                           : 'SSN College claimed an enrolment she never took · "This is not me" dispute ready to sign.')
                       : role === 'institution'
                       ? 'Approved Intake: 240 seats · Reported Admissions: 312 · Upload batch CSVs, preview blind sealing, and download EoA reports.'
-                      : 'National Scope: 15 institutions · 3,333 student seats · Real-time duplicate collision radar and explainable rules R1–R6.'}
+                      : 'National Scope: 15 institutions · 3,333 student seats · Real-time duplicate collision radar and explainable rules R1–R7.'}
                   </p>
                 </div>
               </div>
